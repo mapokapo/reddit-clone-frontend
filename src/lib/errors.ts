@@ -28,7 +28,7 @@ export class HttpException extends Error {
 
   constructor(
     message: string | string[],
-    public error: string,
+    public cause: string,
     public statusCode: ErrorStatusCode
   ) {
     const formattedMessage = Array.isArray(message)
@@ -51,7 +51,7 @@ export type ErrorStatusCode = 400 | 401 | 403 | 404 | 500;
 export interface ErrorResponse {
   statusCode: ErrorStatusCode;
   message: string | string[];
-  error: string;
+  cause: string;
 }
 
 export const errorResponseSchema = z.object({
@@ -62,5 +62,5 @@ export const errorResponseSchema = z.object({
       return [400, 401, 403, 404, 500].includes(value);
     }),
   message: z.union([z.string(), z.array(z.string())]),
-  error: z.string(),
+  cause: z.string(),
 });

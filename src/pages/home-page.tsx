@@ -9,6 +9,8 @@ const HomePage: React.FC = () => {
   const { data, error, isLoading } = useSWR(
     "https://dummyjson.com/products?limit=10",
     fetcher({
+      schemas:
+      {
       responseBody: z.object({
         products: z.array(
           z.object({
@@ -20,7 +22,8 @@ const HomePage: React.FC = () => {
         total: z.number(),
         limit: z.number(),
         skip: z.number(),
-      }),
+      })
+    },
     })
   );
 
