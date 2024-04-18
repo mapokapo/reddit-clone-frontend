@@ -63,12 +63,16 @@ export const fetcher = <
   TResponseBodySchema extends z.Schema,
   TRequestBodySchema extends z.Schema,
 >(
-  options: FetcherOptions<TResponseBodySchema, TRequestBodySchema> = {
+  fetcherOptions: Partial<
+    FetcherOptions<TResponseBodySchema, TRequestBodySchema>
+  >
+): Fetcher<z.infer<TResponseBodySchema>, string> => {
+  const options: FetcherOptions<TResponseBodySchema, TRequestBodySchema> = {
+    ...fetcherOptions,
     schemas: {},
     fetchOptions: {},
     fetchFunction: fetch,
-  }
-): Fetcher<z.infer<TResponseBodySchema>, string> => {
+  };
   return async url => {
     let response: Response;
     try {
