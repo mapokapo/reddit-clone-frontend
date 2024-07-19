@@ -1,18 +1,11 @@
 import { Fetcher } from "swr";
 import {
-  ErrorResponse,
   errorResponseSchema,
   ErrorStatusCode,
   FetchException,
   HttpException,
 } from "@/lib/errors";
 import { z } from "zod";
-import {
-  ClientRequestOptions,
-  InferRequestType,
-  InferResponseType,
-} from "hono";
-import { ClientResponse } from "hono/client";
 
 export type FetcherOptions<
   TResponseBodySchema extends z.Schema,
@@ -71,7 +64,7 @@ export const fetcher = <
     ...fetcherOptions,
     schemas: {},
     fetchOptions: {},
-    fetchFunction: fetch,
+    fetchFunction: fetch.bind(window),
   };
   return async url => {
     let response: Response;
@@ -80,7 +73,7 @@ export const fetcher = <
     } catch (e) {
       console.error(e);
 
-      throw new FetchException(`Network error. Error: ${e}`);
+      throw new FetchException("Network unavailable", `${e}`);
     }
 
     let json: any;
@@ -89,7 +82,7 @@ export const fetcher = <
     } catch (e) {
       console.error(e);
 
-      throw new FetchException(`Failed to parse response body. Error: ${e}`);
+      throw new FetchException("Failed to parse response body", `${e}`);
     }
 
     if (!response.ok) {
@@ -99,18 +92,22 @@ export const fetcher = <
         console.error(result.error);
 
         throw new HttpException(
+          "Failed to parse error response",
           result.error.errors.map(e => e.message),
-          "Request failed. Failed to parse error response.",
-          response.status as ErrorStatusCode
+          response.status as ErrorStatusCode,
+          url,
+          new Date()
         );
       }
 
       const errorJson = result.data;
 
       throw new HttpException(
+        "Request failed",
         errorJson.message,
-        errorJson.cause,
-        response.status as ErrorStatusCode
+        response.status as ErrorStatusCode,
+        url,
+        errorJson.timestamp
       );
     }
 
@@ -122,7 +119,8 @@ export const fetcher = <
         console.error(result.error);
 
         throw new FetchException(
-          `Response data invalid. Reasons: ${result.error.errors.map(e => e.message).join(", ")}`
+          "Response data invalid",
+          `Reasons: ${result.error.errors.map(e => e.message).join(", ")}`
         );
       }
 
@@ -132,73 +130,5 @@ export const fetcher = <
     }
 
     return body;
-  };
-};
-
-export type HonoFunction<TInput, TOutput> = (
-  args?: TInput,
-  options?: ClientRequestOptions
-) => Promise<ClientResponse<TOutput>>;
-
-/**
- * A SWR-specific utility type-safe fetch wrapper function for the hono/client RPC client.
- *
- * @example
- * ```tsx
- * const { data, error, isLoading } = useSWR("/posts", honoFetcher(client.posts.$get));
- * ```
- *
- * @param url URL to fetch.
- * @param arg Hono request data object.
- *
- * @returns A fetch function that can be used with SWR.
- */
-export const honoFetcher = <
-  T extends HonoFunction<InferRequestType<T>, InferResponseType<T>>,
->(
-  honoFunction: T,
-  args?: InferRequestType<T>,
-  options?: ClientRequestOptions
-): Fetcher<InferResponseType<T>, string> => {
-  return async () => {
-    let response: ClientResponse<unknown>;
-    try {
-      response = await honoFunction(args, options);
-    } catch (e) {
-      throw new FetchException(`Failed to fetch data. Error: ${e}`);
-    }
-
-    let json: InferResponseType<T> | ErrorResponse;
-    try {
-      json = await response.json();
-    } catch (e) {
-      console.log(e);
-
-      throw new FetchException(`Failed to parse response body. Error: ${e}`);
-    }
-
-    if (!response.ok) {
-      const result = errorResponseSchema.safeParse(json);
-
-      if (!result.success) {
-        console.error(result.error);
-
-        throw new HttpException(
-          result.error.errors.map(e => e.message),
-          "Request failed. Failed to parse error response.",
-          response.status as ErrorStatusCode
-        );
-      }
-
-      const errorJson = result.data;
-
-      throw new HttpException(
-        errorJson.message,
-        errorJson.cause,
-        response.status as ErrorStatusCode
-      );
-    }
-
-    return json;
   };
 };

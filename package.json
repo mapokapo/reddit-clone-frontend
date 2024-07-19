@@ -1,5 +1,5 @@
 {
-  "name": "react_spa_template",
+  "name": "reddit-clone",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -14,7 +14,6 @@
     "@radix-ui/react-slot": "^1.0.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
-    "hono": "^4.2.5",
     "lucide-react": "^0.363.0",
     "next-themes": "^0.3.0",
     "react": "^18.2.0",

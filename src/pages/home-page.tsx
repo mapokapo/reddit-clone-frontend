@@ -9,39 +9,40 @@ const HomePage: React.FC = () => {
   const { data, error, isLoading } = useSWR(
     "https://dummyjson.com/products?limit=10",
     fetcher({
-      schemas:
-      {
-      responseBody: z.object({
-        products: z.array(
-          z.object({
-            id: z.number(),
-            title: z.string(),
-            price: z.number(),
-          })
-        ),
-        total: z.number(),
-        limit: z.number(),
-        skip: z.number(),
-      })
-    },
+      schemas: {
+        responseBody: z.object({
+          products: z.array(
+            z.object({
+              id: z.number(),
+              title: z.string(),
+              price: z.number(),
+            })
+          ),
+          total: z.number(),
+          limit: z.number(),
+          skip: z.number(),
+        }),
+      },
     })
   );
 
   if (error) {
-    const message = mapErrorToMessage(error);
-    toast.error(message);
+    const [text, details] = mapErrorToMessage(error);
+    toast.error(text, {
+      description: details,
+    });
   }
 
   if (isLoading || data === undefined) {
     return (
-      <div className="flex h-full w-full flex-col items-center justify-center">
+      <div className="flex min-h-screen w-full flex-col items-center justify-center">
         <Loading />
       </div>
     );
   }
 
   return (
-    <main className="prose dark:prose-invert flex h-full w-full flex-col">
+    <main className="prose flex min-h-screen w-full flex-col dark:prose-invert">
       <h1>Hello world!</h1>
       <ul>
         {data.products.map(product => (

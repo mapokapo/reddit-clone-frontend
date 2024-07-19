@@ -6,7 +6,10 @@ import { z } from "zod";
 export class FetchException extends Error {
   public message: string;
 
-  constructor(message: string | string[]) {
+  constructor(
+    public label: string,
+    message: string | string[]
+  ) {
     const formattedMessage = Array.isArray(message)
       ? message.join(", ")
       : message;
@@ -25,11 +28,14 @@ export class FetchException extends Error {
  */
 export class HttpException extends Error {
   public message: string;
+  public timestamp: Date;
 
   constructor(
+    public label: string,
     message: string | string[],
-    public cause: string,
-    public statusCode: ErrorStatusCode
+    public statusCode: ErrorStatusCode,
+    public path: string,
+    timestamp: string | Date
   ) {
     const formattedMessage = Array.isArray(message)
       ? message.join(", ")
@@ -38,6 +44,8 @@ export class HttpException extends Error {
     super(formattedMessage);
 
     this.message = formattedMessage;
+    this.timestamp =
+      timestamp instanceof Date ? timestamp : new Date(timestamp);
     this.name = "HttpException";
   }
 }
@@ -46,12 +54,13 @@ export type StatusCode = 200 | 201 | 400 | 401 | 403 | 404 | 500;
 export type ErrorStatusCode = 400 | 401 | 403 | 404 | 500;
 
 /**
- * This is the JSON body which the server responds with when an error occurs.
+ * This is the JSON body which the server responds with when an expected error occurs.
  */
 export interface ErrorResponse {
   statusCode: ErrorStatusCode;
+  timestamp: string;
+  path: string;
   message: string | string[];
-  cause: string;
 }
 
 export const errorResponseSchema = z.object({
@@ -62,5 +71,6 @@ export const errorResponseSchema = z.object({
       return [400, 401, 403, 404, 500].includes(value);
     }),
   message: z.union([z.string(), z.array(z.string())]),
-  cause: z.string(),
+  timestamp: z.string(),
+  path: z.string(),
 });
