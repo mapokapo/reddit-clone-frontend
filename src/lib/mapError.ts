@@ -1,4 +1,7 @@
 import { FetchException, HttpException } from "@/lib/errors";
+import { FirebaseError } from "firebase/app";
+import { AuthError } from "firebase/auth";
+import { mapFirebaseAuthError } from "./firebase";
 
 type ErrorTransformer = {
   filter: (e: unknown) => boolean;
@@ -18,6 +21,12 @@ const errorTransformers: ErrorTransformer[] = [
     ],
   },
   {
+    filter: (e: unknown): e is AuthError => {
+      return e instanceof FirebaseError && e.code.startsWith("auth/");
+    },
+    map: (e: AuthError) => [mapFirebaseAuthError(e), null],
+  },
+  {
     filter: (e: unknown): e is Error => e instanceof Error,
     map: (e: Error) => [e.message, null],
   },
@@ -28,6 +37,8 @@ const errorTransformers: ErrorTransformer[] = [
 ];
 
 const mapErrorToMessage = (e: unknown) => {
+  console.error(e);
+
   const transformer = errorTransformers.find(t => t.filter(e));
   return transformer ? transformer.map(e) : "An unexpected error occurred";
 };

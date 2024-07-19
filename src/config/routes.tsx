@@ -1,7 +1,10 @@
-import AppLayout from "@/layouts/app-layout";
-import AuthLayout from "@/layouts/auth-layout";
+import PrivateLayout from "@/layouts/private-layout";
+import PublicLayout from "@/layouts/public-layout";
 import RootLayout from "@/layouts/root-layout";
 import HomePage from "@/pages/home-page";
+import LoginPage from "@/pages/login-page";
+import RegisterPage from "@/pages/register-page";
+import SettingsPage from "@/pages/settings-page";
 import { Navigate, RouteObject } from "react-router-dom";
 
 const routes: RouteObject[] = [
@@ -11,17 +14,31 @@ const routes: RouteObject[] = [
     children: [
       {
         path: "/app",
-        element: <AppLayout />,
+        element: <PrivateLayout />,
         children: [
           {
             path: "/app/home",
             element: <HomePage />,
           },
+          {
+            path: "/app/settings",
+            element: <SettingsPage />,
+          },
         ],
       },
       {
         path: "/auth",
-        element: <AuthLayout />,
+        element: <PublicLayout />,
+        children: [
+          {
+            path: "/auth/login",
+            element: <LoginPage />,
+          },
+          {
+            path: "/auth/register",
+            element: <RegisterPage />,
+          },
+        ],
       },
       {
         path: "",
@@ -30,8 +47,22 @@ const routes: RouteObject[] = [
     ],
   },
   {
+    path: "/404",
+    element: (
+      <div className="flex min-h-screen w-full flex-col items-center justify-center">
+        <h1 className="text-4xl font-bold">404</h1>
+        <p className="text-lg">Page not found</p>
+      </div>
+    ),
+  },
+  {
     path: "*",
-    element: <Navigate to="/404" />,
+    element: (
+      <Navigate
+        to="/404"
+        replace
+      />
+    ),
   },
 ];
 

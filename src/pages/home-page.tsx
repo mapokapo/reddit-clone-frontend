@@ -35,14 +35,14 @@ const HomePage: React.FC = () => {
 
   if (isLoading || data === undefined) {
     return (
-      <div className="flex min-h-screen w-full flex-col items-center justify-center">
+      <div className="flex h-full w-full flex-col items-center justify-center">
         <Loading />
       </div>
     );
   }
 
   return (
-    <main className="prose flex min-h-screen w-full flex-col dark:prose-invert">
+    <main className="prose flex h-full w-full flex-col dark:prose-invert">
       <h1>Hello world!</h1>
       <ul>
         {data.products.map(product => (

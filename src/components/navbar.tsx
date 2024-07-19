@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { ThemeModeToggle } from "@/components/theme-mode-toggle";
+import Profile from "./profile";
 
 const Navbar: React.FC = () => {
   return (
@@ -9,7 +10,7 @@ const Navbar: React.FC = () => {
           to="/"
           className="text-foreground">
           <img
-            src="/vite.svg"
+            src="/reddit_clone_logo.png"
             width="40"
             height="40"
             alt="Logo"
@@ -17,6 +18,7 @@ const Navbar: React.FC = () => {
         </Link>
         <ol className="flex items-center space-x-4">
           <ThemeModeToggle />
+          <Profile />
         </ol>
       </div>
     </nav>
