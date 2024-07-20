@@ -17,9 +17,6 @@ const LoginPage: React.FC = () => {
     setLoading(true);
 
     signInWithEmailAndPassword(auth, email, password)
-      .then(credential => {
-        console.log(credential);
-      })
       .catch(error => {
         const [text, details] = mapErrorToMessage(error);
         setActionError(text);
@@ -35,9 +32,6 @@ const LoginPage: React.FC = () => {
   const onSignInWithGoogle = () => {
     setLoading(true);
     signInWithPopup(auth, new GoogleAuthProvider())
-      .then(credential => {
-        console.log(credential);
-      })
       .catch(error => {
         const [text, details] = mapErrorToMessage(error);
         setActionError(text);

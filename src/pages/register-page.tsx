@@ -13,9 +13,6 @@ const RegisterPage: React.FC = () => {
     setLoading(true);
 
     createUserWithEmailAndPassword(auth, email, password)
-      .then(credential => {
-        console.log(credential);
-      })
       .catch(error => {
         const [text, details] = mapErrorToMessage(error);
         setActionError(text);

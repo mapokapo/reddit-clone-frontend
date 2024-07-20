@@ -1,30 +1,18 @@
 import Loading from "@/components/loading";
-import { fetcher } from "@/lib/fetcher";
 import mapErrorToMessage from "@/lib/mapError";
 import { toast } from "sonner";
-import useSWR from "swr";
-import { z } from "zod";
+import { CommunitiesService } from "@/client/requests";
+import { useCommunitiesServiceFindAllCommunitiesKey } from "@/client/queries";
+import { useQuery } from "@tanstack/react-query";
+import { fetcher } from "@/lib/fetcher";
 
 const HomePage: React.FC = () => {
-  const { data, error, isLoading } = useSWR(
-    "https://dummyjson.com/products?limit=10",
-    fetcher({
-      schemas: {
-        responseBody: z.object({
-          products: z.array(
-            z.object({
-              id: z.number(),
-              title: z.string(),
-              price: z.number(),
-            })
-          ),
-          total: z.number(),
-          limit: z.number(),
-          skip: z.number(),
-        }),
-      },
-    })
-  );
+  const { data, error, isLoading } = useQuery({
+    queryKey: [useCommunitiesServiceFindAllCommunitiesKey],
+    queryFn: fetcher({
+      fetchFunction: CommunitiesService.findAllCommunities,
+    }),
+  });
 
   if (error) {
     const [text, details] = mapErrorToMessage(error);
@@ -45,10 +33,10 @@ const HomePage: React.FC = () => {
     <main className="prose flex h-full w-full flex-col dark:prose-invert">
       <h1>Hello world!</h1>
       <ul>
-        {data.products.map(product => (
-          <li key={product.id}>
-            <h2>{product.title}</h2>
-            <p>{product.price}</p>
+        {data.map(community => (
+          <li key={community.id}>
+            <h2>{community.name}</h2>
+            <p>{community.description}</p>
           </li>
         ))}
       </ul>

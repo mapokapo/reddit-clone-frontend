@@ -7,7 +7,8 @@
     "dev": "bunx --bun vite",
     "build": "tsc && bunx --bun vite build",
     "lint": "bunx --bun eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "bunx --bun vite preview"
+    "preview": "bunx --bun vite preview",
+    "openapi-gen": "openapi-rq -i ../backend/openapi.json -o src/client --format prettier --lint eslint --enums javascript --useDateType --base http://localhost:5000"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
@@ -19,6 +20,7 @@
     "@radix-ui/react-separator": "^1.1.0",
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-tooltip": "^1.1.2",
+    "@tanstack/react-query": "^5.51.9",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "firebase": "^10.12.4",
@@ -29,12 +31,12 @@
     "react-hook-form": "^7.52.1",
     "react-router-dom": "^6.22.3",
     "sonner": "^1.4.41",
-    "swr": "^2.2.5",
     "tailwind-merge": "^2.2.2",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@7nohe/openapi-react-query-codegen": "^1.4.1",
     "@tailwindcss/typography": "^0.5.11",
     "@types/bun": "^1.0.11",
     "@types/react": "^18.2.66",

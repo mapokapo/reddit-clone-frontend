@@ -1,22 +1,20 @@
-import { Fetcher } from "swr";
+import { OpenAPIConfig } from "@/client/requests";
+import { ApiRequestOptions } from "@/client/requests/core/ApiRequestOptions";
 import {
   errorResponseSchema,
   ErrorStatusCode,
   FetchException,
   HttpException,
 } from "@/lib/errors";
-import { z } from "zod";
+import { QueryFunction } from "@tanstack/react-query";
 
-export type FetcherOptions<
-  TResponseBodySchema extends z.Schema,
-  TRequestBodySchema extends z.Schema,
-> = {
-  fetchFunction: (url: string, options: RequestInit) => Promise<Response>;
-  schemas: {
-    requestBody?: TRequestBodySchema;
-    responseBody?: TResponseBodySchema;
-  };
-  fetchOptions: RequestInit;
+export type FetcherOptions<ResBody> = {
+  fetchFunction: (
+    config?: OpenAPIConfig,
+    options?: ApiRequestOptions
+  ) => Promise<ResBody>;
+  config?: OpenAPIConfig;
+  options?: ApiRequestOptions;
 };
 
 /**
@@ -27,16 +25,7 @@ export type FetcherOptions<
  * const { data, error, isLoading } = useSWR("/posts", fetcher(
  *   {
  *     fetchFunction: fetch,
- *     schemas: {
- *       responseBody: z.array(
- *         z.object({
- *           id: z.number(),
- *           title: z.string(),
- *           body: z.string(),
- *         })
- *       ),
- *     },
- *     fetchOptions: {
+ *     options: {
  *       headers: {
  *         "Authorization": "Bearer <token>",
  *       },
@@ -45,48 +34,30 @@ export type FetcherOptions<
  * ));
  * ```
  *
- * @param options Fetch wrapper options. You can either use a fetch function (along with options for the fetch function and Zod schemas for validation) or a data function which returns the data directly.
- * @param options.schemas Request and response Zod schemas for runtime validation and compile-type checking. Empty by default.
- * @param options.options Fetch request options. Empty by default.
+ * @param options Fetch wrapper options.
  * @param options.fetchFunction Fetch function to use. Default is `fetch`.
+ * @param options.config OpenAPI configuration.
+ * @param options.options Fetch options.
  *
  * @returns A fetch function that can be used with SWR.
  */
-export const fetcher = <
-  TResponseBodySchema extends z.Schema,
-  TRequestBodySchema extends z.Schema,
->(
-  fetcherOptions: Partial<
-    FetcherOptions<TResponseBodySchema, TRequestBodySchema>
-  >
-): Fetcher<z.infer<TResponseBodySchema>, string> => {
-  const options: FetcherOptions<TResponseBodySchema, TRequestBodySchema> = {
-    ...fetcherOptions,
-    schemas: {},
-    fetchOptions: {},
-    fetchFunction: fetch.bind(window),
-  };
-  return async url => {
-    let response: Response;
+export const fetcher = <ResBody>({
+  fetchFunction,
+  config,
+  options,
+}: FetcherOptions<ResBody>): QueryFunction<ResBody> => {
+  return async context => {
+    let data: any;
     try {
-      response = await options.fetchFunction(url, options.fetchOptions);
+      data = await fetchFunction(config, options);
     } catch (e) {
       console.error(e);
 
       throw new FetchException("Network unavailable", `${e}`);
     }
 
-    let json: any;
-    try {
-      json = await response.json();
-    } catch (e) {
-      console.error(e);
-
-      throw new FetchException("Failed to parse response body", `${e}`);
-    }
-
-    if (!response.ok) {
-      const result = errorResponseSchema.safeParse(json);
+    if ("statusCode" in data) {
+      const result = errorResponseSchema.safeParse(data);
 
       if (!result.success) {
         console.error(result.error);
@@ -94,8 +65,8 @@ export const fetcher = <
         throw new HttpException(
           "Failed to parse error response",
           result.error.errors.map(e => e.message),
-          response.status as ErrorStatusCode,
-          url,
+          data.statusCode as ErrorStatusCode,
+          context.queryKey[0] as string,
           new Date()
         );
       }
@@ -105,30 +76,12 @@ export const fetcher = <
       throw new HttpException(
         "Request failed",
         errorJson.message,
-        response.status as ErrorStatusCode,
-        url,
+        data.statusCode as ErrorStatusCode,
+        context.queryKey[0] as string,
         errorJson.timestamp
       );
     }
 
-    let body: z.infer<TResponseBodySchema>;
-    if (options.schemas.responseBody) {
-      const result = options.schemas.responseBody.safeParse(json);
-
-      if (!result.success) {
-        console.error(result.error);
-
-        throw new FetchException(
-          "Response data invalid",
-          `Reasons: ${result.error.errors.map(e => e.message).join(", ")}`
-        );
-      }
-
-      body = result.data;
-    } else {
-      body = json;
-    }
-
-    return body;
+    return data;
   };
 };
