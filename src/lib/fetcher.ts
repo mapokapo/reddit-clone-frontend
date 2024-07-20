@@ -1,4 +1,4 @@
-import { OpenAPIConfig } from "@/client/requests";
+import { ApiError, OpenAPIConfig } from "@/client/requests";
 import { ApiRequestOptions } from "@/client/requests/core/ApiRequestOptions";
 import {
   errorResponseSchema,
@@ -18,20 +18,23 @@ export type FetcherOptions<ResBody> = {
 };
 
 /**
- * A SWR-specific utility type-safe fetch wrapper function.
+ * A React-Query-specific utility type-safe fetch wrapper function for the OpenAPI client SDK made using @7nohe/openapi-react-query-codegen.
  *
  * @example
  * ```tsx
- * const { data, error, isLoading } = useSWR("/posts", fetcher(
- *   {
- *     fetchFunction: fetch,
- *     options: {
- *       headers: {
- *         "Authorization": "Bearer <token>",
+ * const { data, error, isLoading } = useQuery({
+ *   queryKey: {"/posts"},
+ *   queryFn: fetcher(
+ *     {
+ *       fetchFunction: fetch,
+ *       options: {
+ *         headers: {
+ *           "Authorization": "Bearer <token>",
+ *         },
  *       },
- *     },
- *   }
- * ));
+ *     }
+ *   ),
+ * });
  * ```
  *
  * @param options Fetch wrapper options.
@@ -51,35 +54,26 @@ export const fetcher = <ResBody>({
     try {
       data = await fetchFunction(config, options);
     } catch (e) {
-      console.error(e);
+      if (e instanceof ApiError) {
+        const result = errorResponseSchema.safeParse(e.body);
 
-      throw new FetchException("Network unavailable", `${e}`);
-    }
+        if (!result.success) {
+          console.error(result.error);
 
-    if ("statusCode" in data) {
-      const result = errorResponseSchema.safeParse(data);
+          throw new HttpException("Failed to parse error response", {
+            message: result.error.errors.map(e => e.message),
+            statusCode: e.status as ErrorStatusCode,
+            path: context.queryKey[0] as string,
+            timestamp: new Date().toString(),
+          });
+        }
 
-      if (!result.success) {
-        console.error(result.error);
+        const errorJson = result.data;
 
-        throw new HttpException(
-          "Failed to parse error response",
-          result.error.errors.map(e => e.message),
-          data.statusCode as ErrorStatusCode,
-          context.queryKey[0] as string,
-          new Date()
-        );
+        throw new HttpException("Request failed", errorJson);
       }
 
-      const errorJson = result.data;
-
-      throw new HttpException(
-        "Request failed",
-        errorJson.message,
-        data.statusCode as ErrorStatusCode,
-        context.queryKey[0] as string,
-        errorJson.timestamp
-      );
+      throw new FetchException("Network unavailable", `${e}`);
     }
 
     return data;

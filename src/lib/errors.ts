@@ -28,25 +28,26 @@ export class FetchException extends Error {
  */
 export class HttpException extends Error {
   public message: string;
+  public statusCode: ErrorStatusCode;
+  public path: string;
   public timestamp: Date;
 
   constructor(
     public label: string,
-    message: string | string[],
-    public statusCode: ErrorStatusCode,
-    public path: string,
-    timestamp: string | Date
+    errorResponse: ErrorResponse
   ) {
-    const formattedMessage = Array.isArray(message)
-      ? message.join(", ")
-      : message;
+    const formattedMessage = Array.isArray(errorResponse.message)
+      ? errorResponse.message.join(", ")
+      : errorResponse.message;
 
     super(formattedMessage);
 
-    this.message = formattedMessage;
-    this.timestamp =
-      timestamp instanceof Date ? timestamp : new Date(timestamp);
     this.name = "HttpException";
+
+    this.message = formattedMessage;
+    this.statusCode = errorResponse.statusCode;
+    this.path = errorResponse.path;
+    this.timestamp = new Date(errorResponse.timestamp);
   }
 }
 
@@ -56,21 +57,13 @@ export type ErrorStatusCode = 400 | 401 | 403 | 404 | 500;
 /**
  * This is the JSON body which the server responds with when an expected error occurs.
  */
-export interface ErrorResponse {
-  statusCode: ErrorStatusCode;
-  timestamp: string;
-  path: string;
-  message: string | string[];
-}
-
 export const errorResponseSchema = z.object({
-  statusCode: z
-    .number()
-    .int()
-    .refine(value => {
-      return [400, 401, 403, 404, 500].includes(value);
-    }),
+  statusCode: z.custom<ErrorStatusCode>(value => {
+    return [400, 401, 403, 404, 500].includes(value);
+  }),
   message: z.union([z.string(), z.array(z.string())]),
   timestamp: z.string(),
   path: z.string(),
 });
+
+export type ErrorResponse = z.infer<typeof errorResponseSchema>;
