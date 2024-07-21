@@ -4,6 +4,13 @@ export type CreateUserRequest = {
   name: string;
 };
 
+export type User = {
+  id: number;
+  firebaseUid: string;
+  email: string;
+  name: string;
+};
+
 export type CreateCommunityRequest = {
   name: string;
   description: string;
@@ -44,13 +51,13 @@ export type CreateUserData = {
   requestBody: CreateUserRequest;
 };
 
-export type CreateUserResponse = unknown;
+export type CreateUserResponse = User;
 
 export type CreateCommunityData = {
   requestBody: CreateCommunityRequest;
 };
 
-export type CreateCommunityResponse = unknown;
+export type CreateCommunityResponse = Community;
 
 export type FindAllCommunitiesResponse = Array<Community>;
 
@@ -65,7 +72,7 @@ export type UpdateCommunityData = {
   requestBody: UpdateCommunityRequest;
 };
 
-export type UpdateCommunityResponse = void;
+export type UpdateCommunityResponse = Community;
 
 export type RemoveCommunityData = {
   id: number;
@@ -90,7 +97,7 @@ export type CreatePostData = {
   requestBody: CreatePostRequest;
 };
 
-export type CreatePostResponse = unknown;
+export type CreatePostResponse = Post;
 
 export type FindAllPostsData = {
   communityId: number;
@@ -111,7 +118,7 @@ export type UpdatePostData = {
   requestBody: UpdatePostRequest;
 };
 
-export type UpdatePostResponse = void;
+export type UpdatePostResponse = Post;
 
 export type RemovePostData = {
   communityId: number;
@@ -141,7 +148,7 @@ export type UnvotePostData = {
 
 export type UnvotePostResponse = void;
 
-export type GetFeedResponse = unknown;
+export type GetFeedResponse = Array<Post>;
 
 export type $OpenApiTs = {
   "/users": {
@@ -151,7 +158,7 @@ export type $OpenApiTs = {
         /**
          * User created
          */
-        201: unknown;
+        201: User;
         /**
          * Unauthorized
          */
@@ -166,7 +173,7 @@ export type $OpenApiTs = {
         /**
          * Created
          */
-        201: unknown;
+        201: Community;
         /**
          * Unauthorized
          */
@@ -196,9 +203,9 @@ export type $OpenApiTs = {
       req: UpdateCommunityData;
       res: {
         /**
-         * No content
+         * OK
          */
-        204: void;
+        200: Community;
         /**
          * Unauthorized
          */
@@ -256,7 +263,7 @@ export type $OpenApiTs = {
         /**
          * Created
          */
-        201: unknown;
+        201: Post;
         /**
          * Unauthorized
          */
@@ -287,9 +294,9 @@ export type $OpenApiTs = {
       req: UpdatePostData;
       res: {
         /**
-         * No content
+         * OK
          */
-        204: void;
+        200: Post;
         /**
          * Unauthorized
          */
@@ -361,7 +368,7 @@ export type $OpenApiTs = {
         /**
          * OK
          */
-        200: unknown;
+        200: Array<Post>;
         /**
          * Unauthorized
          */

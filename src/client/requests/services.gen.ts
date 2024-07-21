@@ -43,7 +43,7 @@ export class UsersService {
    * Create a new user using a Firebase ID token
    * @param data The data for the request.
    * @param data.requestBody
-   * @returns unknown User created
+   * @returns User User created
    * @throws ApiError
    */
   public static createUser(
@@ -66,7 +66,7 @@ export class CommunitiesService {
    * Create a new community
    * @param data The data for the request.
    * @param data.requestBody
-   * @returns unknown Created
+   * @returns Community Created
    * @throws ApiError
    */
   public static createCommunity(
@@ -119,7 +119,7 @@ export class CommunitiesService {
    * @param data The data for the request.
    * @param data.id
    * @param data.requestBody
-   * @returns void No content
+   * @returns Community OK
    * @throws ApiError
    */
   public static updateCommunity(
@@ -212,7 +212,7 @@ export class PostsService {
    * @param data The data for the request.
    * @param data.communityId
    * @param data.requestBody
-   * @returns unknown Created
+   * @returns Post Created
    * @throws ApiError
    */
   public static createPost(
@@ -278,7 +278,7 @@ export class PostsService {
    * @param data.communityId
    * @param data.id
    * @param data.requestBody
-   * @returns void No content
+   * @returns Post OK
    * @throws ApiError
    */
   public static updatePost(
@@ -397,7 +397,7 @@ export class PostsService {
 
   /**
    * Get a personalized feed of posts for the current user
-   * @returns unknown OK
+   * @returns Post OK
    * @throws ApiError
    */
   public static getFeed(): CancelablePromise<GetFeedResponse> {

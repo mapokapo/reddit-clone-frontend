@@ -43,7 +43,7 @@ export const prefetchUsePostsServiceFindOnePost = (queryClient: QueryClient, { c
 }) => queryClient.prefetchQuery({ queryKey: Common.UsePostsServiceFindOnePostKeyFn({ communityId, id }), queryFn: () => PostsService.findOnePost({ communityId, id }) });
 /**
 * Get a personalized feed of posts for the current user
-* @returns unknown OK
+* @returns Post OK
 * @throws ApiError
 */
 export const prefetchUsePostsServiceGetFeed = (queryClient: QueryClient) => queryClient.prefetchQuery({ queryKey: Common.UsePostsServiceGetFeedKeyFn(), queryFn: () => PostsService.getFeed() });

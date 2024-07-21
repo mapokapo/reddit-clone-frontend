@@ -10,6 +10,25 @@ export const $CreateUserRequest = {
   required: ["name"],
 } as const;
 
+export const $User = {
+  type: "object",
+  properties: {
+    id: {
+      type: "number",
+    },
+    firebaseUid: {
+      type: "string",
+    },
+    email: {
+      type: "string",
+    },
+    name: {
+      type: "string",
+    },
+  },
+  required: ["id", "firebaseUid", "email", "name"],
+} as const;
+
 export const $CreateCommunityRequest = {
   type: "object",
   properties: {

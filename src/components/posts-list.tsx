@@ -1,5 +1,4 @@
-import { usePostsServiceFindAllPostsKey } from "@/client/queries";
-import { FindAllCommunitiesResponse, PostsService } from "@/client/requests";
+import { PostsService } from "@/client/requests";
 import {
   Select,
   SelectContent,
@@ -10,33 +9,20 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fetcher } from "@/lib/fetcher";
-import { useQueries } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import QueryHandler from "./query-handler";
+import { usePostsServiceGetFeedKey } from "@/client/queries";
 
-type Props = {
-  communities?: FindAllCommunitiesResponse;
-  error: unknown | null;
-};
-
-const PostsList: React.FC<Props> = ({
-  communities,
-  error: communitiesError,
-}) => {
+const PostsList: React.FC = () => {
   const [filterMode, setFilterMode] = useState("new");
   const [filterTopMode, setFilterTopMode] = useState("all-time");
 
-  const postsQueries = useQueries({
-    queries: communities
-      ? communities.map(community => ({
-          queryKey: [usePostsServiceFindAllPostsKey, community.id],
-          queryFn: fetcher({
-            fetchFunction: () =>
-              PostsService.findAllPosts({
-                communityId: community.id,
-              }),
-          }),
-        }))
-      : [],
+  const query = useQuery({
+    queryKey: [usePostsServiceGetFeedKey],
+    queryFn: fetcher({
+      fetchFunction: () => PostsService.getFeed(),
+    }),
   });
 
   return (
@@ -73,40 +59,22 @@ const PostsList: React.FC<Props> = ({
       </div>
       <Separator />
       <ul className="flex w-full flex-col gap-4">
-        {communitiesError ? (
-          <div className="m-4 rounded-lg bg-destructive px-4 py-2  text-destructive-foreground">
-            <h3 className="text-xl font-semibold">Error</h3>
-            <span className="text-lg">
-              Server error. Please try again later.
-            </span>
-          </div>
-        ) : postsQueries.length === 0 ? (
-          <p className="p-4 text-xl text-muted-foreground">
-            There is nothing here.
-          </p>
-        ) : (
-          postsQueries.map((query, i) => {
-            if (query.isLoading) {
-              return (
-                <Skeleton
-                  key={i}
-                  className="h-24 w-full rounded-lg bg-muted"
-                />
-              );
-            }
-
-            if (query.error) {
-              return (
-                <li
-                  key={i}
-                  className="m-4 rounded-lg bg-destructive px-4 py-2  text-destructive-foreground">
-                  <h3 className="text-xl font-semibold">Error</h3>
-                  <span className="text-lg">Failed to fetch post.</span>
-                </li>
-              );
-            }
-
-            return query.data?.map(post => (
+        <QueryHandler
+          query={query}
+          loading={Array.from({ length: 5 }).map((_, i) => (
+            <Skeleton
+              key={i}
+              className="h-24 w-full rounded-lg bg-muted"
+            />
+          ))}
+          error={() => (
+            <p className="p-4 text-xl text-muted-foreground">
+              An error occurred while fetching the posts.
+            </p>
+          )}
+          showToastOnError={true}
+          success={posts =>
+            posts.map(post => (
               <li
                 key={post.id}
                 className="m-4 rounded-lg bg-background px-4 py-2">
@@ -115,9 +83,9 @@ const PostsList: React.FC<Props> = ({
                   <p>{post.content}</p>
                 </div>
               </li>
-            ));
-          })
-        )}
+            ))
+          }
+        />
       </ul>
     </div>
   );

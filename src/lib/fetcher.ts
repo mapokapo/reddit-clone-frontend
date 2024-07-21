@@ -70,7 +70,9 @@ export const fetcher = <ResBody>({
 
         const errorJson = result.data;
 
-        throw new HttpException("Request failed", errorJson);
+        throw new HttpException("Server error", errorJson);
+      } else if (e instanceof TypeError) {
+        throw new FetchException("Request failed", `${e.message}`);
       }
 
       throw new FetchException("Network unavailable", `${e}`);

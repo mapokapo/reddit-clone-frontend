@@ -44,7 +44,7 @@ export const usePostsServiceFindOnePost = <TData = Common.PostsServiceFindOnePos
 }, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UsePostsServiceFindOnePostKeyFn({ communityId, id }, queryKey), queryFn: () => PostsService.findOnePost({ communityId, id }) as TData, ...options });
 /**
 * Get a personalized feed of posts for the current user
-* @returns unknown OK
+* @returns Post OK
 * @throws ApiError
 */
 export const usePostsServiceGetFeed = <TData = Common.PostsServiceGetFeedDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>(queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UsePostsServiceGetFeedKeyFn(queryKey), queryFn: () => PostsService.getFeed() as TData, ...options });
@@ -52,7 +52,7 @@ export const usePostsServiceGetFeed = <TData = Common.PostsServiceGetFeedDefault
 * Create a new user using a Firebase ID token
 * @param data The data for the request.
 * @param data.requestBody
-* @returns unknown User created
+* @returns User User created
 * @throws ApiError
 */
 export const useUsersServiceCreateUser = <TData = Common.UsersServiceCreateUserMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
@@ -64,7 +64,7 @@ export const useUsersServiceCreateUser = <TData = Common.UsersServiceCreateUserM
 * Create a new community
 * @param data The data for the request.
 * @param data.requestBody
-* @returns unknown Created
+* @returns Community Created
 * @throws ApiError
 */
 export const useCommunitiesServiceCreateCommunity = <TData = Common.CommunitiesServiceCreateCommunityMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
@@ -101,7 +101,7 @@ export const useCommunitiesServiceLeaveCommunity = <TData = Common.CommunitiesSe
 * @param data The data for the request.
 * @param data.communityId
 * @param data.requestBody
-* @returns unknown Created
+* @returns Post Created
 * @throws ApiError
 */
 export const usePostsServiceCreatePost = <TData = Common.PostsServiceCreatePostMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
@@ -146,7 +146,7 @@ export const usePostsServiceDownvotePost = <TData = Common.PostsServiceDownvoteP
 * @param data The data for the request.
 * @param data.id
 * @param data.requestBody
-* @returns void No content
+* @returns Community OK
 * @throws ApiError
 */
 export const useCommunitiesServiceUpdateCommunity = <TData = Common.CommunitiesServiceUpdateCommunityMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
@@ -162,7 +162,7 @@ export const useCommunitiesServiceUpdateCommunity = <TData = Common.CommunitiesS
 * @param data.communityId
 * @param data.id
 * @param data.requestBody
-* @returns void No content
+* @returns Post OK
 * @throws ApiError
 */
 export const usePostsServiceUpdatePost = <TData = Common.PostsServiceUpdatePostMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
