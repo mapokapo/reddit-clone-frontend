@@ -35,6 +35,7 @@ import type {
   DownvotePostResponse,
   UnvotePostData,
   UnvotePostResponse,
+  GetFeedResponse,
 } from "./types.gen";
 
 export class UsersService {
@@ -388,6 +389,21 @@ export class PostsService {
         communityId: data.communityId,
         id: data.id,
       },
+      errors: {
+        401: "Unauthorized",
+      },
+    });
+  }
+
+  /**
+   * Get a personalized feed of posts for the current user
+   * @returns unknown OK
+   * @throws ApiError
+   */
+  public static getFeed(): CancelablePromise<GetFeedResponse> {
+    return __request(OpenAPI, {
+      method: "GET",
+      url: "/posts/feed",
       errors: {
         401: "Unauthorized",
       },

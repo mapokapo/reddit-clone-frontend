@@ -43,6 +43,12 @@ export const usePostsServiceFindOnePost = <TData = Common.PostsServiceFindOnePos
   id: number;
 }, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UsePostsServiceFindOnePostKeyFn({ communityId, id }, queryKey), queryFn: () => PostsService.findOnePost({ communityId, id }) as TData, ...options });
 /**
+* Get a personalized feed of posts for the current user
+* @returns unknown OK
+* @throws ApiError
+*/
+export const usePostsServiceGetFeed = <TData = Common.PostsServiceGetFeedDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>(queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UsePostsServiceGetFeedKeyFn(queryKey), queryFn: () => PostsService.getFeed() as TData, ...options });
+/**
 * Create a new user using a Firebase ID token
 * @param data The data for the request.
 * @param data.requestBody

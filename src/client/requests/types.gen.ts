@@ -141,6 +141,8 @@ export type UnvotePostData = {
 
 export type UnvotePostResponse = void;
 
+export type GetFeedResponse = unknown;
+
 export type $OpenApiTs = {
   "/users": {
     post: {
@@ -346,6 +348,20 @@ export type $OpenApiTs = {
          * No content
          */
         204: void;
+        /**
+         * Unauthorized
+         */
+        401: unknown;
+      };
+    };
+  };
+  "/posts/feed": {
+    get: {
+      res: {
+        /**
+         * OK
+         */
+        200: unknown;
         /**
          * Unauthorized
          */

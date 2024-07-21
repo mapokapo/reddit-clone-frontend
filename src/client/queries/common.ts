@@ -25,6 +25,10 @@ export const UsePostsServiceFindOnePostKeyFn = ({ communityId, id }: {
   communityId: number;
   id: number;
 }, queryKey?: Array<unknown>) => [usePostsServiceFindOnePostKey, ...(queryKey ?? [{ communityId, id }])];
+export type PostsServiceGetFeedDefaultResponse = Awaited<ReturnType<typeof PostsService.getFeed>>;
+export type PostsServiceGetFeedQueryResult<TData = PostsServiceGetFeedDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
+export const usePostsServiceGetFeedKey = "PostsServiceGetFeed";
+export const UsePostsServiceGetFeedKeyFn = (queryKey?: Array<unknown>) => [usePostsServiceGetFeedKey, ...(queryKey ?? [])];
 export type UsersServiceCreateUserMutationResult = Awaited<ReturnType<typeof UsersService.createUser>>;
 export type CommunitiesServiceCreateCommunityMutationResult = Awaited<ReturnType<typeof CommunitiesService.createCommunity>>;
 export type CommunitiesServiceJoinCommunityMutationResult = Awaited<ReturnType<typeof CommunitiesService.joinCommunity>>;
