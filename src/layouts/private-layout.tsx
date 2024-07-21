@@ -1,9 +1,10 @@
+import Loading from "@/components/loading";
 import Navbar from "@/components/navbar";
 import { useAuth } from "@/components/user-provider";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 
 const PrivateLayout: React.FC = () => {
-  const user = useAuth();
+  const { user, profile } = useAuth();
   const location = useLocation();
 
   if (user === null) {
@@ -19,8 +20,14 @@ const PrivateLayout: React.FC = () => {
 
   return (
     <div className="flex min-h-screen w-full flex-col">
-      <Navbar />
-      <Outlet />
+      {profile === null ? (
+        <Loading />
+      ) : (
+        <>
+          <Navbar />
+          <Outlet />
+        </>
+      )}
     </div>
   );
 };

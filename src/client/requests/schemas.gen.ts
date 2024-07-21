@@ -6,6 +6,10 @@ export const $CreateUserRequest = {
     name: {
       type: "string",
     },
+    photoUrl: {
+      type: "string",
+      format: "url",
+    },
   },
   required: ["name"],
 } as const;
@@ -18,15 +22,51 @@ export const $User = {
     },
     firebaseUid: {
       type: "string",
+      format: "uuid",
     },
     email: {
       type: "string",
+      format: "email",
     },
     name: {
       type: "string",
     },
+    photoUrl: {
+      type: "string",
+      format: "url",
+    },
   },
   required: ["id", "firebaseUid", "email", "name"],
+} as const;
+
+export const $ErrorResponse = {
+  type: "object",
+  properties: {
+    statusCode: {
+      type: "number",
+    },
+    timestamp: {
+      format: "date-time",
+      type: "string",
+    },
+    path: {
+      type: "string",
+    },
+    message: {
+      anyOf: [
+        {
+          type: "string",
+        },
+        {
+          type: "array",
+          items: {
+            type: "string",
+          },
+        },
+      ],
+    },
+  },
+  required: ["statusCode", "timestamp", "path", "message"],
 } as const;
 
 export const $CreateCommunityRequest = {
@@ -54,12 +94,15 @@ export const $Community = {
     description: {
       type: "string",
     },
+    ownerId: {
+      type: "number",
+    },
     createdAt: {
       format: "date-time",
       type: "string",
     },
   },
-  required: ["id", "name", "description", "createdAt"],
+  required: ["id", "name", "description", "ownerId", "createdAt"],
 } as const;
 
 export const $UpdateCommunityRequest = {
@@ -74,19 +117,6 @@ export const $UpdateCommunityRequest = {
   },
 } as const;
 
-export const $CreatePostRequest = {
-  type: "object",
-  properties: {
-    title: {
-      type: "string",
-    },
-    content: {
-      type: "string",
-    },
-  },
-  required: ["title", "content"],
-} as const;
-
 export const $Post = {
   type: "object",
   properties: {
@@ -98,6 +128,12 @@ export const $Post = {
     },
     content: {
       type: "string",
+    },
+    communityId: {
+      type: "number",
+    },
+    authorId: {
+      type: "number",
     },
     votes: {
       type: "number",
@@ -111,7 +147,29 @@ export const $Post = {
       type: "string",
     },
   },
-  required: ["id", "title", "content", "votes", "createdAt", "updatedAt"],
+  required: [
+    "id",
+    "title",
+    "content",
+    "communityId",
+    "authorId",
+    "votes",
+    "createdAt",
+    "updatedAt",
+  ],
+} as const;
+
+export const $CreatePostRequest = {
+  type: "object",
+  properties: {
+    title: {
+      type: "string",
+    },
+    content: {
+      type: "string",
+    },
+  },
+  required: ["title", "content"],
 } as const;
 
 export const $UpdatePostRequest = {

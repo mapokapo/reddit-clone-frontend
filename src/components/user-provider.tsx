@@ -1,3 +1,4 @@
+import { OpenAPI, User as UserProfile, UsersService } from "@/client/requests";
 import { auth } from "@/lib/firebase";
 import { onAuthStateChanged, User } from "firebase/auth";
 import {
@@ -5,17 +6,38 @@ import {
   PropsWithChildren,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 
-export const UserContext = createContext<User | null>(auth.currentUser);
+export const UserContext = createContext<{
+  user: User | null;
+  profile: UserProfile | null;
+  setProfile: (profile: UserProfile) => void;
+}>({
+  user: auth.currentUser,
+  profile: null,
+  setProfile: () => {},
+});
 
 export const UserProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [user, setUser] = useState<User | null>(auth.currentUser);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, newUser => {
+    const unsubscribe = onAuthStateChanged(auth, async newUser => {
       setUser(newUser);
+
+      OpenAPI.HEADERS = {
+        Authorization: `Bearer ${await newUser?.getIdToken()}`,
+      };
+
+      if (newUser) {
+        const userProfile = await UsersService.getMe();
+        if (!userProfile) return;
+
+        setProfile(userProfile);
+      }
     });
 
     return () => {
@@ -23,7 +45,9 @@ export const UserProvider: React.FC<PropsWithChildren> = ({ children }) => {
     };
   }, []);
 
-  return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
+  const value = useMemo(() => ({ user, profile, setProfile }), [user, profile]);
+
+  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };
 
 export const useAuth = () => {
@@ -36,11 +60,21 @@ export const useAuth = () => {
 };
 
 export const useUser = () => {
-  const user = useAuth();
+  const { user } = useAuth();
 
   if (user === null) {
     throw new Error("User is not authenticated");
   }
 
   return user;
+};
+
+export const useUserProfile = () => {
+  const { user, profile } = useAuth();
+
+  if (user === null || profile === null) {
+    throw new Error("User profile is not loaded");
+  }
+
+  return { user, profile };
 };

@@ -6,6 +6,7 @@ import { request as __request } from "./core/request";
 import type {
   CreateUserData,
   CreateUserResponse,
+  GetMeResponse,
   CreateCommunityData,
   CreateCommunityResponse,
   FindAllCommunitiesResponse,
@@ -19,6 +20,7 @@ import type {
   JoinCommunityResponse,
   LeaveCommunityData,
   LeaveCommunityResponse,
+  GetFeedResponse,
   CreatePostData,
   CreatePostResponse,
   FindAllPostsData,
@@ -35,7 +37,6 @@ import type {
   DownvotePostResponse,
   UnvotePostData,
   UnvotePostResponse,
-  GetFeedResponse,
 } from "./types.gen";
 
 export class UsersService {
@@ -43,7 +44,7 @@ export class UsersService {
    * Create a new user using a Firebase ID token
    * @param data The data for the request.
    * @param data.requestBody
-   * @returns User User created
+   * @returns User Created
    * @throws ApiError
    */
   public static createUser(
@@ -54,6 +55,22 @@ export class UsersService {
       url: "/users",
       body: data.requestBody,
       mediaType: "application/json",
+      errors: {
+        401: "Unauthorized",
+      },
+    });
+  }
+
+  /**
+   * Get the current user
+   * @returns User OK
+   * @returns void No content
+   * @throws ApiError
+   */
+  public static getMe(): CancelablePromise<GetMeResponse> {
+    return __request(OpenAPI, {
+      method: "GET",
+      url: "/users/me",
       errors: {
         401: "Unauthorized",
       },
@@ -207,6 +224,21 @@ export class CommunitiesService {
 }
 
 export class PostsService {
+  /**
+   * Get a personalized feed of posts for the current user
+   * @returns Post OK
+   * @throws ApiError
+   */
+  public static getFeed(): CancelablePromise<GetFeedResponse> {
+    return __request(OpenAPI, {
+      method: "GET",
+      url: "/posts/feed",
+      errors: {
+        401: "Unauthorized",
+      },
+    });
+  }
+
   /**
    * Create a new post in a community
    * @param data The data for the request.
@@ -389,21 +421,6 @@ export class PostsService {
         communityId: data.communityId,
         id: data.id,
       },
-      errors: {
-        401: "Unauthorized",
-      },
-    });
-  }
-
-  /**
-   * Get a personalized feed of posts for the current user
-   * @returns Post OK
-   * @throws ApiError
-   */
-  public static getFeed(): CancelablePromise<GetFeedResponse> {
-    return __request(OpenAPI, {
-      method: "GET",
-      url: "/posts/feed",
       errors: {
         401: "Unauthorized",
       },

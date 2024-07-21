@@ -2,10 +2,10 @@ import { useAuth } from "@/components/user-provider";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 
 const PublicLayout: React.FC = () => {
-  const user = useAuth();
+  const { user, profile } = useAuth();
   const location = useLocation();
 
-  if (user !== null) {
+  if (user !== null && profile !== null) {
     const previousLocation = location.state?.from;
 
     return <Navigate to={previousLocation ?? "/app/home"} />;

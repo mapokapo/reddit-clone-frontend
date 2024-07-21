@@ -1,5 +1,4 @@
-import { ApiError, OpenAPIConfig } from "@/client/requests";
-import { ApiRequestOptions } from "@/client/requests/core/ApiRequestOptions";
+import { ApiError } from "@/client/requests";
 import {
   errorResponseSchema,
   ErrorStatusCode,
@@ -9,16 +8,11 @@ import {
 import { QueryFunction } from "@tanstack/react-query";
 
 export type FetcherOptions<ResBody> = {
-  fetchFunction: (
-    config?: OpenAPIConfig,
-    options?: ApiRequestOptions
-  ) => Promise<ResBody>;
-  config?: OpenAPIConfig;
-  options?: ApiRequestOptions;
+  fetchFunction: () => Promise<ResBody>;
 };
 
 /**
- * A React-Query-specific utility type-safe fetch wrapper function for the OpenAPI client SDK made using @7nohe/openapi-react-query-codegen.
+ * A React-Query-specific utility type-safe fetch wrapper function.
  *
  * @example
  * ```tsx
@@ -39,20 +33,16 @@ export type FetcherOptions<ResBody> = {
  *
  * @param options Fetch wrapper options.
  * @param options.fetchFunction Fetch function to use. Default is `fetch`.
- * @param options.config OpenAPI configuration.
- * @param options.options Fetch options.
  *
  * @returns A fetch function that can be used with SWR.
  */
 export const fetcher = <ResBody>({
   fetchFunction,
-  config,
-  options,
 }: FetcherOptions<ResBody>): QueryFunction<ResBody> => {
   return async context => {
     let data: any;
     try {
-      data = await fetchFunction(config, options);
+      data = await fetchFunction();
     } catch (e) {
       if (e instanceof ApiError) {
         const result = errorResponseSchema.safeParse(e.body);
@@ -69,6 +59,7 @@ export const fetcher = <ResBody>({
         }
 
         const errorJson = result.data;
+        console.log("API Error", e.body);
 
         throw new HttpException("Server error", errorJson);
       } else if (e instanceof TypeError) {

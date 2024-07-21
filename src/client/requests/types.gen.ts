@@ -2,6 +2,7 @@
 
 export type CreateUserRequest = {
   name: string;
+  photoUrl?: string;
 };
 
 export type User = {
@@ -9,6 +10,14 @@ export type User = {
   firebaseUid: string;
   email: string;
   name: string;
+  photoUrl?: string;
+};
+
+export type ErrorResponse = {
+  statusCode: number;
+  timestamp: Date;
+  path: string;
+  message: string | Array<string>;
 };
 
 export type CreateCommunityRequest = {
@@ -20,6 +29,7 @@ export type Community = {
   id: number;
   name: string;
   description: string;
+  ownerId: number;
   createdAt: Date;
 };
 
@@ -28,18 +38,20 @@ export type UpdateCommunityRequest = {
   description?: string;
 };
 
-export type CreatePostRequest = {
-  title: string;
-  content: string;
-};
-
 export type Post = {
   id: number;
   title: string;
   content: string;
+  communityId: number;
+  authorId: number;
   votes: number;
   createdAt: Date;
   updatedAt: Date;
+};
+
+export type CreatePostRequest = {
+  title: string;
+  content: string;
 };
 
 export type UpdatePostRequest = {
@@ -52,6 +64,8 @@ export type CreateUserData = {
 };
 
 export type CreateUserResponse = User;
+
+export type GetMeResponse = User | void;
 
 export type CreateCommunityData = {
   requestBody: CreateCommunityRequest;
@@ -91,6 +105,8 @@ export type LeaveCommunityData = {
 };
 
 export type LeaveCommunityResponse = void;
+
+export type GetFeedResponse = Array<Post>;
 
 export type CreatePostData = {
   communityId: number;
@@ -148,21 +164,37 @@ export type UnvotePostData = {
 
 export type UnvotePostResponse = void;
 
-export type GetFeedResponse = Array<Post>;
-
 export type $OpenApiTs = {
   "/users": {
     post: {
       req: CreateUserData;
       res: {
         /**
-         * User created
+         * Created
          */
         201: User;
         /**
          * Unauthorized
          */
-        401: unknown;
+        401: ErrorResponse;
+      };
+    };
+  };
+  "/users/me": {
+    get: {
+      res: {
+        /**
+         * OK
+         */
+        200: User;
+        /**
+         * No content
+         */
+        204: void;
+        /**
+         * Unauthorized
+         */
+        401: ErrorResponse;
       };
     };
   };
@@ -177,7 +209,7 @@ export type $OpenApiTs = {
         /**
          * Unauthorized
          */
-        401: unknown;
+        401: ErrorResponse;
       };
     };
     get: {
@@ -209,7 +241,7 @@ export type $OpenApiTs = {
         /**
          * Unauthorized
          */
-        401: unknown;
+        401: ErrorResponse;
       };
     };
     delete: {
@@ -222,7 +254,7 @@ export type $OpenApiTs = {
         /**
          * Unauthorized
          */
-        401: unknown;
+        401: ErrorResponse;
       };
     };
   };
@@ -237,7 +269,7 @@ export type $OpenApiTs = {
         /**
          * Unauthorized
          */
-        401: unknown;
+        401: ErrorResponse;
       };
     };
   };
@@ -252,7 +284,21 @@ export type $OpenApiTs = {
         /**
          * Unauthorized
          */
-        401: unknown;
+        401: ErrorResponse;
+      };
+    };
+  };
+  "/posts/feed": {
+    get: {
+      res: {
+        /**
+         * OK
+         */
+        200: Array<Post>;
+        /**
+         * Unauthorized
+         */
+        401: ErrorResponse;
       };
     };
   };
@@ -267,7 +313,7 @@ export type $OpenApiTs = {
         /**
          * Unauthorized
          */
-        401: unknown;
+        401: ErrorResponse;
       };
     };
     get: {
@@ -300,7 +346,7 @@ export type $OpenApiTs = {
         /**
          * Unauthorized
          */
-        401: unknown;
+        401: ErrorResponse;
       };
     };
     delete: {
@@ -313,7 +359,7 @@ export type $OpenApiTs = {
         /**
          * Unauthorized
          */
-        401: unknown;
+        401: ErrorResponse;
       };
     };
   };
@@ -328,7 +374,7 @@ export type $OpenApiTs = {
         /**
          * Unauthorized
          */
-        401: unknown;
+        401: ErrorResponse;
       };
     };
   };
@@ -343,7 +389,7 @@ export type $OpenApiTs = {
         /**
          * Unauthorized
          */
-        401: unknown;
+        401: ErrorResponse;
       };
     };
   };
@@ -358,21 +404,7 @@ export type $OpenApiTs = {
         /**
          * Unauthorized
          */
-        401: unknown;
-      };
-    };
-  };
-  "/posts/feed": {
-    get: {
-      res: {
-        /**
-         * OK
-         */
-        200: Array<Post>;
-        /**
-         * Unauthorized
-         */
-        401: unknown;
+        401: ErrorResponse;
       };
     };
   };

@@ -27,15 +27,39 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ChangeEvent, useState } from "react";
 
 const formSchema = z.object({
   name: z.string(),
   email: z.string().email(),
   password: z.string().min(8),
+  photoFile: z
+    .custom<File>(value => {
+      return value instanceof File;
+    })
+    .optional(),
 });
 
+function getImageData(event: ChangeEvent<HTMLInputElement>) {
+  // FileList is immutable, so we need to create a new one
+  const dataTransfer = new DataTransfer();
+
+  // Add newly uploaded images
+  Array.from(event.target.files!).forEach(image =>
+    dataTransfer.items.add(image)
+  );
+
+  const file = dataTransfer.files[0];
+  const displayUrl = URL.createObjectURL(event.target.files![0]);
+
+  return { file, displayUrl };
+}
+
 type Props = {
-  onSubmit: (values: z.infer<typeof formSchema>) => void;
+  onSubmit: (
+    values: Omit<z.infer<typeof formSchema>, "photoUrl"> & { photoFile?: File }
+  ) => void;
   isLoading: boolean;
   actionError: string | null;
 };
@@ -45,18 +69,29 @@ const RegisterComponent: React.FC<Props> = ({
   isLoading,
   actionError,
 }) => {
+  const [photoData, setPhotoData] = useState<
+    | {
+        displayUrl: string;
+        file: File;
+      }
+    | undefined
+  >();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
       email: "",
       password: "",
+      photoFile: undefined,
     },
   });
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form
+        onSubmit={form.handleSubmit(values =>
+          onSubmit({ ...values, photoFile: photoData?.file })
+        )}>
         <Card className="flex flex-col space-y-4">
           <CardHeader>
             <CardTitle>Create an account</CardTitle>
@@ -64,6 +99,35 @@ const RegisterComponent: React.FC<Props> = ({
           <CardContent
             className={cn("flex flex-col", actionError !== null ? "pb-0" : "")}>
             <div className="flex flex-col gap-4">
+              <Avatar className="mx-auto h-24 w-24">
+                <AvatarImage
+                  src={photoData?.displayUrl}
+                  alt="Photo"
+                />
+                <AvatarFallback>Photo</AvatarFallback>
+              </Avatar>
+              <FormField
+                control={form.control}
+                name="photoFile"
+                render={({ field: { onChange, value, ...rest } }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        {...rest}
+                        type="file"
+                        disabled={isLoading}
+                        className="file:text-muted-foreground"
+                        onChange={event => {
+                          const data = getImageData(event);
+                          setPhotoData(data);
+                          onChange(data.file);
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="name"

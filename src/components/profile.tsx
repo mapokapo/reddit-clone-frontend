@@ -1,5 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useUser } from "./user-provider";
+import { useUserProfile } from "./user-provider";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -17,7 +17,7 @@ import Loading from "./loading";
 const Profile: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
-  const user = useUser();
+  const { profile } = useUserProfile();
 
   const onLogOut = () => {
     setLoading(true);
@@ -36,10 +36,10 @@ const Profile: React.FC = () => {
           className="rounded-full">
           <Avatar>
             <AvatarImage
-              src={user.photoURL ?? undefined}
-              alt={user.displayName ?? undefined}
+              src={profile.photoUrl}
+              alt={profile.name}
             />
-            <AvatarFallback>{user?.displayName}</AvatarFallback>
+            <AvatarFallback>{profile.name}</AvatarFallback>
           </Avatar>
         </Button>
       </PopoverTrigger>
@@ -50,12 +50,12 @@ const Profile: React.FC = () => {
           <div className="flex w-full flex-col items-center justify-center gap-4 p-2">
             <Avatar className="h-24 w-24">
               <AvatarImage
-                src={user.photoURL ?? undefined}
-                alt={user.displayName ?? undefined}
+                src={profile.photoUrl}
+                alt={profile.name}
               />
-              <AvatarFallback>{user.displayName ?? "User"}</AvatarFallback>
+              <AvatarFallback>{profile.name}</AvatarFallback>
             </Avatar>
-            <span className="text-lg">{user.displayName ?? "User"}</span>
+            <span className="text-lg">{profile.name}</span>
             <Separator />
             <div className="flex w-full flex-col gap-2">
               <Link to="/app/profile">

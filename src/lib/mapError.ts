@@ -2,6 +2,7 @@ import { FetchException, HttpException } from "@/lib/errors";
 import { FirebaseError } from "firebase/app";
 import { AuthError } from "firebase/auth";
 import { mapFirebaseAuthError } from "./firebase";
+import { StorageError } from "firebase/storage";
 
 type ErrorTransformer = {
   filter: (e: unknown) => boolean;
@@ -25,6 +26,10 @@ const errorTransformers: ErrorTransformer[] = [
       return e instanceof FirebaseError && e.code.startsWith("auth/");
     },
     map: (e: AuthError) => [mapFirebaseAuthError(e), null],
+  },
+  {
+    filter: (e: unknown): e is StorageError => e instanceof StorageError,
+    map: (e: StorageError) => [`File network error - ${e.code}`, e.message],
   },
   {
     filter: (e: unknown): e is Error => e instanceof Error,
