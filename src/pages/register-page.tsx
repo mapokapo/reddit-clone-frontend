@@ -4,7 +4,7 @@ import { createUserWithEmailAndPassword, deleteUser } from "firebase/auth";
 import { auth, storage } from "@/lib/firebase";
 import mapErrorToMessage from "@/lib/mapError";
 import { toast } from "sonner";
-import { UsersService, CreateUserRequest } from "@/client/requests";
+import { UsersService } from "@/client/requests";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useAuth } from "@/components/user-provider";
 
@@ -12,15 +12,6 @@ const RegisterPage: React.FC = () => {
   const { setProfile } = useAuth();
   const [loading, setLoading] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
-
-  const createUserProfile = async ({ name, photoUrl }: CreateUserRequest) => {
-    return await UsersService.createUser({
-      requestBody: {
-        name,
-        photoUrl,
-      },
-    });
-  };
 
   const onSubmit = ({
     name,
@@ -51,7 +42,12 @@ const RegisterPage: React.FC = () => {
         }
 
         try {
-          const profile = await createUserProfile({ name, photoUrl });
+          const profile = await UsersService.createUser({
+            requestBody: {
+              name,
+              photoUrl,
+            },
+          });
 
           setProfile(profile);
 
