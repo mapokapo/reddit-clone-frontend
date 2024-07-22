@@ -5,11 +5,23 @@ import { CommunitiesService, PostsService, UsersService } from "../requests/serv
 import * as Common from "./common";
 /**
 * Get the current user
+* This endpoint is used by the client to get the current user. Returns 204 if the authenticated user doesn't have a profile.
 * @returns User OK
 * @returns void No content
 * @throws ApiError
 */
 export const prefetchUseUsersServiceGetMe = (queryClient: QueryClient) => queryClient.prefetchQuery({ queryKey: Common.UseUsersServiceGetMeKeyFn(), queryFn: () => UsersService.getMe() });
+/**
+* Get aggregated user data for the current user
+* This endpoint is used by the client to get user data such as posts, comments, and votes for the current user.
+* @param data The data for the request.
+* @param data.include The data to include in the response
+* @returns unknown OK
+* @throws ApiError
+*/
+export const prefetchUseUsersServiceGetUserData = (queryClient: QueryClient, { include }: {
+  include?: ("posts" | "votes")[];
+} = {}) => queryClient.prefetchQuery({ queryKey: Common.UseUsersServiceGetUserDataKeyFn({ include }), queryFn: () => UsersService.getUserData({ include }) });
 /**
 * Find all communities
 * @returns Community OK
@@ -42,6 +54,16 @@ export const prefetchUsePostsServiceGetFeed = (queryClient: QueryClient) => quer
 export const prefetchUsePostsServiceFindAllPosts = (queryClient: QueryClient, { communityId }: {
   communityId: number;
 }) => queryClient.prefetchQuery({ queryKey: Common.UsePostsServiceFindAllPostsKeyFn({ communityId }), queryFn: () => PostsService.findAllPosts({ communityId }) });
+/**
+* Find all posts by a user in a community
+* @param data The data for the request.
+* @param data.userId
+* @returns Post OK
+* @throws ApiError
+*/
+export const prefetchUsePostsServiceFindAllPostsByUser = (queryClient: QueryClient, { userId }: {
+  userId: number;
+}) => queryClient.prefetchQuery({ queryKey: Common.UsePostsServiceFindAllPostsByUserKeyFn({ userId }), queryFn: () => PostsService.findAllPostsByUser({ userId }) });
 /**
 * Find a post by ID in a community
 * @param data The data for the request.

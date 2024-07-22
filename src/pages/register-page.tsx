@@ -1,6 +1,6 @@
 import { useState } from "react";
 import RegisterComponent from "@/components/register";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, deleteUser } from "firebase/auth";
 import { auth, storage } from "@/lib/firebase";
 import mapErrorToMessage from "@/lib/mapError";
 import { toast } from "sonner";
@@ -59,6 +59,9 @@ const RegisterPage: React.FC = () => {
         });
 
         setLoading(false);
+      })
+      .catch(async () => {
+        if (auth.currentUser) await deleteUser(auth.currentUser);
       })
       .catch(error => {
         const [text, details] = mapErrorToMessage(error);

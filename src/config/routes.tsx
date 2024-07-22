@@ -1,8 +1,10 @@
+import AppLayout from "@/layouts/app-layout";
 import PrivateLayout from "@/layouts/private-layout";
 import PublicLayout from "@/layouts/public-layout";
 import RootLayout from "@/layouts/root-layout";
 import HomePage from "@/pages/home-page";
 import LoginPage from "@/pages/login-page";
+import ProfilePage from "@/pages/profile-page";
 import RegisterPage from "@/pages/register-page";
 import SettingsPage from "@/pages/settings-page";
 import { Navigate, RouteObject } from "react-router-dom";
@@ -17,12 +19,22 @@ const routes: RouteObject[] = [
         element: <PrivateLayout />,
         children: [
           {
-            path: "/app/home",
-            element: <HomePage />,
-          },
-          {
-            path: "/app/settings",
-            element: <SettingsPage />,
+            path: "/app",
+            element: <AppLayout />,
+            children: [
+              {
+                path: "/app/home",
+                element: <HomePage />,
+              },
+              {
+                path: "/app/settings",
+                element: <SettingsPage />,
+              },
+              {
+                path: "/app/profile",
+                element: <ProfilePage />,
+              },
+            ],
           },
         ],
       },

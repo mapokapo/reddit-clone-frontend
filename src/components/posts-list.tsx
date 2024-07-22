@@ -13,6 +13,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import QueryHandler from "./query-handler";
 import { usePostsServiceGetFeedKey } from "@/client/queries";
+import PostView from "@/components/post-view";
+import { range } from "@/lib/utils";
 
 const PostsList: React.FC = () => {
   const [filterMode, setFilterMode] = useState("new");
@@ -61,9 +63,9 @@ const PostsList: React.FC = () => {
       <ul className="flex w-full flex-col gap-4">
         <QueryHandler
           query={query}
-          loading={Array.from({ length: 5 }).map((_, i) => (
+          loading={range(5).map(key => (
             <Skeleton
-              key={i}
+              key={key}
               className="h-24 w-full rounded-lg bg-muted"
             />
           ))}
@@ -74,16 +76,19 @@ const PostsList: React.FC = () => {
           )}
           showToastOnError={true}
           success={posts =>
-            posts.map(post => (
-              <li
-                key={post.id}
-                className="m-4 rounded-lg bg-background px-4 py-2">
-                <div className="flex flex-col gap-2">
-                  <p>{post.title}</p>
-                  <p>{post.content}</p>
-                </div>
-              </li>
-            ))
+            posts.length === 0 ? (
+              <p className="p-4 text-xl text-muted-foreground">
+                There is nothing here.
+              </p>
+            ) : (
+              posts.map(post => (
+                <li
+                  key={post.id}
+                  className="flex w-full gap-4">
+                  <PostView post={post} />
+                </li>
+              ))
+            )
           }
         />
       </ul>

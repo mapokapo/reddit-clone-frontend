@@ -7,6 +7,8 @@ import type {
   CreateUserData,
   CreateUserResponse,
   GetMeResponse,
+  GetUserDataData,
+  GetUserDataResponse,
   CreateCommunityData,
   CreateCommunityResponse,
   FindAllCommunitiesResponse,
@@ -25,6 +27,8 @@ import type {
   CreatePostResponse,
   FindAllPostsData,
   FindAllPostsResponse,
+  FindAllPostsByUserData,
+  FindAllPostsByUserResponse,
   FindOnePostData,
   FindOnePostResponse,
   UpdatePostData,
@@ -63,6 +67,7 @@ export class UsersService {
 
   /**
    * Get the current user
+   * This endpoint is used by the client to get the current user. Returns 204 if the authenticated user doesn't have a profile.
    * @returns User OK
    * @returns void No content
    * @throws ApiError
@@ -71,6 +76,29 @@ export class UsersService {
     return __request(OpenAPI, {
       method: "GET",
       url: "/users/me",
+      errors: {
+        401: "Unauthorized",
+      },
+    });
+  }
+
+  /**
+   * Get aggregated user data for the current user
+   * This endpoint is used by the client to get user data such as posts, comments, and votes for the current user.
+   * @param data The data for the request.
+   * @param data.include The data to include in the response
+   * @returns unknown OK
+   * @throws ApiError
+   */
+  public static getUserData(
+    data: GetUserDataData = {}
+  ): CancelablePromise<GetUserDataResponse> {
+    return __request(OpenAPI, {
+      method: "GET",
+      url: "/users/userdata",
+      query: {
+        include: data.include,
+      },
       errors: {
         401: "Unauthorized",
       },
@@ -279,6 +307,25 @@ export class PostsService {
       url: "/posts/{communityId}",
       path: {
         communityId: data.communityId,
+      },
+    });
+  }
+
+  /**
+   * Find all posts by a user in a community
+   * @param data The data for the request.
+   * @param data.userId
+   * @returns Post OK
+   * @throws ApiError
+   */
+  public static findAllPostsByUser(
+    data: FindAllPostsByUserData
+  ): CancelablePromise<FindAllPostsByUserResponse> {
+    return __request(OpenAPI, {
+      method: "GET",
+      url: "/posts/user/{userId}",
+      path: {
+        userId: data.userId,
       },
     });
   }

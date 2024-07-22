@@ -1,12 +1,16 @@
-import Sidebar from "@/components/sidebar";
-import Feed from "@/components/feed";
+import RecentPosts from "@/components/recent-posts";
+import PostsList from "@/components/posts-list";
 
 const HomePage: React.FC = () => {
   return (
-    <div className="flex min-h-full flex-1">
-      <Sidebar />
-      <Feed />
-    </div>
+    <main className="mx-auto flex min-h-full w-full max-w-6xl gap-8 p-4">
+      <div className="flex-[3]">
+        <PostsList />
+      </div>
+      <div className="flex-1">
+        <RecentPosts />
+      </div>
+    </main>
   );
 };
 

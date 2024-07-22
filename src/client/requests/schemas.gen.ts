@@ -69,6 +69,25 @@ export const $ErrorResponse = {
   required: ["statusCode", "timestamp", "path", "message"],
 } as const;
 
+export const $Vote = {
+  type: "object",
+  properties: {
+    id: {
+      type: "number",
+    },
+    voterId: {
+      type: "number",
+    },
+    postId: {
+      type: "number",
+    },
+    isUpvote: {
+      type: "boolean",
+    },
+  },
+  required: ["id", "voterId", "postId", "isUpvote"],
+} as const;
+
 export const $CreateCommunityRequest = {
   type: "object",
   properties: {

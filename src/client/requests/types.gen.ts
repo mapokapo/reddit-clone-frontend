@@ -20,6 +20,13 @@ export type ErrorResponse = {
   message: string | Array<string>;
 };
 
+export type Vote = {
+  id: number;
+  voterId: number;
+  postId: number;
+  isUpvote: boolean;
+};
+
 export type CreateCommunityRequest = {
   name: string;
   description: string;
@@ -66,6 +73,15 @@ export type CreateUserData = {
 export type CreateUserResponse = User;
 
 export type GetMeResponse = User | void;
+
+export type GetUserDataData = {
+  /**
+   * The data to include in the response
+   */
+  include?: Array<"posts" | "votes">;
+};
+
+export type GetUserDataResponse = Array<Post | Vote>;
 
 export type CreateCommunityData = {
   requestBody: CreateCommunityRequest;
@@ -120,6 +136,12 @@ export type FindAllPostsData = {
 };
 
 export type FindAllPostsResponse = Array<Post>;
+
+export type FindAllPostsByUserData = {
+  userId: number;
+};
+
+export type FindAllPostsByUserResponse = Array<Post>;
 
 export type FindOnePostData = {
   communityId: number;
@@ -191,6 +213,21 @@ export type $OpenApiTs = {
          * No content
          */
         204: void;
+        /**
+         * Unauthorized
+         */
+        401: ErrorResponse;
+      };
+    };
+  };
+  "/users/userdata": {
+    get: {
+      req: GetUserDataData;
+      res: {
+        /**
+         * OK
+         */
+        200: Array<Post | Vote>;
         /**
          * Unauthorized
          */
@@ -318,6 +355,17 @@ export type $OpenApiTs = {
     };
     get: {
       req: FindAllPostsData;
+      res: {
+        /**
+         * OK
+         */
+        200: Array<Post>;
+      };
+    };
+  };
+  "/posts/user/{userId}": {
+    get: {
+      req: FindAllPostsByUserData;
       res: {
         /**
          * OK

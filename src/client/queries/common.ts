@@ -6,6 +6,12 @@ export type UsersServiceGetMeDefaultResponse = Awaited<ReturnType<typeof UsersSe
 export type UsersServiceGetMeQueryResult<TData = UsersServiceGetMeDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
 export const useUsersServiceGetMeKey = "UsersServiceGetMe";
 export const UseUsersServiceGetMeKeyFn = (queryKey?: Array<unknown>) => [useUsersServiceGetMeKey, ...(queryKey ?? [])];
+export type UsersServiceGetUserDataDefaultResponse = Awaited<ReturnType<typeof UsersService.getUserData>>;
+export type UsersServiceGetUserDataQueryResult<TData = UsersServiceGetUserDataDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
+export const useUsersServiceGetUserDataKey = "UsersServiceGetUserData";
+export const UseUsersServiceGetUserDataKeyFn = ({ include }: {
+  include?: ("posts" | "votes")[];
+} = {}, queryKey?: Array<unknown>) => [useUsersServiceGetUserDataKey, ...(queryKey ?? [{ include }])];
 export type CommunitiesServiceFindAllCommunitiesDefaultResponse = Awaited<ReturnType<typeof CommunitiesService.findAllCommunities>>;
 export type CommunitiesServiceFindAllCommunitiesQueryResult<TData = CommunitiesServiceFindAllCommunitiesDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
 export const useCommunitiesServiceFindAllCommunitiesKey = "CommunitiesServiceFindAllCommunities";
@@ -26,6 +32,12 @@ export const usePostsServiceFindAllPostsKey = "PostsServiceFindAllPosts";
 export const UsePostsServiceFindAllPostsKeyFn = ({ communityId }: {
   communityId: number;
 }, queryKey?: Array<unknown>) => [usePostsServiceFindAllPostsKey, ...(queryKey ?? [{ communityId }])];
+export type PostsServiceFindAllPostsByUserDefaultResponse = Awaited<ReturnType<typeof PostsService.findAllPostsByUser>>;
+export type PostsServiceFindAllPostsByUserQueryResult<TData = PostsServiceFindAllPostsByUserDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
+export const usePostsServiceFindAllPostsByUserKey = "PostsServiceFindAllPostsByUser";
+export const UsePostsServiceFindAllPostsByUserKeyFn = ({ userId }: {
+  userId: number;
+}, queryKey?: Array<unknown>) => [usePostsServiceFindAllPostsByUserKey, ...(queryKey ?? [{ userId }])];
 export type PostsServiceFindOnePostDefaultResponse = Awaited<ReturnType<typeof PostsService.findOnePost>>;
 export type PostsServiceFindOnePostQueryResult<TData = PostsServiceFindOnePostDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
 export const usePostsServiceFindOnePostKey = "PostsServiceFindOnePost";
