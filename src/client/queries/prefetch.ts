@@ -1,7 +1,7 @@
 // generated with @7nohe/openapi-react-query-codegen@1.4.1 
 
 import { type QueryClient } from "@tanstack/react-query";
-import { CommunitiesService, PostsService, UsersService } from "../requests/services.gen";
+import { CommentsService, CommunitiesService, PostsService, UsersService } from "../requests/services.gen";
 import * as Common from "./common";
 /**
 * Get the current user
@@ -22,6 +22,30 @@ export const prefetchUseUsersServiceGetMe = (queryClient: QueryClient) => queryC
 export const prefetchUseUsersServiceGetUserData = (queryClient: QueryClient, { include }: {
   include?: ("posts" | "votes")[];
 } = {}) => queryClient.prefetchQuery({ queryKey: Common.UseUsersServiceGetUserDataKeyFn({ include }), queryFn: () => UsersService.getUserData({ include }) });
+/**
+* Get all comments for a post
+* @param data The data for the request.
+* @param data.postId
+* @param data.depth
+* @returns Comment OK
+* @throws ApiError
+*/
+export const prefetchUseCommentsServiceFindAllComments = (queryClient: QueryClient, { depth, postId }: {
+  depth?: number;
+  postId: number;
+}) => queryClient.prefetchQuery({ queryKey: Common.UseCommentsServiceFindAllCommentsKeyFn({ depth, postId }), queryFn: () => CommentsService.findAllComments({ depth, postId }) });
+/**
+* Get a comment by ID
+* @param data The data for the request.
+* @param data.commentId
+* @param data.depth
+* @returns Comment OK
+* @throws ApiError
+*/
+export const prefetchUseCommentsServiceFindCommentById = (queryClient: QueryClient, { commentId, depth }: {
+  commentId: number;
+  depth?: number;
+}) => queryClient.prefetchQuery({ queryKey: Common.UseCommentsServiceFindCommentByIdKeyFn({ commentId, depth }), queryFn: () => CommentsService.findCommentById({ commentId, depth }) });
 /**
 * Find all communities
 * @returns Community OK
@@ -45,6 +69,16 @@ export const prefetchUseCommunitiesServiceFindOneCommunity = (queryClient: Query
 */
 export const prefetchUsePostsServiceGetFeed = (queryClient: QueryClient) => queryClient.prefetchQuery({ queryKey: Common.UsePostsServiceGetFeedKeyFn(), queryFn: () => PostsService.getFeed() });
 /**
+* Find all posts by a user
+* @param data The data for the request.
+* @param data.userId
+* @returns Post OK
+* @throws ApiError
+*/
+export const prefetchUsePostsServiceFindAllPostsByUser = (queryClient: QueryClient, { userId }: {
+  userId: number;
+}) => queryClient.prefetchQuery({ queryKey: Common.UsePostsServiceFindAllPostsByUserKeyFn({ userId }), queryFn: () => PostsService.findAllPostsByUser({ userId }) });
+/**
 * Find all posts in a community
 * @param data The data for the request.
 * @param data.communityId
@@ -55,24 +89,12 @@ export const prefetchUsePostsServiceFindAllPosts = (queryClient: QueryClient, { 
   communityId: number;
 }) => queryClient.prefetchQuery({ queryKey: Common.UsePostsServiceFindAllPostsKeyFn({ communityId }), queryFn: () => PostsService.findAllPosts({ communityId }) });
 /**
-* Find all posts by a user in a community
+* Find a post by ID
 * @param data The data for the request.
-* @param data.userId
-* @returns Post OK
-* @throws ApiError
-*/
-export const prefetchUsePostsServiceFindAllPostsByUser = (queryClient: QueryClient, { userId }: {
-  userId: number;
-}) => queryClient.prefetchQuery({ queryKey: Common.UsePostsServiceFindAllPostsByUserKeyFn({ userId }), queryFn: () => PostsService.findAllPostsByUser({ userId }) });
-/**
-* Find a post by ID in a community
-* @param data The data for the request.
-* @param data.communityId
 * @param data.id
 * @returns Post OK
 * @throws ApiError
 */
-export const prefetchUsePostsServiceFindOnePost = (queryClient: QueryClient, { communityId, id }: {
-  communityId: number;
+export const prefetchUsePostsServiceFindOnePost = (queryClient: QueryClient, { id }: {
   id: number;
-}) => queryClient.prefetchQuery({ queryKey: Common.UsePostsServiceFindOnePostKeyFn({ communityId, id }), queryFn: () => PostsService.findOnePost({ communityId, id }) });
+}) => queryClient.prefetchQuery({ queryKey: Common.UsePostsServiceFindOnePostKeyFn({ id }), queryFn: () => PostsService.findOnePost({ id }) });

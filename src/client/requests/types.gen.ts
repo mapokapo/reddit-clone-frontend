@@ -23,8 +23,28 @@ export type ErrorResponse = {
 export type Vote = {
   id: number;
   voterId: number;
-  postId: number;
+  postId?: number;
+  commentId?: number;
   isUpvote: boolean;
+};
+
+export type CreateCommentRequest = {
+  content: string;
+  parentId?: number;
+};
+
+export type Comment = {
+  id: number;
+  content: string;
+  authorId: number;
+  parentId?: number;
+  children: Array<unknown[]>;
+  postId: number;
+  votes: number;
+};
+
+export type UpdateCommentRequest = {
+  content?: string;
 };
 
 export type CreateCommunityRequest = {
@@ -83,6 +103,58 @@ export type GetUserDataData = {
 
 export type GetUserDataResponse = Array<Post | Vote>;
 
+export type CreateCommentData = {
+  postId: number;
+  requestBody: CreateCommentRequest;
+};
+
+export type CreateCommentResponse = Comment;
+
+export type FindAllCommentsData = {
+  depth?: number;
+  postId: number;
+};
+
+export type FindAllCommentsResponse = Array<Comment>;
+
+export type FindCommentByIdData = {
+  commentId: number;
+  depth?: number;
+};
+
+export type FindCommentByIdResponse = Comment;
+
+export type UpdateCommentData = {
+  commentId: number;
+  requestBody: UpdateCommentRequest;
+};
+
+export type UpdateCommentResponse = Comment;
+
+export type DeleteCommentData = {
+  commentId: number;
+};
+
+export type DeleteCommentResponse = void;
+
+export type UpvoteCommentData = {
+  id: number;
+};
+
+export type UpvoteCommentResponse = void;
+
+export type DownvoteCommentData = {
+  id: number;
+};
+
+export type DownvoteCommentResponse = void;
+
+export type UnvoteCommentData = {
+  id: number;
+};
+
+export type UnvoteCommentResponse = void;
+
 export type CreateCommunityData = {
   requestBody: CreateCommunityRequest;
 };
@@ -131,27 +203,25 @@ export type CreatePostData = {
 
 export type CreatePostResponse = Post;
 
-export type FindAllPostsData = {
-  communityId: number;
-};
-
-export type FindAllPostsResponse = Array<Post>;
-
 export type FindAllPostsByUserData = {
   userId: number;
 };
 
 export type FindAllPostsByUserResponse = Array<Post>;
 
-export type FindOnePostData = {
+export type FindAllPostsData = {
   communityId: number;
+};
+
+export type FindAllPostsResponse = Array<Post>;
+
+export type FindOnePostData = {
   id: number;
 };
 
 export type FindOnePostResponse = Post;
 
 export type UpdatePostData = {
-  communityId: number;
   id: number;
   requestBody: UpdatePostRequest;
 };
@@ -159,28 +229,24 @@ export type UpdatePostData = {
 export type UpdatePostResponse = Post;
 
 export type RemovePostData = {
-  communityId: number;
   id: number;
 };
 
 export type RemovePostResponse = void;
 
 export type UpvotePostData = {
-  communityId: number;
   id: number;
 };
 
 export type UpvotePostResponse = void;
 
 export type DownvotePostData = {
-  communityId: number;
   id: number;
 };
 
 export type DownvotePostResponse = void;
 
 export type UnvotePostData = {
-  communityId: number;
   id: number;
 };
 
@@ -235,6 +301,146 @@ export type $OpenApiTs = {
       };
     };
   };
+  "/comments/{postId}": {
+    post: {
+      req: CreateCommentData;
+      res: {
+        /**
+         * Created
+         */
+        201: Comment;
+        /**
+         * Unauthorized
+         */
+        401: ErrorResponse;
+        /**
+         * Not found
+         */
+        404: unknown;
+      };
+    };
+  };
+  "/comments/posts/{postId}": {
+    get: {
+      req: FindAllCommentsData;
+      res: {
+        /**
+         * OK
+         */
+        200: Array<Comment>;
+        /**
+         * Not found
+         */
+        404: unknown;
+      };
+    };
+  };
+  "/comments/{commentId}": {
+    get: {
+      req: FindCommentByIdData;
+      res: {
+        /**
+         * OK
+         */
+        200: Comment;
+        /**
+         * Not found
+         */
+        404: unknown;
+      };
+    };
+    patch: {
+      req: UpdateCommentData;
+      res: {
+        /**
+         * OK
+         */
+        200: Comment;
+        /**
+         * Unauthorized
+         */
+        401: ErrorResponse;
+        /**
+         * Not found
+         */
+        404: unknown;
+      };
+    };
+    delete: {
+      req: DeleteCommentData;
+      res: {
+        /**
+         * No content
+         */
+        204: void;
+        /**
+         * Unauthorized
+         */
+        401: ErrorResponse;
+        /**
+         * Not found
+         */
+        404: unknown;
+      };
+    };
+  };
+  "/comments/{id}/upvote": {
+    post: {
+      req: UpvoteCommentData;
+      res: {
+        /**
+         * No content
+         */
+        204: void;
+        /**
+         * Unauthorized
+         */
+        401: ErrorResponse;
+        /**
+         * Not found
+         */
+        404: unknown;
+      };
+    };
+  };
+  "/comments/{id}/downvote": {
+    post: {
+      req: DownvoteCommentData;
+      res: {
+        /**
+         * No content
+         */
+        204: void;
+        /**
+         * Unauthorized
+         */
+        401: ErrorResponse;
+        /**
+         * Not found
+         */
+        404: unknown;
+      };
+    };
+  };
+  "/comments/{id}/unvote": {
+    delete: {
+      req: UnvoteCommentData;
+      res: {
+        /**
+         * No content
+         */
+        204: void;
+        /**
+         * Unauthorized
+         */
+        401: ErrorResponse;
+        /**
+         * Not found
+         */
+        404: unknown;
+      };
+    };
+  };
   "/communities": {
     post: {
       req: CreateCommunityData;
@@ -266,6 +472,10 @@ export type $OpenApiTs = {
          * OK
          */
         200: Community;
+        /**
+         * Not found
+         */
+        404: unknown;
       };
     };
     patch: {
@@ -279,6 +489,10 @@ export type $OpenApiTs = {
          * Unauthorized
          */
         401: ErrorResponse;
+        /**
+         * Not found
+         */
+        404: unknown;
       };
     };
     delete: {
@@ -292,6 +506,10 @@ export type $OpenApiTs = {
          * Unauthorized
          */
         401: ErrorResponse;
+        /**
+         * Not found
+         */
+        404: unknown;
       };
     };
   };
@@ -307,6 +525,10 @@ export type $OpenApiTs = {
          * Unauthorized
          */
         401: ErrorResponse;
+        /**
+         * Not found
+         */
+        404: unknown;
       };
     };
   };
@@ -322,6 +544,10 @@ export type $OpenApiTs = {
          * Unauthorized
          */
         401: ErrorResponse;
+        /**
+         * Not found
+         */
+        404: unknown;
       };
     };
   };
@@ -351,15 +577,10 @@ export type $OpenApiTs = {
          * Unauthorized
          */
         401: ErrorResponse;
-      };
-    };
-    get: {
-      req: FindAllPostsData;
-      res: {
         /**
-         * OK
+         * Not found
          */
-        200: Array<Post>;
+        404: unknown;
       };
     };
   };
@@ -374,7 +595,22 @@ export type $OpenApiTs = {
       };
     };
   };
-  "/posts/{communityId}/{id}": {
+  "/posts/community/{communityId}": {
+    get: {
+      req: FindAllPostsData;
+      res: {
+        /**
+         * OK
+         */
+        200: Array<Post>;
+        /**
+         * Not found
+         */
+        404: unknown;
+      };
+    };
+  };
+  "/posts/{id}": {
     get: {
       req: FindOnePostData;
       res: {
@@ -382,6 +618,10 @@ export type $OpenApiTs = {
          * OK
          */
         200: Post;
+        /**
+         * Not found
+         */
+        404: unknown;
       };
     };
     patch: {
@@ -395,6 +635,10 @@ export type $OpenApiTs = {
          * Unauthorized
          */
         401: ErrorResponse;
+        /**
+         * Not found
+         */
+        404: unknown;
       };
     };
     delete: {
@@ -408,10 +652,14 @@ export type $OpenApiTs = {
          * Unauthorized
          */
         401: ErrorResponse;
+        /**
+         * Not found
+         */
+        404: unknown;
       };
     };
   };
-  "/posts/{communityId}/{id}/upvote": {
+  "/posts/{id}/upvote": {
     post: {
       req: UpvotePostData;
       res: {
@@ -423,10 +671,14 @@ export type $OpenApiTs = {
          * Unauthorized
          */
         401: ErrorResponse;
+        /**
+         * Not found
+         */
+        404: unknown;
       };
     };
   };
-  "/posts/{communityId}/{id}/downvote": {
+  "/posts/{id}/downvote": {
     post: {
       req: DownvotePostData;
       res: {
@@ -438,10 +690,14 @@ export type $OpenApiTs = {
          * Unauthorized
          */
         401: ErrorResponse;
+        /**
+         * Not found
+         */
+        404: unknown;
       };
     };
   };
-  "/posts/{communityId}/{id}/unvote": {
+  "/posts/{id}/unvote": {
     delete: {
       req: UnvotePostData;
       res: {
@@ -453,6 +709,10 @@ export type $OpenApiTs = {
          * Unauthorized
          */
         401: ErrorResponse;
+        /**
+         * Not found
+         */
+        404: unknown;
       };
     };
   };

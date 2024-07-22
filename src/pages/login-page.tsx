@@ -3,6 +3,7 @@ import LoginComponent from "@/components/login";
 import { auth } from "@/lib/firebase";
 import mapErrorToMessage from "@/lib/mapError";
 import {
+  deleteUser,
   GoogleAuthProvider,
   signInWithEmailAndPassword,
   signInWithPopup,
@@ -50,11 +51,15 @@ const LoginPage: React.FC = () => {
 
     signInWithPopup(auth, new GoogleAuthProvider())
       .then(async credential => {
-        await createUserProfile(credential.user);
+        try {
+          await createUserProfile(credential.user);
+        } catch (e) {
+          if (auth.currentUser) await deleteUser(auth.currentUser);
+
+          throw e;
+        }
 
         toast.success("Successfully signed in with Google");
-
-        setLoading(false);
       })
       .catch(error => {
         const [text, details] = mapErrorToMessage(error);
@@ -62,7 +67,8 @@ const LoginPage: React.FC = () => {
         toast.error(text, {
           description: details,
         });
-
+      })
+      .finally(() => {
         setLoading(false);
       });
   };

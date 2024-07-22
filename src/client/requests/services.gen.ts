@@ -9,6 +9,22 @@ import type {
   GetMeResponse,
   GetUserDataData,
   GetUserDataResponse,
+  CreateCommentData,
+  CreateCommentResponse,
+  FindAllCommentsData,
+  FindAllCommentsResponse,
+  FindCommentByIdData,
+  FindCommentByIdResponse,
+  UpdateCommentData,
+  UpdateCommentResponse,
+  DeleteCommentData,
+  DeleteCommentResponse,
+  UpvoteCommentData,
+  UpvoteCommentResponse,
+  DownvoteCommentData,
+  DownvoteCommentResponse,
+  UnvoteCommentData,
+  UnvoteCommentResponse,
   CreateCommunityData,
   CreateCommunityResponse,
   FindAllCommunitiesResponse,
@@ -25,10 +41,10 @@ import type {
   GetFeedResponse,
   CreatePostData,
   CreatePostResponse,
-  FindAllPostsData,
-  FindAllPostsResponse,
   FindAllPostsByUserData,
   FindAllPostsByUserResponse,
+  FindAllPostsData,
+  FindAllPostsResponse,
   FindOnePostData,
   FindOnePostResponse,
   UpdatePostData,
@@ -106,6 +122,204 @@ export class UsersService {
   }
 }
 
+export class CommentsService {
+  /**
+   * Add a comment to a post
+   * @param data The data for the request.
+   * @param data.postId
+   * @param data.requestBody
+   * @returns Comment Created
+   * @throws ApiError
+   */
+  public static createComment(
+    data: CreateCommentData
+  ): CancelablePromise<CreateCommentResponse> {
+    return __request(OpenAPI, {
+      method: "POST",
+      url: "/comments/{postId}",
+      path: {
+        postId: data.postId,
+      },
+      body: data.requestBody,
+      mediaType: "application/json",
+      errors: {
+        401: "Unauthorized",
+        404: "Not found",
+      },
+    });
+  }
+
+  /**
+   * Get all comments for a post
+   * @param data The data for the request.
+   * @param data.postId
+   * @param data.depth
+   * @returns Comment OK
+   * @throws ApiError
+   */
+  public static findAllComments(
+    data: FindAllCommentsData
+  ): CancelablePromise<FindAllCommentsResponse> {
+    return __request(OpenAPI, {
+      method: "GET",
+      url: "/comments/posts/{postId}",
+      path: {
+        postId: data.postId,
+      },
+      query: {
+        depth: data.depth,
+      },
+      errors: {
+        404: "Not found",
+      },
+    });
+  }
+
+  /**
+   * Get a comment by ID
+   * @param data The data for the request.
+   * @param data.commentId
+   * @param data.depth
+   * @returns Comment OK
+   * @throws ApiError
+   */
+  public static findCommentById(
+    data: FindCommentByIdData
+  ): CancelablePromise<FindCommentByIdResponse> {
+    return __request(OpenAPI, {
+      method: "GET",
+      url: "/comments/{commentId}",
+      path: {
+        commentId: data.commentId,
+      },
+      query: {
+        depth: data.depth,
+      },
+      errors: {
+        404: "Not found",
+      },
+    });
+  }
+
+  /**
+   * Update a comment
+   * @param data The data for the request.
+   * @param data.commentId
+   * @param data.requestBody
+   * @returns Comment OK
+   * @throws ApiError
+   */
+  public static updateComment(
+    data: UpdateCommentData
+  ): CancelablePromise<UpdateCommentResponse> {
+    return __request(OpenAPI, {
+      method: "PATCH",
+      url: "/comments/{commentId}",
+      path: {
+        commentId: data.commentId,
+      },
+      body: data.requestBody,
+      mediaType: "application/json",
+      errors: {
+        401: "Unauthorized",
+        404: "Not found",
+      },
+    });
+  }
+
+  /**
+   * Delete a comment
+   * @param data The data for the request.
+   * @param data.commentId
+   * @returns void No content
+   * @throws ApiError
+   */
+  public static deleteComment(
+    data: DeleteCommentData
+  ): CancelablePromise<DeleteCommentResponse> {
+    return __request(OpenAPI, {
+      method: "DELETE",
+      url: "/comments/{commentId}",
+      path: {
+        commentId: data.commentId,
+      },
+      errors: {
+        401: "Unauthorized",
+        404: "Not found",
+      },
+    });
+  }
+
+  /**
+   * Upvote a comment
+   * @param data The data for the request.
+   * @param data.id
+   * @returns void No content
+   * @throws ApiError
+   */
+  public static upvoteComment(
+    data: UpvoteCommentData
+  ): CancelablePromise<UpvoteCommentResponse> {
+    return __request(OpenAPI, {
+      method: "POST",
+      url: "/comments/{id}/upvote",
+      path: {
+        id: data.id,
+      },
+      errors: {
+        401: "Unauthorized",
+        404: "Not found",
+      },
+    });
+  }
+
+  /**
+   * Downvote a comment
+   * @param data The data for the request.
+   * @param data.id
+   * @returns void No content
+   * @throws ApiError
+   */
+  public static downvoteComment(
+    data: DownvoteCommentData
+  ): CancelablePromise<DownvoteCommentResponse> {
+    return __request(OpenAPI, {
+      method: "POST",
+      url: "/comments/{id}/downvote",
+      path: {
+        id: data.id,
+      },
+      errors: {
+        401: "Unauthorized",
+        404: "Not found",
+      },
+    });
+  }
+
+  /**
+   * Remove a vote from a comment
+   * @param data The data for the request.
+   * @param data.id
+   * @returns void No content
+   * @throws ApiError
+   */
+  public static unvoteComment(
+    data: UnvoteCommentData
+  ): CancelablePromise<UnvoteCommentResponse> {
+    return __request(OpenAPI, {
+      method: "DELETE",
+      url: "/comments/{id}/unvote",
+      path: {
+        id: data.id,
+      },
+      errors: {
+        401: "Unauthorized",
+        404: "Not found",
+      },
+    });
+  }
+}
+
 export class CommunitiesService {
   /**
    * Create a new community
@@ -156,6 +370,9 @@ export class CommunitiesService {
       path: {
         id: data.id,
       },
+      errors: {
+        404: "Not found",
+      },
     });
   }
 
@@ -180,6 +397,7 @@ export class CommunitiesService {
       mediaType: "application/json",
       errors: {
         401: "Unauthorized",
+        404: "Not found",
       },
     });
   }
@@ -202,6 +420,7 @@ export class CommunitiesService {
       },
       errors: {
         401: "Unauthorized",
+        404: "Not found",
       },
     });
   }
@@ -224,6 +443,7 @@ export class CommunitiesService {
       },
       errors: {
         401: "Unauthorized",
+        404: "Not found",
       },
     });
   }
@@ -246,6 +466,7 @@ export class CommunitiesService {
       },
       errors: {
         401: "Unauthorized",
+        404: "Not found",
       },
     });
   }
@@ -288,31 +509,13 @@ export class PostsService {
       mediaType: "application/json",
       errors: {
         401: "Unauthorized",
+        404: "Not found",
       },
     });
   }
 
   /**
-   * Find all posts in a community
-   * @param data The data for the request.
-   * @param data.communityId
-   * @returns Post OK
-   * @throws ApiError
-   */
-  public static findAllPosts(
-    data: FindAllPostsData
-  ): CancelablePromise<FindAllPostsResponse> {
-    return __request(OpenAPI, {
-      method: "GET",
-      url: "/posts/{communityId}",
-      path: {
-        communityId: data.communityId,
-      },
-    });
-  }
-
-  /**
-   * Find all posts by a user in a community
+   * Find all posts by a user
    * @param data The data for the request.
    * @param data.userId
    * @returns Post OK
@@ -331,9 +534,30 @@ export class PostsService {
   }
 
   /**
-   * Find a post by ID in a community
+   * Find all posts in a community
    * @param data The data for the request.
    * @param data.communityId
+   * @returns Post OK
+   * @throws ApiError
+   */
+  public static findAllPosts(
+    data: FindAllPostsData
+  ): CancelablePromise<FindAllPostsResponse> {
+    return __request(OpenAPI, {
+      method: "GET",
+      url: "/posts/community/{communityId}",
+      path: {
+        communityId: data.communityId,
+      },
+      errors: {
+        404: "Not found",
+      },
+    });
+  }
+
+  /**
+   * Find a post by ID
+   * @param data The data for the request.
    * @param data.id
    * @returns Post OK
    * @throws ApiError
@@ -343,18 +567,19 @@ export class PostsService {
   ): CancelablePromise<FindOnePostResponse> {
     return __request(OpenAPI, {
       method: "GET",
-      url: "/posts/{communityId}/{id}",
+      url: "/posts/{id}",
       path: {
-        communityId: data.communityId,
         id: data.id,
+      },
+      errors: {
+        404: "Not found",
       },
     });
   }
 
   /**
-   * Update a post in a community
+   * Update a post
    * @param data The data for the request.
-   * @param data.communityId
    * @param data.id
    * @param data.requestBody
    * @returns Post OK
@@ -365,23 +590,22 @@ export class PostsService {
   ): CancelablePromise<UpdatePostResponse> {
     return __request(OpenAPI, {
       method: "PATCH",
-      url: "/posts/{communityId}/{id}",
+      url: "/posts/{id}",
       path: {
-        communityId: data.communityId,
         id: data.id,
       },
       body: data.requestBody,
       mediaType: "application/json",
       errors: {
         401: "Unauthorized",
+        404: "Not found",
       },
     });
   }
 
   /**
-   * Delete a post in a community
+   * Delete a post
    * @param data The data for the request.
-   * @param data.communityId
    * @param data.id
    * @returns void No content
    * @throws ApiError
@@ -391,13 +615,13 @@ export class PostsService {
   ): CancelablePromise<RemovePostResponse> {
     return __request(OpenAPI, {
       method: "DELETE",
-      url: "/posts/{communityId}/{id}",
+      url: "/posts/{id}",
       path: {
-        communityId: data.communityId,
         id: data.id,
       },
       errors: {
         401: "Unauthorized",
+        404: "Not found",
       },
     });
   }
@@ -405,7 +629,6 @@ export class PostsService {
   /**
    * Upvote a post
    * @param data The data for the request.
-   * @param data.communityId
    * @param data.id
    * @returns void No content
    * @throws ApiError
@@ -415,13 +638,13 @@ export class PostsService {
   ): CancelablePromise<UpvotePostResponse> {
     return __request(OpenAPI, {
       method: "POST",
-      url: "/posts/{communityId}/{id}/upvote",
+      url: "/posts/{id}/upvote",
       path: {
-        communityId: data.communityId,
         id: data.id,
       },
       errors: {
         401: "Unauthorized",
+        404: "Not found",
       },
     });
   }
@@ -429,7 +652,6 @@ export class PostsService {
   /**
    * Downvote a post
    * @param data The data for the request.
-   * @param data.communityId
    * @param data.id
    * @returns void No content
    * @throws ApiError
@@ -439,13 +661,13 @@ export class PostsService {
   ): CancelablePromise<DownvotePostResponse> {
     return __request(OpenAPI, {
       method: "POST",
-      url: "/posts/{communityId}/{id}/downvote",
+      url: "/posts/{id}/downvote",
       path: {
-        communityId: data.communityId,
         id: data.id,
       },
       errors: {
         401: "Unauthorized",
+        404: "Not found",
       },
     });
   }
@@ -453,7 +675,6 @@ export class PostsService {
   /**
    * Remove a vote from a post
    * @param data The data for the request.
-   * @param data.communityId
    * @param data.id
    * @returns void No content
    * @throws ApiError
@@ -463,13 +684,13 @@ export class PostsService {
   ): CancelablePromise<UnvotePostResponse> {
     return __request(OpenAPI, {
       method: "DELETE",
-      url: "/posts/{communityId}/{id}/unvote",
+      url: "/posts/{id}/unvote",
       path: {
-        communityId: data.communityId,
         id: data.id,
       },
       errors: {
         401: "Unauthorized",
+        404: "Not found",
       },
     });
   }

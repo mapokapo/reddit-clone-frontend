@@ -50,18 +50,19 @@ const RegisterPage: React.FC = () => {
           photoUrl = url;
         }
 
-        const profile = await createUserProfile({ name, photoUrl });
+        try {
+          const profile = await createUserProfile({ name, photoUrl });
 
-        setProfile(profile);
+          setProfile(profile);
 
-        toast.success("Successfully registered", {
-          description: "Now you can sign in",
-        });
+          toast.success("Successfully registered", {
+            description: "Now you can sign in",
+          });
+        } catch (e) {
+          if (auth.currentUser) await deleteUser(auth.currentUser);
 
-        setLoading(false);
-      })
-      .catch(async () => {
-        if (auth.currentUser) await deleteUser(auth.currentUser);
+          throw e;
+        }
       })
       .catch(error => {
         const [text, details] = mapErrorToMessage(error);
@@ -69,7 +70,8 @@ const RegisterPage: React.FC = () => {
         toast.error(text, {
           description: details,
         });
-
+      })
+      .finally(() => {
         setLoading(false);
       });
   };

@@ -81,11 +81,67 @@ export const $Vote = {
     postId: {
       type: "number",
     },
+    commentId: {
+      type: "number",
+    },
     isUpvote: {
       type: "boolean",
     },
   },
-  required: ["id", "voterId", "postId", "isUpvote"],
+  required: ["id", "voterId", "isUpvote"],
+} as const;
+
+export const $CreateCommentRequest = {
+  type: "object",
+  properties: {
+    content: {
+      type: "string",
+    },
+    parentId: {
+      type: "number",
+    },
+  },
+  required: ["content"],
+} as const;
+
+export const $Comment = {
+  type: "object",
+  properties: {
+    id: {
+      type: "number",
+    },
+    content: {
+      type: "string",
+    },
+    authorId: {
+      type: "number",
+    },
+    parentId: {
+      type: "number",
+    },
+    children: {
+      type: "array",
+      items: {
+        type: "array",
+      },
+    },
+    postId: {
+      type: "number",
+    },
+    votes: {
+      type: "number",
+    },
+  },
+  required: ["id", "content", "authorId", "children", "postId", "votes"],
+} as const;
+
+export const $UpdateCommentRequest = {
+  type: "object",
+  properties: {
+    content: {
+      type: "string",
+    },
+  },
 } as const;
 
 export const $CreateCommunityRequest = {

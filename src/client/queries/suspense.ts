@@ -1,7 +1,7 @@
 // generated with @7nohe/openapi-react-query-codegen@1.4.1 
 
 import { UseQueryOptions, useSuspenseQuery } from "@tanstack/react-query";
-import { CommunitiesService, PostsService, UsersService } from "../requests/services.gen";
+import { CommentsService, CommunitiesService, PostsService, UsersService } from "../requests/services.gen";
 import * as Common from "./common";
 /**
 * Get the current user
@@ -22,6 +22,30 @@ export const useUsersServiceGetMeSuspense = <TData = Common.UsersServiceGetMeDef
 export const useUsersServiceGetUserDataSuspense = <TData = Common.UsersServiceGetUserDataDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ include }: {
   include?: ("posts" | "votes")[];
 } = {}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useSuspenseQuery<TData, TError>({ queryKey: Common.UseUsersServiceGetUserDataKeyFn({ include }, queryKey), queryFn: () => UsersService.getUserData({ include }) as TData, ...options });
+/**
+* Get all comments for a post
+* @param data The data for the request.
+* @param data.postId
+* @param data.depth
+* @returns Comment OK
+* @throws ApiError
+*/
+export const useCommentsServiceFindAllCommentsSuspense = <TData = Common.CommentsServiceFindAllCommentsDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ depth, postId }: {
+  depth?: number;
+  postId: number;
+}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useSuspenseQuery<TData, TError>({ queryKey: Common.UseCommentsServiceFindAllCommentsKeyFn({ depth, postId }, queryKey), queryFn: () => CommentsService.findAllComments({ depth, postId }) as TData, ...options });
+/**
+* Get a comment by ID
+* @param data The data for the request.
+* @param data.commentId
+* @param data.depth
+* @returns Comment OK
+* @throws ApiError
+*/
+export const useCommentsServiceFindCommentByIdSuspense = <TData = Common.CommentsServiceFindCommentByIdDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ commentId, depth }: {
+  commentId: number;
+  depth?: number;
+}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useSuspenseQuery<TData, TError>({ queryKey: Common.UseCommentsServiceFindCommentByIdKeyFn({ commentId, depth }, queryKey), queryFn: () => CommentsService.findCommentById({ commentId, depth }) as TData, ...options });
 /**
 * Find all communities
 * @returns Community OK
@@ -45,6 +69,16 @@ export const useCommunitiesServiceFindOneCommunitySuspense = <TData = Common.Com
 */
 export const usePostsServiceGetFeedSuspense = <TData = Common.PostsServiceGetFeedDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>(queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useSuspenseQuery<TData, TError>({ queryKey: Common.UsePostsServiceGetFeedKeyFn(queryKey), queryFn: () => PostsService.getFeed() as TData, ...options });
 /**
+* Find all posts by a user
+* @param data The data for the request.
+* @param data.userId
+* @returns Post OK
+* @throws ApiError
+*/
+export const usePostsServiceFindAllPostsByUserSuspense = <TData = Common.PostsServiceFindAllPostsByUserDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ userId }: {
+  userId: number;
+}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useSuspenseQuery<TData, TError>({ queryKey: Common.UsePostsServiceFindAllPostsByUserKeyFn({ userId }, queryKey), queryFn: () => PostsService.findAllPostsByUser({ userId }) as TData, ...options });
+/**
 * Find all posts in a community
 * @param data The data for the request.
 * @param data.communityId
@@ -55,24 +89,12 @@ export const usePostsServiceFindAllPostsSuspense = <TData = Common.PostsServiceF
   communityId: number;
 }, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useSuspenseQuery<TData, TError>({ queryKey: Common.UsePostsServiceFindAllPostsKeyFn({ communityId }, queryKey), queryFn: () => PostsService.findAllPosts({ communityId }) as TData, ...options });
 /**
-* Find all posts by a user in a community
+* Find a post by ID
 * @param data The data for the request.
-* @param data.userId
-* @returns Post OK
-* @throws ApiError
-*/
-export const usePostsServiceFindAllPostsByUserSuspense = <TData = Common.PostsServiceFindAllPostsByUserDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ userId }: {
-  userId: number;
-}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useSuspenseQuery<TData, TError>({ queryKey: Common.UsePostsServiceFindAllPostsByUserKeyFn({ userId }, queryKey), queryFn: () => PostsService.findAllPostsByUser({ userId }) as TData, ...options });
-/**
-* Find a post by ID in a community
-* @param data The data for the request.
-* @param data.communityId
 * @param data.id
 * @returns Post OK
 * @throws ApiError
 */
-export const usePostsServiceFindOnePostSuspense = <TData = Common.PostsServiceFindOnePostDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ communityId, id }: {
-  communityId: number;
+export const usePostsServiceFindOnePostSuspense = <TData = Common.PostsServiceFindOnePostDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ id }: {
   id: number;
-}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useSuspenseQuery<TData, TError>({ queryKey: Common.UsePostsServiceFindOnePostKeyFn({ communityId, id }, queryKey), queryFn: () => PostsService.findOnePost({ communityId, id }) as TData, ...options });
+}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useSuspenseQuery<TData, TError>({ queryKey: Common.UsePostsServiceFindOnePostKeyFn({ id }, queryKey), queryFn: () => PostsService.findOnePost({ id }) as TData, ...options });
