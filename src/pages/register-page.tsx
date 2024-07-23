@@ -10,10 +10,9 @@ import { useAuth } from "@/components/user-provider";
 
 const RegisterPage: React.FC = () => {
   const { setProfile } = useAuth();
-  const [loading, setLoading] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
 
-  const onSubmit = ({
+  const onSubmit = async ({
     name,
     email,
     password,
@@ -24,52 +23,51 @@ const RegisterPage: React.FC = () => {
     password: string;
     photoFile?: File;
   }) => {
-    setLoading(true);
+    try {
+      const credential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
 
-    createUserWithEmailAndPassword(auth, email, password)
-      .then(async credential => {
-        let photoUrl: string | undefined;
-        if (photoFile) {
-          const photoRef = ref(
-            storage,
-            `users/${credential.user.uid}/profile.${photoFile.name.split(".").pop()}`
-          );
+      let photoUrl: string | undefined;
+      if (photoFile) {
+        const photoRef = ref(
+          storage,
+          `users/${credential.user.uid}/profile.${photoFile.name.split(".").pop()}`
+        );
 
-          const res = await uploadBytes(photoRef, photoFile);
-          const url = await getDownloadURL(res.ref);
+        const res = await uploadBytes(photoRef, photoFile);
+        const url = await getDownloadURL(res.ref);
 
-          photoUrl = url;
-        }
+        photoUrl = url;
+      }
 
-        try {
-          const profile = await UsersService.createUser({
-            requestBody: {
-              name,
-              photoUrl,
-            },
-          });
-
-          setProfile(profile);
-
-          toast.success("Successfully registered", {
-            description: "Now you can sign in",
-          });
-        } catch (e) {
-          if (auth.currentUser) await deleteUser(auth.currentUser);
-
-          throw e;
-        }
-      })
-      .catch(error => {
-        const [text, details] = mapErrorToMessage(error);
-        setActionError(text);
-        toast.error(text, {
-          description: details,
+      try {
+        const profile = await UsersService.createUser({
+          requestBody: {
+            name,
+            photoUrl,
+          },
         });
-      })
-      .finally(() => {
-        setLoading(false);
+
+        setProfile(profile);
+
+        toast.success("Successfully registered", {
+          description: "Now you can sign in",
+        });
+      } catch (e) {
+        if (auth.currentUser) await deleteUser(auth.currentUser);
+
+        throw e;
+      }
+    } catch (error) {
+      const [text, details] = mapErrorToMessage(error);
+      setActionError(text);
+      toast.error(text, {
+        description: details,
       });
+    }
   };
 
   return (
@@ -78,7 +76,6 @@ const RegisterPage: React.FC = () => {
         onSubmit={values => {
           onSubmit(values);
         }}
-        isLoading={loading}
         actionError={actionError}
       />
     </div>

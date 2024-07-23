@@ -15,7 +15,6 @@ import { toast } from "sonner";
 
 const LoginPage: React.FC = () => {
   const { setProfile } = useAuth();
-  const [loading, setLoading] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
 
   // Used for OAuth sign in - no registration required
@@ -34,53 +33,43 @@ const LoginPage: React.FC = () => {
     return userExists;
   };
 
-  const onSubmit = (email: string, password: string) => {
-    setLoading(true);
-
-    signInWithEmailAndPassword(auth, email, password)
-      .catch(error => {
-        const [text, details] = mapErrorToMessage(error);
-        setActionError(text);
-        toast.error(text, {
-          description: details,
-        });
-      })
-      .finally(() => {
-        setLoading(false);
+  const onSubmit = async (email: string, password: string) => {
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (error) {
+      const [text, details] = mapErrorToMessage(error);
+      setActionError(text);
+      toast.error(text, {
+        description: details,
       });
+    }
   };
 
-  const onSignInWithGoogle = () => {
-    setLoading(true);
+  const onSignInWithGoogle = async () => {
+    try {
+      const credential = await signInWithPopup(auth, new GoogleAuthProvider());
+      try {
+        const profile = await createUserProfile(credential.user);
 
-    signInWithPopup(auth, new GoogleAuthProvider())
-      .then(async credential => {
-        try {
-          const profile = await createUserProfile(credential.user);
+        setProfile(profile);
 
-          setProfile(profile);
-
-          toast.success("Successfully registered", {
-            description: "Now you can sign in",
-          });
-        } catch (e) {
-          if (auth.currentUser) await deleteUser(auth.currentUser);
-
-          throw e;
-        }
-
-        toast.success("Successfully signed in with Google");
-      })
-      .catch(error => {
-        const [text, details] = mapErrorToMessage(error);
-        setActionError(text);
-        toast.error(text, {
-          description: details,
+        toast.success("Successfully registered", {
+          description: "Now you can sign in",
         });
-      })
-      .finally(() => {
-        setLoading(false);
+      } catch (e) {
+        if (auth.currentUser) await deleteUser(auth.currentUser);
+
+        throw e;
+      }
+
+      toast.success("Successfully signed in with Google");
+    } catch (error) {
+      const [text, details] = mapErrorToMessage(error);
+      setActionError(text);
+      toast.error(text, {
+        description: details,
       });
+    }
   };
 
   return (
@@ -92,7 +81,6 @@ const LoginPage: React.FC = () => {
         onSignInWithGoogle={() => {
           onSignInWithGoogle();
         }}
-        isLoading={loading}
         actionError={actionError}
       />
     </div>

@@ -2,6 +2,7 @@ import AppLayout from "@/layouts/app-layout";
 import PrivateLayout from "@/layouts/private-layout";
 import PublicLayout from "@/layouts/public-layout";
 import RootLayout from "@/layouts/root-layout";
+import CreatePostPage from "@/pages/create-post-page";
 import HomePage from "@/pages/home-page";
 import LoginPage from "@/pages/login-page";
 import ProfilePage from "@/pages/profile-page";
@@ -33,6 +34,10 @@ const routes: RouteObject[] = [
               {
                 path: "/app/profile",
                 element: <ProfilePage />,
+              },
+              {
+                path: "/app/create-post",
+                element: <CreatePostPage />,
               },
             ],
           },

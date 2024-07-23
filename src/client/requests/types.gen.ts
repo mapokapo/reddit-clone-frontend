@@ -163,6 +163,8 @@ export type CreateCommunityResponse = Community;
 
 export type FindAllCommunitiesResponse = Array<Community>;
 
+export type FindUserCommunitiesResponse = Array<Community>;
+
 export type FindOneCommunityData = {
   id: number;
 };
@@ -461,6 +463,20 @@ export type $OpenApiTs = {
          * OK
          */
         200: Array<Community>;
+      };
+    };
+  };
+  "/communities/me": {
+    get: {
+      res: {
+        /**
+         * OK
+         */
+        200: Array<Community>;
+        /**
+         * Unauthorized
+         */
+        401: ErrorResponse;
       };
     };
   };

@@ -38,14 +38,12 @@ const formSchema = z.object({
 type Props = {
   onSubmit: (values: z.infer<typeof formSchema>) => void;
   onSignInWithGoogle: () => void;
-  isLoading: boolean;
   actionError: string | null;
 };
 
 const LoginComponent: React.FC<Props> = ({
   onSubmit,
   onSignInWithGoogle,
-  isLoading,
   actionError,
 }) => {
   const form = useForm<z.infer<typeof formSchema>>({
@@ -89,7 +87,7 @@ const LoginComponent: React.FC<Props> = ({
                     <FormControl>
                       <Input
                         placeholder="Email"
-                        disabled={isLoading}
+                        disabled={form.formState.isSubmitting}
                         {...field}
                       />
                     </FormControl>
@@ -120,7 +118,7 @@ const LoginComponent: React.FC<Props> = ({
                     <FormControl>
                       <Input
                         placeholder="Password"
-                        disabled={isLoading}
+                        disabled={form.formState.isSubmitting}
                         {...field}
                       />
                     </FormControl>
@@ -138,7 +136,7 @@ const LoginComponent: React.FC<Props> = ({
           <CardFooter className="mt-2 flex flex-col pb-0">
             <Button
               type="submit"
-              disabled={isLoading}
+              disabled={form.formState.isSubmitting}
               className="w-full">
               Sign in
             </Button>
@@ -146,7 +144,7 @@ const LoginComponent: React.FC<Props> = ({
               <Button
                 type="button"
                 variant="link"
-                disabled={isLoading}
+                disabled={form.formState.isSubmitting}
                 className="px-0"
                 asChild>
                 <Link to="/auth/forgot-password">Forgot password?</Link>
@@ -154,7 +152,7 @@ const LoginComponent: React.FC<Props> = ({
               <Button
                 type="button"
                 variant="link"
-                disabled={isLoading}
+                disabled={form.formState.isSubmitting}
                 className="px-0"
                 asChild>
                 <Link to="/auth/register">Don't have an account?</Link>
@@ -171,7 +169,7 @@ const LoginComponent: React.FC<Props> = ({
             <Button
               type="button"
               variant="secondary"
-              disabled={isLoading}
+              disabled={form.formState.isSubmitting}
               onClick={onSignInWithGoogle}>
               <SiGoogle size={16} />
               <span className="ml-2">Sign in with Google</span>

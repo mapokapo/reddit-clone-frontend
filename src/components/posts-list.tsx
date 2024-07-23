@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { fetcher } from "@/lib/fetcher";
+import { mapFetchErrors } from "@/lib/fetcher";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import QueryHandler from "./query-handler";
@@ -22,9 +22,11 @@ const PostsList: React.FC = () => {
 
   const query = useQuery({
     queryKey: [usePostsServiceGetFeedKey],
-    queryFn: fetcher({
-      fetchFunction: () => PostsService.getFeed(),
-    }),
+    queryFn: () =>
+      mapFetchErrors({
+        fetchFunction: PostsService.getFeed,
+        key: usePostsServiceGetFeedKey,
+      }),
   });
 
   return (

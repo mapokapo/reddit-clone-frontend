@@ -28,6 +28,7 @@ import type {
   CreateCommunityData,
   CreateCommunityResponse,
   FindAllCommunitiesResponse,
+  FindUserCommunitiesResponse,
   FindOneCommunityData,
   FindOneCommunityResponse,
   UpdateCommunityData,
@@ -351,6 +352,21 @@ export class CommunitiesService {
     return __request(OpenAPI, {
       method: "GET",
       url: "/communities",
+    });
+  }
+
+  /**
+   * Find all communities that the current user is a member of
+   * @returns Community OK
+   * @throws ApiError
+   */
+  public static findUserCommunities(): CancelablePromise<FindUserCommunitiesResponse> {
+    return __request(OpenAPI, {
+      method: "GET",
+      url: "/communities/me",
+      errors: {
+        401: "Unauthorized",
+      },
     });
   }
 

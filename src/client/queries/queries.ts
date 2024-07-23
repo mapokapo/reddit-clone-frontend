@@ -54,6 +54,12 @@ export const useCommentsServiceFindCommentById = <TData = Common.CommentsService
 */
 export const useCommunitiesServiceFindAllCommunities = <TData = Common.CommunitiesServiceFindAllCommunitiesDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>(queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UseCommunitiesServiceFindAllCommunitiesKeyFn(queryKey), queryFn: () => CommunitiesService.findAllCommunities() as TData, ...options });
 /**
+* Find all communities that the current user is a member of
+* @returns Community OK
+* @throws ApiError
+*/
+export const useCommunitiesServiceFindUserCommunities = <TData = Common.CommunitiesServiceFindUserCommunitiesDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>(queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UseCommunitiesServiceFindUserCommunitiesKeyFn(queryKey), queryFn: () => CommunitiesService.findUserCommunities() as TData, ...options });
+/**
 * Find a community by ID
 * @param data The data for the request.
 * @param data.id

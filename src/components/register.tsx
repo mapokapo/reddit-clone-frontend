@@ -60,13 +60,11 @@ type Props = {
   onSubmit: (
     values: Omit<z.infer<typeof formSchema>, "photoUrl"> & { photoFile?: File }
   ) => void;
-  isLoading: boolean;
   actionError: string | null;
 };
 
 const RegisterComponent: React.FC<Props> = ({
   onSubmit,
-  isLoading,
   actionError,
 }) => {
   const [photoData, setPhotoData] = useState<
@@ -115,7 +113,7 @@ const RegisterComponent: React.FC<Props> = ({
                       <Input
                         {...rest}
                         type="file"
-                        disabled={isLoading}
+                        disabled={form.formState.isSubmitting}
                         className="file:text-muted-foreground"
                         onChange={event => {
                           const data = getImageData(event);
@@ -139,7 +137,7 @@ const RegisterComponent: React.FC<Props> = ({
                     <FormControl>
                       <Input
                         placeholder="Name"
-                        disabled={isLoading}
+                        disabled={form.formState.isSubmitting}
                         {...field}
                       />
                     </FormControl>
@@ -170,7 +168,7 @@ const RegisterComponent: React.FC<Props> = ({
                     <FormControl>
                       <Input
                         placeholder="Email"
-                        disabled={isLoading}
+                        disabled={form.formState.isSubmitting}
                         {...field}
                       />
                     </FormControl>
@@ -201,7 +199,7 @@ const RegisterComponent: React.FC<Props> = ({
                     <FormControl>
                       <Input
                         placeholder="Password"
-                        disabled={isLoading}
+                        disabled={form.formState.isSubmitting}
                         {...field}
                       />
                     </FormControl>
@@ -220,7 +218,7 @@ const RegisterComponent: React.FC<Props> = ({
             <Button
               type="submit"
               className="w-full"
-              disabled={isLoading}>
+              disabled={form.formState.isSubmitting}>
               Sign in
             </Button>
             <div className="mt-2 flex w-full justify-between gap-1 px-2 py-1">
@@ -228,7 +226,7 @@ const RegisterComponent: React.FC<Props> = ({
                 type="button"
                 variant="link"
                 className="px-0"
-                disabled={isLoading}
+                disabled={form.formState.isSubmitting}
                 asChild>
                 <Link to="/auth/login">Already have an account?</Link>
               </Button>

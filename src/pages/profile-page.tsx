@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUserProfile } from "@/components/user-provider";
 import VoteView from "@/components/vote-view";
-import { fetcher } from "@/lib/fetcher";
+import { mapFetchErrors } from "@/lib/fetcher";
 import { range } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -20,14 +20,14 @@ const ProfilePage: React.FC = () => {
   const { profile } = useUserProfile();
 
   const items = useQuery({
-    queryKey: [
-      UseUsersServiceGetUserDataKeyFn({
-        include: viewMode === "all" ? ["posts", "votes"] : [viewMode],
+    queryKey: UseUsersServiceGetUserDataKeyFn({
+      include: viewMode === "all" ? ["posts", "votes"] : [viewMode],
+    }) as string[],
+    queryFn: context =>
+      mapFetchErrors({
+        fetchFunction: UsersService.getUserData,
+        key: context.queryKey,
       }),
-    ],
-    queryFn: fetcher({
-      fetchFunction: () => UsersService.getUserData(),
-    }),
   });
 
   return (

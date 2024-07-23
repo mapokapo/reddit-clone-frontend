@@ -53,6 +53,12 @@ export const prefetchUseCommentsServiceFindCommentById = (queryClient: QueryClie
 */
 export const prefetchUseCommunitiesServiceFindAllCommunities = (queryClient: QueryClient) => queryClient.prefetchQuery({ queryKey: Common.UseCommunitiesServiceFindAllCommunitiesKeyFn(), queryFn: () => CommunitiesService.findAllCommunities() });
 /**
+* Find all communities that the current user is a member of
+* @returns Community OK
+* @throws ApiError
+*/
+export const prefetchUseCommunitiesServiceFindUserCommunities = (queryClient: QueryClient) => queryClient.prefetchQuery({ queryKey: Common.UseCommunitiesServiceFindUserCommunitiesKeyFn(), queryFn: () => CommunitiesService.findUserCommunities() });
+/**
 * Find a community by ID
 * @param data The data for the request.
 * @param data.id

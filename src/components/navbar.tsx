@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import { ThemeModeToggle } from "@/components/theme-mode-toggle";
-import Profile from "./profile";
+import Profile from "@/components/profile";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 
 const Navbar: React.FC = () => {
   return (
@@ -17,6 +19,14 @@ const Navbar: React.FC = () => {
           />
         </Link>
         <ol className="flex items-center space-x-4">
+          <Link to="/app/create-post">
+            <Button
+              variant="ghost"
+              className="flex gap-1 px-2 pr-3">
+              <Plus size={24} />
+              <span>Create</span>
+            </Button>
+          </Link>
           <ThemeModeToggle />
           <Profile />
         </ol>

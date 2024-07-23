@@ -30,6 +30,10 @@ export type CommunitiesServiceFindAllCommunitiesDefaultResponse = Awaited<Return
 export type CommunitiesServiceFindAllCommunitiesQueryResult<TData = CommunitiesServiceFindAllCommunitiesDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
 export const useCommunitiesServiceFindAllCommunitiesKey = "CommunitiesServiceFindAllCommunities";
 export const UseCommunitiesServiceFindAllCommunitiesKeyFn = (queryKey?: Array<unknown>) => [useCommunitiesServiceFindAllCommunitiesKey, ...(queryKey ?? [])];
+export type CommunitiesServiceFindUserCommunitiesDefaultResponse = Awaited<ReturnType<typeof CommunitiesService.findUserCommunities>>;
+export type CommunitiesServiceFindUserCommunitiesQueryResult<TData = CommunitiesServiceFindUserCommunitiesDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
+export const useCommunitiesServiceFindUserCommunitiesKey = "CommunitiesServiceFindUserCommunities";
+export const UseCommunitiesServiceFindUserCommunitiesKeyFn = (queryKey?: Array<unknown>) => [useCommunitiesServiceFindUserCommunitiesKey, ...(queryKey ?? [])];
 export type CommunitiesServiceFindOneCommunityDefaultResponse = Awaited<ReturnType<typeof CommunitiesService.findOneCommunity>>;
 export type CommunitiesServiceFindOneCommunityQueryResult<TData = CommunitiesServiceFindOneCommunityDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
 export const useCommunitiesServiceFindOneCommunityKey = "CommunitiesServiceFindOneCommunity";
