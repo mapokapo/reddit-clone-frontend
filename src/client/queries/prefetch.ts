@@ -26,7 +26,7 @@ export const prefetchUseUsersServiceGetUserData = (queryClient: QueryClient, { i
 * Get all comments for a post
 * @param data The data for the request.
 * @param data.postId
-* @param data.depth
+* @param data.depth The depth of the comment tree to return
 * @returns Comment OK
 * @throws ApiError
 */
@@ -38,7 +38,7 @@ export const prefetchUseCommentsServiceFindAllComments = (queryClient: QueryClie
 * Get a comment by ID
 * @param data The data for the request.
 * @param data.commentId
-* @param data.depth
+* @param data.depth The depth of the comment tree to return
 * @returns Comment OK
 * @throws ApiError
 */

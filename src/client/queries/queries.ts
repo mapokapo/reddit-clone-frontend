@@ -27,7 +27,7 @@ export const useUsersServiceGetUserData = <TData = Common.UsersServiceGetUserDat
 * Get all comments for a post
 * @param data The data for the request.
 * @param data.postId
-* @param data.depth
+* @param data.depth The depth of the comment tree to return
 * @returns Comment OK
 * @throws ApiError
 */
@@ -39,7 +39,7 @@ export const useCommentsServiceFindAllComments = <TData = Common.CommentsService
 * Get a comment by ID
 * @param data The data for the request.
 * @param data.commentId
-* @param data.depth
+* @param data.depth The depth of the comment tree to return
 * @returns Comment OK
 * @throws ApiError
 */
@@ -208,29 +208,20 @@ export const usePostsServiceCreatePost = <TData = Common.PostsServiceCreatePostM
   requestBody: CreatePostRequest;
 }, TContext>({ mutationFn: ({ communityId, requestBody }) => PostsService.createPost({ communityId, requestBody }) as unknown as Promise<TData>, ...options });
 /**
-* Upvote a post
+* Vote a post up or down
 * @param data The data for the request.
 * @param data.id
+* @param data.isUpvote
 * @returns void No content
 * @throws ApiError
 */
-export const usePostsServiceUpvotePost = <TData = Common.PostsServiceUpvotePostMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
+export const usePostsServiceVotePost = <TData = Common.PostsServiceVotePostMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
   id: number;
+  isUpvote: boolean;
 }, TContext>, "mutationFn">) => useMutation<TData, TError, {
   id: number;
-}, TContext>({ mutationFn: ({ id }) => PostsService.upvotePost({ id }) as unknown as Promise<TData>, ...options });
-/**
-* Downvote a post
-* @param data The data for the request.
-* @param data.id
-* @returns void No content
-* @throws ApiError
-*/
-export const usePostsServiceDownvotePost = <TData = Common.PostsServiceDownvotePostMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
-  id: number;
-}, TContext>, "mutationFn">) => useMutation<TData, TError, {
-  id: number;
-}, TContext>({ mutationFn: ({ id }) => PostsService.downvotePost({ id }) as unknown as Promise<TData>, ...options });
+  isUpvote: boolean;
+}, TContext>({ mutationFn: ({ id, isUpvote }) => PostsService.votePost({ id, isUpvote }) as unknown as Promise<TData>, ...options });
 /**
 * Update a comment
 * @param data The data for the request.

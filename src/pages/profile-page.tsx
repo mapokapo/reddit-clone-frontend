@@ -1,4 +1,3 @@
-import { UseUsersServiceGetUserDataKeyFn } from "@/client/queries";
 import { UsersService } from "@/client/requests";
 import PostView from "@/components/post-view";
 import QueryHandler from "@/components/query-handler";
@@ -20,13 +19,17 @@ const ProfilePage: React.FC = () => {
   const { profile } = useUserProfile();
 
   const items = useQuery({
-    queryKey: UseUsersServiceGetUserDataKeyFn({
-      include: viewMode === "all" ? ["posts", "votes"] : [viewMode],
-    }) as string[],
-    queryFn: context =>
+    queryKey: [
+      "users",
+      {
+        id: profile.id,
+        include: viewMode === "all" ? ["posts", "votes"] : [viewMode],
+      },
+    ],
+    queryFn: () =>
       mapFetchErrors({
         fetchFunction: UsersService.getUserData,
-        key: context.queryKey,
+        key: "/users/me",
       }),
   });
 

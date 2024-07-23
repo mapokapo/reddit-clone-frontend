@@ -8,7 +8,7 @@
     "build": "tsc && bunx --bun vite build",
     "lint": "bunx --bun eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "bunx --bun vite preview",
-    "openapi-gen": "openapi-rq -i ../backend/openapi.json -o src/client --format prettier --lint eslint --enums javascript --useDateType --base http://localhost:5000"
+    "openapi-gen": "openapi-rq -i ../backend/openapi.json -o src/client --format prettier --lint eslint --enums javascript --base http://localhost:5000"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

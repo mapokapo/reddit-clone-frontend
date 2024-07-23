@@ -35,8 +35,16 @@ export const $User = {
       type: "string",
       format: "url",
     },
+    createdAt: {
+      format: "date-time",
+      type: "string",
+    },
+    updatedAt: {
+      format: "date-time",
+      type: "string",
+    },
   },
-  required: ["id", "firebaseUid", "email", "name"],
+  required: ["id", "firebaseUid", "email", "name", "createdAt", "updatedAt"],
 } as const;
 
 export const $ErrorResponse = {
@@ -131,8 +139,25 @@ export const $Comment = {
     votes: {
       type: "number",
     },
+    createdAt: {
+      format: "date-time",
+      type: "string",
+    },
+    updatedAt: {
+      format: "date-time",
+      type: "string",
+    },
   },
-  required: ["id", "content", "authorId", "children", "postId", "votes"],
+  required: [
+    "id",
+    "content",
+    "authorId",
+    "children",
+    "postId",
+    "votes",
+    "createdAt",
+    "updatedAt",
+  ],
 } as const;
 
 export const $UpdateCommentRequest = {
@@ -176,8 +201,12 @@ export const $Community = {
       format: "date-time",
       type: "string",
     },
+    updatedAt: {
+      format: "date-time",
+      type: "string",
+    },
   },
-  required: ["id", "name", "description", "ownerId", "createdAt"],
+  required: ["id", "name", "description", "ownerId", "createdAt", "updatedAt"],
 } as const;
 
 export const $UpdateCommunityRequest = {
@@ -207,6 +236,9 @@ export const $Post = {
     communityId: {
       type: "number",
     },
+    communityName: {
+      type: "string",
+    },
     authorId: {
       type: "number",
     },
@@ -227,6 +259,7 @@ export const $Post = {
     "title",
     "content",
     "communityId",
+    "communityName",
     "authorId",
     "votes",
     "createdAt",

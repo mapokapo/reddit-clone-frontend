@@ -12,7 +12,6 @@ import { mapFetchErrors } from "@/lib/fetcher";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import QueryHandler from "./query-handler";
-import { usePostsServiceGetFeedKey } from "@/client/queries";
 import PostView from "@/components/post-view";
 import { range } from "@/lib/utils";
 
@@ -21,11 +20,11 @@ const PostsList: React.FC = () => {
   const [filterTopMode, setFilterTopMode] = useState("all-time");
 
   const query = useQuery({
-    queryKey: [usePostsServiceGetFeedKey],
+    queryKey: ["posts"],
     queryFn: () =>
       mapFetchErrors({
         fetchFunction: PostsService.getFeed,
-        key: usePostsServiceGetFeedKey,
+        key: "/posts/feed",
       }),
   });
 
@@ -62,7 +61,7 @@ const PostsList: React.FC = () => {
         )}
       </div>
       <Separator />
-      <ul className="flex w-full flex-col gap-4">
+      <ul className="mt-4 flex w-full flex-col gap-4">
         <QueryHandler
           query={query}
           loading={range(5).map(key => (
@@ -86,8 +85,9 @@ const PostsList: React.FC = () => {
               posts.map(post => (
                 <li
                   key={post.id}
-                  className="flex w-full gap-4">
+                  className="flex w-full flex-col gap-4">
                   <PostView post={post} />
+                  <Separator />
                 </li>
               ))
             )

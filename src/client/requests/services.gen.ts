@@ -52,10 +52,8 @@ import type {
   UpdatePostResponse,
   RemovePostData,
   RemovePostResponse,
-  UpvotePostData,
-  UpvotePostResponse,
-  DownvotePostData,
-  DownvotePostResponse,
+  VotePostData,
+  VotePostResponse,
   UnvotePostData,
   UnvotePostResponse,
 } from "./types.gen";
@@ -154,7 +152,7 @@ export class CommentsService {
    * Get all comments for a post
    * @param data The data for the request.
    * @param data.postId
-   * @param data.depth
+   * @param data.depth The depth of the comment tree to return
    * @returns Comment OK
    * @throws ApiError
    */
@@ -180,7 +178,7 @@ export class CommentsService {
    * Get a comment by ID
    * @param data The data for the request.
    * @param data.commentId
-   * @param data.depth
+   * @param data.depth The depth of the comment tree to return
    * @returns Comment OK
    * @throws ApiError
    */
@@ -643,43 +641,24 @@ export class PostsService {
   }
 
   /**
-   * Upvote a post
+   * Vote a post up or down
    * @param data The data for the request.
    * @param data.id
+   * @param data.isUpvote
    * @returns void No content
    * @throws ApiError
    */
-  public static upvotePost(
-    data: UpvotePostData
-  ): CancelablePromise<UpvotePostResponse> {
+  public static votePost(
+    data: VotePostData
+  ): CancelablePromise<VotePostResponse> {
     return __request(OpenAPI, {
       method: "POST",
-      url: "/posts/{id}/upvote",
+      url: "/posts/{id}/vote",
       path: {
         id: data.id,
       },
-      errors: {
-        401: "Unauthorized",
-        404: "Not found",
-      },
-    });
-  }
-
-  /**
-   * Downvote a post
-   * @param data The data for the request.
-   * @param data.id
-   * @returns void No content
-   * @throws ApiError
-   */
-  public static downvotePost(
-    data: DownvotePostData
-  ): CancelablePromise<DownvotePostResponse> {
-    return __request(OpenAPI, {
-      method: "POST",
-      url: "/posts/{id}/downvote",
-      path: {
-        id: data.id,
+      query: {
+        isUpvote: data.isUpvote,
       },
       errors: {
         401: "Unauthorized",

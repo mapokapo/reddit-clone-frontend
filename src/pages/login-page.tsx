@@ -52,10 +52,6 @@ const LoginPage: React.FC = () => {
         const profile = await createUserProfile(credential.user);
 
         setProfile(profile);
-
-        toast.success("Successfully registered", {
-          description: "Now you can sign in",
-        });
       } catch (e) {
         if (auth.currentUser) await deleteUser(auth.currentUser);
 

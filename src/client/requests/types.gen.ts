@@ -11,11 +11,13 @@ export type User = {
   email: string;
   name: string;
   photoUrl?: string;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type ErrorResponse = {
   statusCode: number;
-  timestamp: Date;
+  timestamp: string;
   path: string;
   message: string | Array<string>;
 };
@@ -41,6 +43,8 @@ export type Comment = {
   children: Array<unknown[]>;
   postId: number;
   votes: number;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type UpdateCommentRequest = {
@@ -57,7 +61,8 @@ export type Community = {
   name: string;
   description: string;
   ownerId: number;
-  createdAt: Date;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type UpdateCommunityRequest = {
@@ -70,10 +75,11 @@ export type Post = {
   title: string;
   content: string;
   communityId: number;
+  communityName: string;
   authorId: number;
   votes: number;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type CreatePostRequest = {
@@ -111,6 +117,9 @@ export type CreateCommentData = {
 export type CreateCommentResponse = Comment;
 
 export type FindAllCommentsData = {
+  /**
+   * The depth of the comment tree to return
+   */
   depth?: number;
   postId: number;
 };
@@ -119,6 +128,9 @@ export type FindAllCommentsResponse = Array<Comment>;
 
 export type FindCommentByIdData = {
   commentId: number;
+  /**
+   * The depth of the comment tree to return
+   */
   depth?: number;
 };
 
@@ -236,17 +248,12 @@ export type RemovePostData = {
 
 export type RemovePostResponse = void;
 
-export type UpvotePostData = {
+export type VotePostData = {
   id: number;
+  isUpvote: boolean;
 };
 
-export type UpvotePostResponse = void;
-
-export type DownvotePostData = {
-  id: number;
-};
-
-export type DownvotePostResponse = void;
+export type VotePostResponse = void;
 
 export type UnvotePostData = {
   id: number;
@@ -675,28 +682,9 @@ export type $OpenApiTs = {
       };
     };
   };
-  "/posts/{id}/upvote": {
+  "/posts/{id}/vote": {
     post: {
-      req: UpvotePostData;
-      res: {
-        /**
-         * No content
-         */
-        204: void;
-        /**
-         * Unauthorized
-         */
-        401: ErrorResponse;
-        /**
-         * Not found
-         */
-        404: unknown;
-      };
-    };
-  };
-  "/posts/{id}/downvote": {
-    post: {
-      req: DownvotePostData;
+      req: VotePostData;
       res: {
         /**
          * No content

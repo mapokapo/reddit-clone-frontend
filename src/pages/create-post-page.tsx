@@ -1,4 +1,3 @@
-import { useCommunitiesServiceFindUserCommunitiesKey } from "@/client/queries";
 import { CommunitiesService, PostsService } from "@/client/requests";
 import Combobox from "@/components/combobox";
 import Loading from "@/components/loading";
@@ -16,7 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { mapFetchErrors } from "@/lib/fetcher";
 import mapErrorToMessage from "@/lib/mapError";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -34,6 +33,8 @@ const formSchema = z.object({
 });
 
 const CreatePostPage: React.FC = () => {
+  const queryClient = useQueryClient();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -44,16 +45,15 @@ const CreatePostPage: React.FC = () => {
   });
 
   const { data, error, isLoading } = useQuery({
-    queryKey: [useCommunitiesServiceFindUserCommunitiesKey],
+    queryKey: ["communities"],
     queryFn: () =>
       mapFetchErrors({
         fetchFunction: () => CommunitiesService.findUserCommunities(),
-        key: useCommunitiesServiceFindUserCommunitiesKey,
+        key: "/communities/me",
       }),
   });
 
-  const { error: mutationError, mutate } = useMutation({
-    mutationKey: ["PostsService.createPost"],
+  const { mutateAsync } = useMutation({
     mutationFn: (values: z.infer<typeof formSchema>) =>
       mapFetchErrors({
         fetchFunction: () =>
@@ -64,26 +64,37 @@ const CreatePostPage: React.FC = () => {
               title: values.title,
             },
           }),
-        key: "PostsService.createPost",
+        key: "/posts",
       }),
     onSuccess: () => {
       form.reset();
+
+      queryClient.invalidateQueries({
+        queryKey: ["posts"],
+      });
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    mutate(values);
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      await mutateAsync(values);
 
-    toast.success("Post created");
+      toast.success("Post created");
+    } catch (error) {
+      const [text, details] = mapErrorToMessage(error);
+      toast.error(text, {
+        description: details,
+      });
+    }
   };
 
-  if (error || mutationError) {
-    const [text, details] = mapErrorToMessage(error ?? mutationError);
+  if (error) {
+    const [text, details] = mapErrorToMessage(error);
     toast.error(text, {
       description: details,
     });
 
-    if (!mutationError) return <p>{text}</p>;
+    return <p>{text}</p>;
   }
 
   if (isLoading || data === undefined) {
