@@ -1,4 +1,4 @@
-import { PostsService } from "@/client/requests";
+import { PostsService, SortBy, Timespan } from "@/client/requests";
 import {
   Select,
   SelectContent,
@@ -16,14 +16,18 @@ import PostView from "@/components/post-view";
 import { range } from "@/lib/utils";
 
 const PostsList: React.FC = () => {
-  const [filterMode, setFilterMode] = useState("new");
-  const [filterTopMode, setFilterTopMode] = useState("all-time");
+  const [filterMode, setFilterMode] = useState<SortBy>("new");
+  const [filterTimespan, setFilterTimespan] = useState<Timespan>("all-time");
 
   const query = useQuery({
-    queryKey: ["posts"],
+    queryKey: ["posts", "feed", filterMode, filterTimespan],
     queryFn: () =>
       mapFetchErrors({
-        fetchFunction: PostsService.getFeed,
+        fetchFunction: async () =>
+          PostsService.getFeed({
+            sortBy: filterMode,
+            timespan: filterTimespan,
+          }),
         key: "/posts/feed",
       }),
   });
@@ -34,7 +38,7 @@ const PostsList: React.FC = () => {
         <Select
           defaultValue="top"
           value={filterMode}
-          onValueChange={setFilterMode}>
+          onValueChange={value => setFilterMode(value as SortBy)}>
           <SelectTrigger className="flex w-min justify-start gap-2 border-none">
             <SelectValue />
           </SelectTrigger>
@@ -46,16 +50,16 @@ const PostsList: React.FC = () => {
         {filterMode === "top" && (
           <Select
             defaultValue="all-time"
-            value={filterTopMode}
-            onValueChange={setFilterTopMode}>
+            value={filterTimespan}
+            onValueChange={value => setFilterTimespan(value as Timespan)}>
             <SelectTrigger className="flex w-min justify-between gap-2 border-none [&>span]:line-clamp-none [&>span]:text-nowrap">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all-time">All time</SelectItem>
-              <SelectItem value="last-year">Last year</SelectItem>
-              <SelectItem value="last-month">Last month</SelectItem>
-              <SelectItem value="last-week">Last week</SelectItem>
+              <SelectItem value="year">Last year</SelectItem>
+              <SelectItem value="month">Last month</SelectItem>
+              <SelectItem value="week">Last week</SelectItem>
             </SelectContent>
           </Select>
         )}

@@ -232,6 +232,16 @@ export const $UpdateCommunityRequest = {
   },
 } as const;
 
+export const $SortBy = {
+  type: "string",
+  enum: ["new", "top"],
+} as const;
+
+export const $Timespan = {
+  type: "string",
+  enum: ["day", "week", "month", "year", "all-time"],
+} as const;
+
 export const $PostResponse = {
   type: "object",
   properties: {

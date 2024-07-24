@@ -39,6 +39,7 @@ import type {
   JoinCommunityResponse,
   LeaveCommunityData,
   LeaveCommunityResponse,
+  GetFeedData,
   GetFeedResponse,
   CreatePostData,
   CreatePostResponse,
@@ -489,13 +490,26 @@ export class CommunitiesService {
 export class PostsService {
   /**
    * Get a personalized feed of posts for the current user
+   * @param data The data for the request.
+   * @param data.sortBy
+   * @param data.timespan
+   * @param data.skip
+   * @param data.take
    * @returns PostResponse OK
    * @throws ApiError
    */
-  public static getFeed(): CancelablePromise<GetFeedResponse> {
+  public static getFeed(
+    data: GetFeedData = {}
+  ): CancelablePromise<GetFeedResponse> {
     return __request(OpenAPI, {
       method: "GET",
       url: "/posts/feed",
+      query: {
+        sortBy: data.sortBy,
+        timespan: data.timespan,
+        skip: data.skip,
+        take: data.take,
+      },
       errors: {
         401: "Unauthorized",
       },
@@ -532,6 +546,10 @@ export class PostsService {
    * Find all posts by a user
    * @param data The data for the request.
    * @param data.userId
+   * @param data.sortBy
+   * @param data.timespan
+   * @param data.skip
+   * @param data.take
    * @returns PostResponse OK
    * @throws ApiError
    */
@@ -544,6 +562,12 @@ export class PostsService {
       path: {
         userId: data.userId,
       },
+      query: {
+        sortBy: data.sortBy,
+        timespan: data.timespan,
+        skip: data.skip,
+        take: data.take,
+      },
       errors: {
         401: "Unauthorized",
       },
@@ -554,6 +578,10 @@ export class PostsService {
    * Find all posts in a community
    * @param data The data for the request.
    * @param data.communityId
+   * @param data.sortBy
+   * @param data.timespan
+   * @param data.skip
+   * @param data.take
    * @returns PostResponse OK
    * @throws ApiError
    */
@@ -565,6 +593,12 @@ export class PostsService {
       url: "/posts/community/{communityId}",
       path: {
         communityId: data.communityId,
+      },
+      query: {
+        sortBy: data.sortBy,
+        timespan: data.timespan,
+        skip: data.skip,
+        take: data.take,
       },
       errors: {
         401: "Unauthorized",

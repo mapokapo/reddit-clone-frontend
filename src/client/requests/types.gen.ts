@@ -71,6 +71,23 @@ export type UpdateCommunityRequest = {
   description?: string;
 };
 
+export type SortBy = "new" | "top";
+
+export const SortBy = {
+  NEW: "new",
+  TOP: "top",
+} as const;
+
+export type Timespan = "day" | "week" | "month" | "year" | "all-time";
+
+export const Timespan = {
+  DAY: "day",
+  WEEK: "week",
+  MONTH: "month",
+  YEAR: "year",
+  ALL_TIME: "all-time",
+} as const;
+
 export type PostResponse = {
   id: number;
   title: string;
@@ -210,6 +227,13 @@ export type LeaveCommunityData = {
 
 export type LeaveCommunityResponse = void;
 
+export type GetFeedData = {
+  skip?: number;
+  sortBy?: SortBy;
+  take?: number;
+  timespan?: Timespan;
+};
+
 export type GetFeedResponse = Array<PostResponse>;
 
 export type CreatePostData = {
@@ -220,6 +244,10 @@ export type CreatePostData = {
 export type CreatePostResponse = PostResponse;
 
 export type FindAllPostsByUserData = {
+  skip?: number;
+  sortBy?: SortBy;
+  take?: number;
+  timespan?: Timespan;
   userId: number;
 };
 
@@ -227,6 +255,10 @@ export type FindAllPostsByUserResponse = Array<PostResponse>;
 
 export type FindAllPostsData = {
   communityId: number;
+  skip?: number;
+  sortBy?: SortBy;
+  take?: number;
+  timespan?: Timespan;
 };
 
 export type FindAllPostsResponse = Array<PostResponse>;
@@ -578,6 +610,7 @@ export type $OpenApiTs = {
   };
   "/posts/feed": {
     get: {
+      req: GetFeedData;
       res: {
         /**
          * OK

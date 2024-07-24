@@ -2,6 +2,7 @@
 
 import { type QueryClient } from "@tanstack/react-query";
 import { CommentsService, CommunitiesService, PostsService, UsersService } from "../requests/services.gen";
+import { SortBy, Timespan } from "../requests/types.gen";
 import * as Common from "./common";
 /**
 * Get the current user
@@ -70,30 +71,56 @@ export const prefetchUseCommunitiesServiceFindOneCommunity = (queryClient: Query
 }) => queryClient.prefetchQuery({ queryKey: Common.UseCommunitiesServiceFindOneCommunityKeyFn({ id }), queryFn: () => CommunitiesService.findOneCommunity({ id }) });
 /**
 * Get a personalized feed of posts for the current user
+* @param data The data for the request.
+* @param data.sortBy
+* @param data.timespan
+* @param data.skip
+* @param data.take
 * @returns PostResponse OK
 * @throws ApiError
 */
-export const prefetchUsePostsServiceGetFeed = (queryClient: QueryClient) => queryClient.prefetchQuery({ queryKey: Common.UsePostsServiceGetFeedKeyFn(), queryFn: () => PostsService.getFeed() });
+export const prefetchUsePostsServiceGetFeed = (queryClient: QueryClient, { skip, sortBy, take, timespan }: {
+  skip?: number;
+  sortBy?: SortBy;
+  take?: number;
+  timespan?: Timespan;
+} = {}) => queryClient.prefetchQuery({ queryKey: Common.UsePostsServiceGetFeedKeyFn({ skip, sortBy, take, timespan }), queryFn: () => PostsService.getFeed({ skip, sortBy, take, timespan }) });
 /**
 * Find all posts by a user
 * @param data The data for the request.
 * @param data.userId
+* @param data.sortBy
+* @param data.timespan
+* @param data.skip
+* @param data.take
 * @returns PostResponse OK
 * @throws ApiError
 */
-export const prefetchUsePostsServiceFindAllPostsByUser = (queryClient: QueryClient, { userId }: {
+export const prefetchUsePostsServiceFindAllPostsByUser = (queryClient: QueryClient, { skip, sortBy, take, timespan, userId }: {
+  skip?: number;
+  sortBy?: SortBy;
+  take?: number;
+  timespan?: Timespan;
   userId: number;
-}) => queryClient.prefetchQuery({ queryKey: Common.UsePostsServiceFindAllPostsByUserKeyFn({ userId }), queryFn: () => PostsService.findAllPostsByUser({ userId }) });
+}) => queryClient.prefetchQuery({ queryKey: Common.UsePostsServiceFindAllPostsByUserKeyFn({ skip, sortBy, take, timespan, userId }), queryFn: () => PostsService.findAllPostsByUser({ skip, sortBy, take, timespan, userId }) });
 /**
 * Find all posts in a community
 * @param data The data for the request.
 * @param data.communityId
+* @param data.sortBy
+* @param data.timespan
+* @param data.skip
+* @param data.take
 * @returns PostResponse OK
 * @throws ApiError
 */
-export const prefetchUsePostsServiceFindAllPosts = (queryClient: QueryClient, { communityId }: {
+export const prefetchUsePostsServiceFindAllPosts = (queryClient: QueryClient, { communityId, skip, sortBy, take, timespan }: {
   communityId: number;
-}) => queryClient.prefetchQuery({ queryKey: Common.UsePostsServiceFindAllPostsKeyFn({ communityId }), queryFn: () => PostsService.findAllPosts({ communityId }) });
+  skip?: number;
+  sortBy?: SortBy;
+  take?: number;
+  timespan?: Timespan;
+}) => queryClient.prefetchQuery({ queryKey: Common.UsePostsServiceFindAllPostsKeyFn({ communityId, skip, sortBy, take, timespan }), queryFn: () => PostsService.findAllPosts({ communityId, skip, sortBy, take, timespan }) });
 /**
 * Find a post by ID
 * @param data The data for the request.

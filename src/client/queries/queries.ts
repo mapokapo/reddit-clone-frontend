@@ -2,7 +2,7 @@
 
 import { UseMutationOptions, UseQueryOptions, useMutation, useQuery } from "@tanstack/react-query";
 import { CommentsService, CommunitiesService, PostsService, UsersService } from "../requests/services.gen";
-import { CreateCommentRequest, CreateCommunityRequest, CreatePostRequest, CreateUserRequest, UpdateCommentRequest, UpdateCommunityRequest, UpdatePostRequest } from "../requests/types.gen";
+import { CreateCommentRequest, CreateCommunityRequest, CreatePostRequest, CreateUserRequest, SortBy, Timespan, UpdateCommentRequest, UpdateCommunityRequest, UpdatePostRequest } from "../requests/types.gen";
 import * as Common from "./common";
 /**
 * Get the current user
@@ -71,30 +71,56 @@ export const useCommunitiesServiceFindOneCommunity = <TData = Common.Communities
 }, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UseCommunitiesServiceFindOneCommunityKeyFn({ id }, queryKey), queryFn: () => CommunitiesService.findOneCommunity({ id }) as TData, ...options });
 /**
 * Get a personalized feed of posts for the current user
+* @param data The data for the request.
+* @param data.sortBy
+* @param data.timespan
+* @param data.skip
+* @param data.take
 * @returns PostResponse OK
 * @throws ApiError
 */
-export const usePostsServiceGetFeed = <TData = Common.PostsServiceGetFeedDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>(queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UsePostsServiceGetFeedKeyFn(queryKey), queryFn: () => PostsService.getFeed() as TData, ...options });
+export const usePostsServiceGetFeed = <TData = Common.PostsServiceGetFeedDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ skip, sortBy, take, timespan }: {
+  skip?: number;
+  sortBy?: SortBy;
+  take?: number;
+  timespan?: Timespan;
+} = {}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UsePostsServiceGetFeedKeyFn({ skip, sortBy, take, timespan }, queryKey), queryFn: () => PostsService.getFeed({ skip, sortBy, take, timespan }) as TData, ...options });
 /**
 * Find all posts by a user
 * @param data The data for the request.
 * @param data.userId
+* @param data.sortBy
+* @param data.timespan
+* @param data.skip
+* @param data.take
 * @returns PostResponse OK
 * @throws ApiError
 */
-export const usePostsServiceFindAllPostsByUser = <TData = Common.PostsServiceFindAllPostsByUserDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ userId }: {
+export const usePostsServiceFindAllPostsByUser = <TData = Common.PostsServiceFindAllPostsByUserDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ skip, sortBy, take, timespan, userId }: {
+  skip?: number;
+  sortBy?: SortBy;
+  take?: number;
+  timespan?: Timespan;
   userId: number;
-}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UsePostsServiceFindAllPostsByUserKeyFn({ userId }, queryKey), queryFn: () => PostsService.findAllPostsByUser({ userId }) as TData, ...options });
+}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UsePostsServiceFindAllPostsByUserKeyFn({ skip, sortBy, take, timespan, userId }, queryKey), queryFn: () => PostsService.findAllPostsByUser({ skip, sortBy, take, timespan, userId }) as TData, ...options });
 /**
 * Find all posts in a community
 * @param data The data for the request.
 * @param data.communityId
+* @param data.sortBy
+* @param data.timespan
+* @param data.skip
+* @param data.take
 * @returns PostResponse OK
 * @throws ApiError
 */
-export const usePostsServiceFindAllPosts = <TData = Common.PostsServiceFindAllPostsDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ communityId }: {
+export const usePostsServiceFindAllPosts = <TData = Common.PostsServiceFindAllPostsDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ communityId, skip, sortBy, take, timespan }: {
   communityId: number;
-}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UsePostsServiceFindAllPostsKeyFn({ communityId }, queryKey), queryFn: () => PostsService.findAllPosts({ communityId }) as TData, ...options });
+  skip?: number;
+  sortBy?: SortBy;
+  take?: number;
+  timespan?: Timespan;
+}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UsePostsServiceFindAllPostsKeyFn({ communityId, skip, sortBy, take, timespan }, queryKey), queryFn: () => PostsService.findAllPosts({ communityId, skip, sortBy, take, timespan }) as TData, ...options });
 /**
 * Find a post by ID
 * @param data The data for the request.
