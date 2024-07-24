@@ -1,5 +1,5 @@
-import { Post, PostsService } from "@/client/requests";
-import { getRelativeTime } from "@/lib/utils";
+import { PostResponse, PostsService } from "@/client/requests";
+import { cn, getRelativeTime } from "@/lib/utils";
 import { ArrowBigDown, ArrowBigUp, Dot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -9,36 +9,38 @@ import mapErrorToMessage from "@/lib/mapError";
 import { Link } from "react-router-dom";
 
 type Props = {
-  post: Post;
+  post: PostResponse;
 };
 
 const PostView: React.FC<Props> = ({ post }) => {
   const queryClient = useQueryClient();
   const { isPending, mutateAsync } = useMutation({
-    mutationFn: (isUpvote: boolean) =>
+    mutationFn: ({isUpvote, unvote}: {isUpvote: boolean, unvote: boolean}) =>
       mapFetchErrors({
-        fetchFunction: () =>
-          PostsService.votePost({
-            id: post.id,
-            isUpvote,
-          }),
+        fetchFunction: async () => {
+          if (unvote) {
+            return await PostsService.unvotePost({
+              id: post.id,
+            });
+          } else {
+            return await PostsService.votePost({
+              id: post.id,
+              isUpvote,
+            });
+          }
+        },
         key: "/posts/vote",
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [
-          "posts",
-          {
-            id: post.id,
-          },
-        ],
+        queryKey: ["posts"],
       });
     },
   });
 
-  const onVote = async (isUpvote: boolean) => {
+  const onVote = async (isUpvote: boolean, unvote: boolean) => {
     try {
-      await mutateAsync(isUpvote);
+      await mutateAsync({isUpvote, unvote});
     } catch (error) {
       const [text, details] = mapErrorToMessage(error);
       toast.error(text, {
@@ -48,9 +50,7 @@ const PostView: React.FC<Props> = ({ post }) => {
   };
 
   return (
-    <Button
-      variant="ghost"
-      className="flex h-auto flex-col items-start justify-start gap-2 whitespace-normal text-start text-base font-normal">
+    <div className="flex flex-col gap-2 rounded-lg px-4 py-2  transition-colors hover:bg-muted">
       <div className="flex items-center text-sm text-muted-foreground">
         <Link
           to={`/app/communities/${post.communityId}`}
@@ -69,27 +69,35 @@ const PostView: React.FC<Props> = ({ post }) => {
       <div className="mt-1 flex w-min items-center rounded-3xl bg-muted">
         <Button
           variant="ghost"
-          className="aspect-square h-min rounded-full p-1 hover:text-orange-500"
+          className={cn(
+            "aspect-square h-min rounded-full p-1 hover:text-orange-500",
+            { "text-orange-500": post.upvoted === true }
+          )}
           disabled={isPending}
-          onClick={() => onVote(true)}>
+          onClick={() => onVote(true, post.upvoted === true)}>
           <ArrowBigUp
             size={26}
             strokeWidth={1}
+            fill={post.upvoted ? "currentColor" : "none"}
           />
         </Button>
         <span className="text-center">{post.votes}</span>
         <Button
           variant="ghost"
-          className="aspect-square h-min rounded-full p-1 hover:text-indigo-500"
+          className={cn(
+            "aspect-square h-min rounded-full p-1 hover:text-indigo-500",
+            { "text-indigo-500": post.upvoted === false }
+          )}
           disabled={isPending}
-          onClick={() => onVote(false)}>
+          onClick={() => onVote(false, post.upvoted === false)}>
           <ArrowBigDown
             size={26}
             strokeWidth={1}
+            fill={post.upvoted === false ? "currentColor" : "none"}
           />
         </Button>
       </div>
-    </Button>
+    </div>
   );
 };
 

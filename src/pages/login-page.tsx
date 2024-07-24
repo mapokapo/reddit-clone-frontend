@@ -1,6 +1,7 @@
 import { UsersService } from "@/client/requests";
 import LoginComponent from "@/components/login";
 import { useAuth } from "@/components/user-provider";
+import { mapFetchErrors } from "@/lib/fetcher";
 import { auth } from "@/lib/firebase";
 import mapErrorToMessage from "@/lib/mapError";
 import {
@@ -22,11 +23,15 @@ const LoginPage: React.FC = () => {
     const userExists = await UsersService.getMe();
 
     if (!userExists) {
-      return await UsersService.createUser({
-        requestBody: {
-          name: user.displayName ?? "User",
-          photoUrl: user.photoURL ?? undefined,
-        },
+      return await mapFetchErrors({
+        fetchFunction: async () =>
+          await UsersService.createUser({
+            requestBody: {
+              name: user.displayName ?? "User",
+              photoUrl: user.photoURL ?? undefined,
+            },
+          }),
+        key: "/users",
       });
     }
 
@@ -38,7 +43,7 @@ const LoginPage: React.FC = () => {
       await signInWithEmailAndPassword(auth, email, password);
     } catch (error) {
       const [text, details] = mapErrorToMessage(error);
-      setActionError(text);
+      setActionError(details);
       toast.error(text, {
         description: details,
       });
@@ -61,7 +66,7 @@ const LoginPage: React.FC = () => {
       toast.success("Successfully signed in with Google");
     } catch (error) {
       const [text, details] = mapErrorToMessage(error);
-      setActionError(text);
+      setActionError(details);
       toast.error(text, {
         description: details,
       });

@@ -70,7 +70,7 @@ export const prefetchUseCommunitiesServiceFindOneCommunity = (queryClient: Query
 }) => queryClient.prefetchQuery({ queryKey: Common.UseCommunitiesServiceFindOneCommunityKeyFn({ id }), queryFn: () => CommunitiesService.findOneCommunity({ id }) });
 /**
 * Get a personalized feed of posts for the current user
-* @returns Post OK
+* @returns PostResponse OK
 * @throws ApiError
 */
 export const prefetchUsePostsServiceGetFeed = (queryClient: QueryClient) => queryClient.prefetchQuery({ queryKey: Common.UsePostsServiceGetFeedKeyFn(), queryFn: () => PostsService.getFeed() });
@@ -78,7 +78,7 @@ export const prefetchUsePostsServiceGetFeed = (queryClient: QueryClient) => quer
 * Find all posts by a user
 * @param data The data for the request.
 * @param data.userId
-* @returns Post OK
+* @returns PostResponse OK
 * @throws ApiError
 */
 export const prefetchUsePostsServiceFindAllPostsByUser = (queryClient: QueryClient, { userId }: {
@@ -88,7 +88,7 @@ export const prefetchUsePostsServiceFindAllPostsByUser = (queryClient: QueryClie
 * Find all posts in a community
 * @param data The data for the request.
 * @param data.communityId
-* @returns Post OK
+* @returns PostResponse OK
 * @throws ApiError
 */
 export const prefetchUsePostsServiceFindAllPosts = (queryClient: QueryClient, { communityId }: {
@@ -98,7 +98,7 @@ export const prefetchUsePostsServiceFindAllPosts = (queryClient: QueryClient, { 
 * Find a post by ID
 * @param data The data for the request.
 * @param data.id
-* @returns Post OK
+* @returns PostResponse OK
 * @throws ApiError
 */
 export const prefetchUsePostsServiceFindOnePost = (queryClient: QueryClient, { id }: {

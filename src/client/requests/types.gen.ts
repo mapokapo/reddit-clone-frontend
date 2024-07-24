@@ -60,6 +60,7 @@ export type Community = {
   id: number;
   name: string;
   description: string;
+  isPrivate: boolean;
   ownerId: number;
   createdAt: string;
   updatedAt: string;
@@ -70,12 +71,13 @@ export type UpdateCommunityRequest = {
   description?: string;
 };
 
-export type Post = {
+export type PostResponse = {
   id: number;
   title: string;
   content: string;
   communityId: number;
   communityName: string;
+  upvoted: boolean | null;
   authorId: number;
   votes: number;
   createdAt: string;
@@ -107,7 +109,7 @@ export type GetUserDataData = {
   include?: Array<"posts" | "votes">;
 };
 
-export type GetUserDataResponse = Array<Post | Vote>;
+export type GetUserDataResponse = Array<PostResponse | Vote>;
 
 export type CreateCommentData = {
   postId: number;
@@ -208,39 +210,39 @@ export type LeaveCommunityData = {
 
 export type LeaveCommunityResponse = void;
 
-export type GetFeedResponse = Array<Post>;
+export type GetFeedResponse = Array<PostResponse>;
 
 export type CreatePostData = {
   communityId: number;
   requestBody: CreatePostRequest;
 };
 
-export type CreatePostResponse = Post;
+export type CreatePostResponse = PostResponse;
 
 export type FindAllPostsByUserData = {
   userId: number;
 };
 
-export type FindAllPostsByUserResponse = Array<Post>;
+export type FindAllPostsByUserResponse = Array<PostResponse>;
 
 export type FindAllPostsData = {
   communityId: number;
 };
 
-export type FindAllPostsResponse = Array<Post>;
+export type FindAllPostsResponse = Array<PostResponse>;
 
 export type FindOnePostData = {
   id: number;
 };
 
-export type FindOnePostResponse = Post;
+export type FindOnePostResponse = PostResponse;
 
 export type UpdatePostData = {
   id: number;
   requestBody: UpdatePostRequest;
 };
 
-export type UpdatePostResponse = Post;
+export type UpdatePostResponse = PostResponse;
 
 export type RemovePostData = {
   id: number;
@@ -302,7 +304,7 @@ export type $OpenApiTs = {
         /**
          * OK
          */
-        200: Array<Post | Vote>;
+        200: Array<PostResponse | Vote>;
         /**
          * Unauthorized
          */
@@ -580,7 +582,7 @@ export type $OpenApiTs = {
         /**
          * OK
          */
-        200: Array<Post>;
+        200: Array<PostResponse>;
         /**
          * Unauthorized
          */
@@ -595,7 +597,7 @@ export type $OpenApiTs = {
         /**
          * Created
          */
-        201: Post;
+        201: PostResponse;
         /**
          * Unauthorized
          */
@@ -614,7 +616,11 @@ export type $OpenApiTs = {
         /**
          * OK
          */
-        200: Array<Post>;
+        200: Array<PostResponse>;
+        /**
+         * Unauthorized
+         */
+        401: ErrorResponse;
       };
     };
   };
@@ -625,7 +631,11 @@ export type $OpenApiTs = {
         /**
          * OK
          */
-        200: Array<Post>;
+        200: Array<PostResponse>;
+        /**
+         * Unauthorized
+         */
+        401: ErrorResponse;
         /**
          * Not found
          */
@@ -640,7 +650,11 @@ export type $OpenApiTs = {
         /**
          * OK
          */
-        200: Post;
+        200: PostResponse;
+        /**
+         * Unauthorized
+         */
+        401: ErrorResponse;
         /**
          * Not found
          */
@@ -653,7 +667,7 @@ export type $OpenApiTs = {
         /**
          * OK
          */
-        200: Post;
+        200: PostResponse;
         /**
          * Unauthorized
          */

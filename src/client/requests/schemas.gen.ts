@@ -194,6 +194,9 @@ export const $Community = {
     description: {
       type: "string",
     },
+    isPrivate: {
+      type: "boolean",
+    },
     ownerId: {
       type: "number",
     },
@@ -206,7 +209,15 @@ export const $Community = {
       type: "string",
     },
   },
-  required: ["id", "name", "description", "ownerId", "createdAt", "updatedAt"],
+  required: [
+    "id",
+    "name",
+    "description",
+    "isPrivate",
+    "ownerId",
+    "createdAt",
+    "updatedAt",
+  ],
 } as const;
 
 export const $UpdateCommunityRequest = {
@@ -221,7 +232,7 @@ export const $UpdateCommunityRequest = {
   },
 } as const;
 
-export const $Post = {
+export const $PostResponse = {
   type: "object",
   properties: {
     id: {
@@ -238,6 +249,16 @@ export const $Post = {
     },
     communityName: {
       type: "string",
+    },
+    upvoted: {
+      oneOf: [
+        {
+          type: "boolean",
+        },
+        {
+          type: "null",
+        },
+      ],
     },
     authorId: {
       type: "number",
@@ -260,6 +281,7 @@ export const $Post = {
     "content",
     "communityId",
     "communityName",
+    "upvoted",
     "authorId",
     "votes",
     "createdAt",

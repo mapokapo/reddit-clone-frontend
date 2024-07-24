@@ -70,7 +70,7 @@ export const useCommunitiesServiceFindOneCommunitySuspense = <TData = Common.Com
 }, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useSuspenseQuery<TData, TError>({ queryKey: Common.UseCommunitiesServiceFindOneCommunityKeyFn({ id }, queryKey), queryFn: () => CommunitiesService.findOneCommunity({ id }) as TData, ...options });
 /**
 * Get a personalized feed of posts for the current user
-* @returns Post OK
+* @returns PostResponse OK
 * @throws ApiError
 */
 export const usePostsServiceGetFeedSuspense = <TData = Common.PostsServiceGetFeedDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>(queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useSuspenseQuery<TData, TError>({ queryKey: Common.UsePostsServiceGetFeedKeyFn(queryKey), queryFn: () => PostsService.getFeed() as TData, ...options });
@@ -78,7 +78,7 @@ export const usePostsServiceGetFeedSuspense = <TData = Common.PostsServiceGetFee
 * Find all posts by a user
 * @param data The data for the request.
 * @param data.userId
-* @returns Post OK
+* @returns PostResponse OK
 * @throws ApiError
 */
 export const usePostsServiceFindAllPostsByUserSuspense = <TData = Common.PostsServiceFindAllPostsByUserDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ userId }: {
@@ -88,7 +88,7 @@ export const usePostsServiceFindAllPostsByUserSuspense = <TData = Common.PostsSe
 * Find all posts in a community
 * @param data The data for the request.
 * @param data.communityId
-* @returns Post OK
+* @returns PostResponse OK
 * @throws ApiError
 */
 export const usePostsServiceFindAllPostsSuspense = <TData = Common.PostsServiceFindAllPostsDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ communityId }: {
@@ -98,7 +98,7 @@ export const usePostsServiceFindAllPostsSuspense = <TData = Common.PostsServiceF
 * Find a post by ID
 * @param data The data for the request.
 * @param data.id
-* @returns Post OK
+* @returns PostResponse OK
 * @throws ApiError
 */
 export const usePostsServiceFindOnePostSuspense = <TData = Common.PostsServiceFindOnePostDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ id }: {

@@ -71,7 +71,7 @@ export const useCommunitiesServiceFindOneCommunity = <TData = Common.Communities
 }, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UseCommunitiesServiceFindOneCommunityKeyFn({ id }, queryKey), queryFn: () => CommunitiesService.findOneCommunity({ id }) as TData, ...options });
 /**
 * Get a personalized feed of posts for the current user
-* @returns Post OK
+* @returns PostResponse OK
 * @throws ApiError
 */
 export const usePostsServiceGetFeed = <TData = Common.PostsServiceGetFeedDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>(queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UsePostsServiceGetFeedKeyFn(queryKey), queryFn: () => PostsService.getFeed() as TData, ...options });
@@ -79,7 +79,7 @@ export const usePostsServiceGetFeed = <TData = Common.PostsServiceGetFeedDefault
 * Find all posts by a user
 * @param data The data for the request.
 * @param data.userId
-* @returns Post OK
+* @returns PostResponse OK
 * @throws ApiError
 */
 export const usePostsServiceFindAllPostsByUser = <TData = Common.PostsServiceFindAllPostsByUserDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ userId }: {
@@ -89,7 +89,7 @@ export const usePostsServiceFindAllPostsByUser = <TData = Common.PostsServiceFin
 * Find all posts in a community
 * @param data The data for the request.
 * @param data.communityId
-* @returns Post OK
+* @returns PostResponse OK
 * @throws ApiError
 */
 export const usePostsServiceFindAllPosts = <TData = Common.PostsServiceFindAllPostsDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ communityId }: {
@@ -99,7 +99,7 @@ export const usePostsServiceFindAllPosts = <TData = Common.PostsServiceFindAllPo
 * Find a post by ID
 * @param data The data for the request.
 * @param data.id
-* @returns Post OK
+* @returns PostResponse OK
 * @throws ApiError
 */
 export const usePostsServiceFindOnePost = <TData = Common.PostsServiceFindOnePostDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ id }: {
@@ -197,7 +197,7 @@ export const useCommunitiesServiceLeaveCommunity = <TData = Common.CommunitiesSe
 * @param data The data for the request.
 * @param data.communityId
 * @param data.requestBody
-* @returns Post Created
+* @returns PostResponse Created
 * @throws ApiError
 */
 export const usePostsServiceCreatePost = <TData = Common.PostsServiceCreatePostMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
@@ -257,7 +257,7 @@ export const useCommunitiesServiceUpdateCommunity = <TData = Common.CommunitiesS
 * @param data The data for the request.
 * @param data.id
 * @param data.requestBody
-* @returns Post OK
+* @returns PostResponse OK
 * @throws ApiError
 */
 export const usePostsServiceUpdatePost = <TData = Common.PostsServiceUpdatePostMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {

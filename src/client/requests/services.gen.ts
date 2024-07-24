@@ -489,7 +489,7 @@ export class CommunitiesService {
 export class PostsService {
   /**
    * Get a personalized feed of posts for the current user
-   * @returns Post OK
+   * @returns PostResponse OK
    * @throws ApiError
    */
   public static getFeed(): CancelablePromise<GetFeedResponse> {
@@ -507,7 +507,7 @@ export class PostsService {
    * @param data The data for the request.
    * @param data.communityId
    * @param data.requestBody
-   * @returns Post Created
+   * @returns PostResponse Created
    * @throws ApiError
    */
   public static createPost(
@@ -532,7 +532,7 @@ export class PostsService {
    * Find all posts by a user
    * @param data The data for the request.
    * @param data.userId
-   * @returns Post OK
+   * @returns PostResponse OK
    * @throws ApiError
    */
   public static findAllPostsByUser(
@@ -544,6 +544,9 @@ export class PostsService {
       path: {
         userId: data.userId,
       },
+      errors: {
+        401: "Unauthorized",
+      },
     });
   }
 
@@ -551,7 +554,7 @@ export class PostsService {
    * Find all posts in a community
    * @param data The data for the request.
    * @param data.communityId
-   * @returns Post OK
+   * @returns PostResponse OK
    * @throws ApiError
    */
   public static findAllPosts(
@@ -564,6 +567,7 @@ export class PostsService {
         communityId: data.communityId,
       },
       errors: {
+        401: "Unauthorized",
         404: "Not found",
       },
     });
@@ -573,7 +577,7 @@ export class PostsService {
    * Find a post by ID
    * @param data The data for the request.
    * @param data.id
-   * @returns Post OK
+   * @returns PostResponse OK
    * @throws ApiError
    */
   public static findOnePost(
@@ -586,6 +590,7 @@ export class PostsService {
         id: data.id,
       },
       errors: {
+        401: "Unauthorized",
         404: "Not found",
       },
     });
@@ -596,7 +601,7 @@ export class PostsService {
    * @param data The data for the request.
    * @param data.id
    * @param data.requestBody
-   * @returns Post OK
+   * @returns PostResponse OK
    * @throws ApiError
    */
   public static updatePost(

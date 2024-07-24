@@ -85,7 +85,7 @@ const PostsList: React.FC = () => {
               posts.map(post => (
                 <li
                   key={post.id}
-                  className="flex w-full flex-col gap-4">
+                  className="flex w-full flex-col gap-2">
                   <PostView post={post} />
                   <Separator />
                 </li>

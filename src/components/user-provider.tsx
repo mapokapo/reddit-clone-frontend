@@ -1,4 +1,5 @@
 import { OpenAPI, User as UserProfile, UsersService } from "@/client/requests";
+import { mapFetchErrors } from "@/lib/fetcher";
 import { auth } from "@/lib/firebase";
 import { onAuthStateChanged, User } from "firebase/auth";
 import {
@@ -13,16 +14,19 @@ import {
 export const UserContext = createContext<{
   user: User | null;
   profile: UserProfile | null;
+  error: unknown | null;
   setProfile: (profile: UserProfile) => void;
 }>({
   user: auth.currentUser,
   profile: null,
+  error: null,
   setProfile: () => {},
 });
 
 export const UserProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const [user, setUser] = useState<User | null>(auth.currentUser);
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [error, setError] = useState<unknown | null>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async newUser => {
@@ -33,10 +37,17 @@ export const UserProvider: React.FC<PropsWithChildren> = ({ children }) => {
       };
 
       if (newUser) {
-        const userProfile = await UsersService.getMe();
-        if (!userProfile) return;
+        try {
+          const userProfile = await mapFetchErrors({
+            fetchFunction: async () => await UsersService.getMe(),
+            key: "/users/me",
+          });
+          if (!userProfile) throw new Error("User profile not found");
 
-        setProfile(userProfile);
+          setProfile(userProfile);
+        } catch (e) {
+          setError(e);
+        }
       }
     });
 
@@ -45,7 +56,10 @@ export const UserProvider: React.FC<PropsWithChildren> = ({ children }) => {
     };
   }, []);
 
-  const value = useMemo(() => ({ user, profile, setProfile }), [user, profile]);
+  const value = useMemo(
+    () => ({ user, profile, error, setProfile }),
+    [user, profile, error]
+  );
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };

@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { UsersService } from "@/client/requests";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useAuth } from "@/components/user-provider";
+import { mapFetchErrors } from "@/lib/fetcher";
 
 const RegisterPage: React.FC = () => {
   const { setProfile } = useAuth();
@@ -37,18 +38,28 @@ const RegisterPage: React.FC = () => {
           `users/${credential.user.uid}/profile.${photoFile.name.split(".").pop()}`
         );
 
-        const res = await uploadBytes(photoRef, photoFile);
-        const url = await getDownloadURL(res.ref);
+        const res = await mapFetchErrors({
+          fetchFunction: async () => await uploadBytes(photoRef, photoFile),
+          key: "firebase/storage/upload",
+        });
+        const url = await mapFetchErrors({
+          fetchFunction: async () => await getDownloadURL(res.ref),
+          key: "firebase/storage/getDownloadURL",
+        });
 
         photoUrl = url;
       }
 
       try {
-        const profile = await UsersService.createUser({
-          requestBody: {
-            name,
-            photoUrl,
-          },
+        const profile = await mapFetchErrors({
+          fetchFunction: async () =>
+            await UsersService.createUser({
+              requestBody: {
+                name,
+                photoUrl,
+              },
+            }),
+          key: "/users",
         });
 
         setProfile(profile);
@@ -63,7 +74,7 @@ const RegisterPage: React.FC = () => {
       }
     } catch (error) {
       const [text, details] = mapErrorToMessage(error);
-      setActionError(text);
+      setActionError(details);
       toast.error(text, {
         description: details,
       });
