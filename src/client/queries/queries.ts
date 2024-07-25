@@ -1,8 +1,8 @@
 // generated with @7nohe/openapi-react-query-codegen@1.4.1 
 
 import { UseMutationOptions, UseQueryOptions, useMutation, useQuery } from "@tanstack/react-query";
-import { CommentsService, CommunitiesService, PostsService, UsersService } from "../requests/services.gen";
-import { CreateCommentRequest, CreateCommunityRequest, CreatePostRequest, CreateUserRequest, SortBy, Timespan, UpdateCommentRequest, UpdateCommunityRequest, UpdatePostRequest } from "../requests/types.gen";
+import { CommentsService, CommunitiesService, PostsService, RepliesService, UsersService } from "../requests/services.gen";
+import { CreateCommentRequest, CreateCommunityRequest, CreatePostRequest, CreateReplyRequest, CreateUserRequest, SortBy, Timespan, UpdateCommentRequest, UpdateCommunityRequest, UpdatePostRequest, UpdateReplyRequest } from "../requests/types.gen";
 import * as Common from "./common";
 /**
 * Get the current user
@@ -21,32 +21,46 @@ export const useUsersServiceGetMe = <TData = Common.UsersServiceGetMeDefaultResp
 * @throws ApiError
 */
 export const useUsersServiceGetUserData = <TData = Common.UsersServiceGetUserDataDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ include }: {
-  include?: ("posts" | "votes")[];
+  include?: ("posts" | "votes" | "comments")[];
 } = {}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UseUsersServiceGetUserDataKeyFn({ include }, queryKey), queryFn: () => UsersService.getUserData({ include }) as TData, ...options });
+/**
+* Get a user's profile by ID
+* @param data The data for the request.
+* @param data.id
+* @returns User OK
+* @throws ApiError
+*/
+export const useUsersServiceGetUserById = <TData = Common.UsersServiceGetUserByIdDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ id }: {
+  id: number;
+}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UseUsersServiceGetUserByIdKeyFn({ id }, queryKey), queryFn: () => UsersService.getUserById({ id }) as TData, ...options });
 /**
 * Get all comments for a post
 * @param data The data for the request.
 * @param data.postId
-* @param data.depth The depth of the comment tree to return
-* @returns Comment OK
+* @param data.sortBy
+* @param data.timespan
+* @param data.skip
+* @param data.take
+* @returns CommentResponse OK
 * @throws ApiError
 */
-export const useCommentsServiceFindAllComments = <TData = Common.CommentsServiceFindAllCommentsDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ depth, postId }: {
-  depth?: number;
+export const useCommentsServiceFindAllComments = <TData = Common.CommentsServiceFindAllCommentsDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ postId, skip, sortBy, take, timespan }: {
   postId: number;
-}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UseCommentsServiceFindAllCommentsKeyFn({ depth, postId }, queryKey), queryFn: () => CommentsService.findAllComments({ depth, postId }) as TData, ...options });
+  skip?: number;
+  sortBy?: SortBy;
+  take?: number;
+  timespan?: Timespan;
+}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UseCommentsServiceFindAllCommentsKeyFn({ postId, skip, sortBy, take, timespan }, queryKey), queryFn: () => CommentsService.findAllComments({ postId, skip, sortBy, take, timespan }) as TData, ...options });
 /**
 * Get a comment by ID
 * @param data The data for the request.
 * @param data.commentId
-* @param data.depth The depth of the comment tree to return
-* @returns Comment OK
+* @returns CommentResponse OK
 * @throws ApiError
 */
-export const useCommentsServiceFindCommentById = <TData = Common.CommentsServiceFindCommentByIdDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ commentId, depth }: {
+export const useCommentsServiceFindCommentById = <TData = Common.CommentsServiceFindCommentByIdDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ commentId }: {
   commentId: number;
-  depth?: number;
-}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UseCommentsServiceFindCommentByIdKeyFn({ commentId, depth }, queryKey), queryFn: () => CommentsService.findCommentById({ commentId, depth }) as TData, ...options });
+}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UseCommentsServiceFindCommentByIdKeyFn({ commentId }, queryKey), queryFn: () => CommentsService.findCommentById({ commentId }) as TData, ...options });
 /**
 * Find all communities
 * @returns Community OK
@@ -132,6 +146,26 @@ export const usePostsServiceFindOnePost = <TData = Common.PostsServiceFindOnePos
   id: number;
 }, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UsePostsServiceFindOnePostKeyFn({ id }, queryKey), queryFn: () => PostsService.findOnePost({ id }) as TData, ...options });
 /**
+* Get all replies for a comment
+* @param data The data for the request.
+* @param data.commentId
+* @returns ReplyResponse OK
+* @throws ApiError
+*/
+export const useRepliesServiceFindAllReplies = <TData = Common.RepliesServiceFindAllRepliesDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ commentId }: {
+  commentId: number;
+}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UseRepliesServiceFindAllRepliesKeyFn({ commentId }, queryKey), queryFn: () => RepliesService.findAllReplies({ commentId }) as TData, ...options });
+/**
+* Get a reply by id
+* @param data The data for the request.
+* @param data.replyId
+* @returns ReplyResponse OK
+* @throws ApiError
+*/
+export const useRepliesServiceFindOneReply = <TData = Common.RepliesServiceFindOneReplyDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ replyId }: {
+  replyId: number;
+}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UseRepliesServiceFindOneReplyKeyFn({ replyId }, queryKey), queryFn: () => RepliesService.findOneReply({ replyId }) as TData, ...options });
+/**
 * Create a new user using a Firebase ID token
 * @param data The data for the request.
 * @param data.requestBody
@@ -148,7 +182,7 @@ export const useUsersServiceCreateUser = <TData = Common.UsersServiceCreateUserM
 * @param data The data for the request.
 * @param data.postId
 * @param data.requestBody
-* @returns Comment Created
+* @returns CommentResponse Created
 * @throws ApiError
 */
 export const useCommentsServiceCreateComment = <TData = Common.CommentsServiceCreateCommentMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
@@ -159,29 +193,20 @@ export const useCommentsServiceCreateComment = <TData = Common.CommentsServiceCr
   requestBody: CreateCommentRequest;
 }, TContext>({ mutationFn: ({ postId, requestBody }) => CommentsService.createComment({ postId, requestBody }) as unknown as Promise<TData>, ...options });
 /**
-* Upvote a comment
+* Vote a comment up or down
 * @param data The data for the request.
 * @param data.id
+* @param data.isUpvote
 * @returns void No content
 * @throws ApiError
 */
-export const useCommentsServiceUpvoteComment = <TData = Common.CommentsServiceUpvoteCommentMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
+export const useCommentsServiceVoteComment = <TData = Common.CommentsServiceVoteCommentMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
   id: number;
+  isUpvote: boolean;
 }, TContext>, "mutationFn">) => useMutation<TData, TError, {
   id: number;
-}, TContext>({ mutationFn: ({ id }) => CommentsService.upvoteComment({ id }) as unknown as Promise<TData>, ...options });
-/**
-* Downvote a comment
-* @param data The data for the request.
-* @param data.id
-* @returns void No content
-* @throws ApiError
-*/
-export const useCommentsServiceDownvoteComment = <TData = Common.CommentsServiceDownvoteCommentMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
-  id: number;
-}, TContext>, "mutationFn">) => useMutation<TData, TError, {
-  id: number;
-}, TContext>({ mutationFn: ({ id }) => CommentsService.downvoteComment({ id }) as unknown as Promise<TData>, ...options });
+  isUpvote: boolean;
+}, TContext>({ mutationFn: ({ id, isUpvote }) => CommentsService.voteComment({ id, isUpvote }) as unknown as Promise<TData>, ...options });
 /**
 * Create a new community
 * @param data The data for the request.
@@ -249,11 +274,41 @@ export const usePostsServiceVotePost = <TData = Common.PostsServiceVotePostMutat
   isUpvote: boolean;
 }, TContext>({ mutationFn: ({ id, isUpvote }) => PostsService.votePost({ id, isUpvote }) as unknown as Promise<TData>, ...options });
 /**
+* Add a reply to a comment
+* @param data The data for the request.
+* @param data.commentId
+* @param data.requestBody
+* @returns ReplyResponse Created
+* @throws ApiError
+*/
+export const useRepliesServiceCreateReply = <TData = Common.RepliesServiceCreateReplyMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
+  commentId: number;
+  requestBody: CreateReplyRequest;
+}, TContext>, "mutationFn">) => useMutation<TData, TError, {
+  commentId: number;
+  requestBody: CreateReplyRequest;
+}, TContext>({ mutationFn: ({ commentId, requestBody }) => RepliesService.createReply({ commentId, requestBody }) as unknown as Promise<TData>, ...options });
+/**
+* Vote a reply up or down
+* @param data The data for the request.
+* @param data.id
+* @param data.isUpvote
+* @returns void No content
+* @throws ApiError
+*/
+export const useRepliesServiceVoteReply = <TData = Common.RepliesServiceVoteReplyMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
+  id: number;
+  isUpvote: boolean;
+}, TContext>, "mutationFn">) => useMutation<TData, TError, {
+  id: number;
+  isUpvote: boolean;
+}, TContext>({ mutationFn: ({ id, isUpvote }) => RepliesService.voteReply({ id, isUpvote }) as unknown as Promise<TData>, ...options });
+/**
 * Update a comment
 * @param data The data for the request.
 * @param data.commentId
 * @param data.requestBody
-* @returns Comment OK
+* @returns CommentResponse OK
 * @throws ApiError
 */
 export const useCommentsServiceUpdateComment = <TData = Common.CommentsServiceUpdateCommentMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
@@ -293,6 +348,21 @@ export const usePostsServiceUpdatePost = <TData = Common.PostsServiceUpdatePostM
   id: number;
   requestBody: UpdatePostRequest;
 }, TContext>({ mutationFn: ({ id, requestBody }) => PostsService.updatePost({ id, requestBody }) as unknown as Promise<TData>, ...options });
+/**
+* Update a reply
+* @param data The data for the request.
+* @param data.replyId
+* @param data.requestBody
+* @returns ReplyResponse OK
+* @throws ApiError
+*/
+export const useRepliesServiceUpdateReply = <TData = Common.RepliesServiceUpdateReplyMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
+  replyId: number;
+  requestBody: UpdateReplyRequest;
+}, TContext>, "mutationFn">) => useMutation<TData, TError, {
+  replyId: number;
+  requestBody: UpdateReplyRequest;
+}, TContext>({ mutationFn: ({ replyId, requestBody }) => RepliesService.updateReply({ replyId, requestBody }) as unknown as Promise<TData>, ...options });
 /**
 * Delete a comment
 * @param data The data for the request.
@@ -353,3 +423,27 @@ export const usePostsServiceUnvotePost = <TData = Common.PostsServiceUnvotePostM
 }, TContext>, "mutationFn">) => useMutation<TData, TError, {
   id: number;
 }, TContext>({ mutationFn: ({ id }) => PostsService.unvotePost({ id }) as unknown as Promise<TData>, ...options });
+/**
+* Delete a reply
+* @param data The data for the request.
+* @param data.replyId
+* @returns void No content
+* @throws ApiError
+*/
+export const useRepliesServiceDeleteReply = <TData = Common.RepliesServiceDeleteReplyMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
+  replyId: number;
+}, TContext>, "mutationFn">) => useMutation<TData, TError, {
+  replyId: number;
+}, TContext>({ mutationFn: ({ replyId }) => RepliesService.deleteReply({ replyId }) as unknown as Promise<TData>, ...options });
+/**
+* Remove a vote from a reply
+* @param data The data for the request.
+* @param data.id
+* @returns void No content
+* @throws ApiError
+*/
+export const useRepliesServiceUnvoteReply = <TData = Common.RepliesServiceUnvoteReplyMutationResult, TError = unknown, TContext = unknown>(options?: Omit<UseMutationOptions<TData, TError, {
+  id: number;
+}, TContext>, "mutationFn">) => useMutation<TData, TError, {
+  id: number;
+}, TContext>({ mutationFn: ({ id }) => RepliesService.unvoteReply({ id }) as unknown as Promise<TData>, ...options });

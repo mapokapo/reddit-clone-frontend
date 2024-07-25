@@ -24,8 +24,8 @@ const LoginPage: React.FC = () => {
 
     if (!userExists) {
       return await mapFetchErrors({
-        fetchFunction: async () =>
-          await UsersService.createUser({
+        fetchFunction: () =>
+          UsersService.createUser({
             requestBody: {
               name: user.displayName ?? "User",
               photoUrl: user.photoURL ?? undefined,

@@ -9,6 +9,8 @@ import type {
   GetMeResponse,
   GetUserDataData,
   GetUserDataResponse,
+  GetUserByIdData,
+  GetUserByIdResponse,
   CreateCommentData,
   CreateCommentResponse,
   FindAllCommentsData,
@@ -19,10 +21,8 @@ import type {
   UpdateCommentResponse,
   DeleteCommentData,
   DeleteCommentResponse,
-  UpvoteCommentData,
-  UpvoteCommentResponse,
-  DownvoteCommentData,
-  DownvoteCommentResponse,
+  VoteCommentData,
+  VoteCommentResponse,
   UnvoteCommentData,
   UnvoteCommentResponse,
   CreateCommunityData,
@@ -57,6 +57,20 @@ import type {
   VotePostResponse,
   UnvotePostData,
   UnvotePostResponse,
+  CreateReplyData,
+  CreateReplyResponse,
+  FindAllRepliesData,
+  FindAllRepliesResponse,
+  FindOneReplyData,
+  FindOneReplyResponse,
+  UpdateReplyData,
+  UpdateReplyResponse,
+  DeleteReplyData,
+  DeleteReplyResponse,
+  VoteReplyData,
+  VoteReplyResponse,
+  UnvoteReplyData,
+  UnvoteReplyResponse,
 } from "./types.gen";
 
 export class UsersService {
@@ -120,6 +134,28 @@ export class UsersService {
       },
     });
   }
+
+  /**
+   * Get a user's profile by ID
+   * @param data The data for the request.
+   * @param data.id
+   * @returns User OK
+   * @throws ApiError
+   */
+  public static getUserById(
+    data: GetUserByIdData
+  ): CancelablePromise<GetUserByIdResponse> {
+    return __request(OpenAPI, {
+      method: "GET",
+      url: "/users/{id}",
+      path: {
+        id: data.id,
+      },
+      errors: {
+        404: "Not found",
+      },
+    });
+  }
 }
 
 export class CommentsService {
@@ -128,7 +164,7 @@ export class CommentsService {
    * @param data The data for the request.
    * @param data.postId
    * @param data.requestBody
-   * @returns Comment Created
+   * @returns CommentResponse Created
    * @throws ApiError
    */
   public static createComment(
@@ -153,8 +189,11 @@ export class CommentsService {
    * Get all comments for a post
    * @param data The data for the request.
    * @param data.postId
-   * @param data.depth The depth of the comment tree to return
-   * @returns Comment OK
+   * @param data.sortBy
+   * @param data.timespan
+   * @param data.skip
+   * @param data.take
+   * @returns CommentResponse OK
    * @throws ApiError
    */
   public static findAllComments(
@@ -167,9 +206,13 @@ export class CommentsService {
         postId: data.postId,
       },
       query: {
-        depth: data.depth,
+        sortBy: data.sortBy,
+        timespan: data.timespan,
+        skip: data.skip,
+        take: data.take,
       },
       errors: {
+        401: "Unauthorized",
         404: "Not found",
       },
     });
@@ -179,8 +222,7 @@ export class CommentsService {
    * Get a comment by ID
    * @param data The data for the request.
    * @param data.commentId
-   * @param data.depth The depth of the comment tree to return
-   * @returns Comment OK
+   * @returns CommentResponse OK
    * @throws ApiError
    */
   public static findCommentById(
@@ -192,10 +234,8 @@ export class CommentsService {
       path: {
         commentId: data.commentId,
       },
-      query: {
-        depth: data.depth,
-      },
       errors: {
+        401: "Unauthorized",
         404: "Not found",
       },
     });
@@ -206,7 +246,7 @@ export class CommentsService {
    * @param data The data for the request.
    * @param data.commentId
    * @param data.requestBody
-   * @returns Comment OK
+   * @returns CommentResponse OK
    * @throws ApiError
    */
   public static updateComment(
@@ -251,43 +291,24 @@ export class CommentsService {
   }
 
   /**
-   * Upvote a comment
+   * Vote a comment up or down
    * @param data The data for the request.
    * @param data.id
+   * @param data.isUpvote
    * @returns void No content
    * @throws ApiError
    */
-  public static upvoteComment(
-    data: UpvoteCommentData
-  ): CancelablePromise<UpvoteCommentResponse> {
+  public static voteComment(
+    data: VoteCommentData
+  ): CancelablePromise<VoteCommentResponse> {
     return __request(OpenAPI, {
       method: "POST",
-      url: "/comments/{id}/upvote",
+      url: "/comments/{id}/vote",
       path: {
         id: data.id,
       },
-      errors: {
-        401: "Unauthorized",
-        404: "Not found",
-      },
-    });
-  }
-
-  /**
-   * Downvote a comment
-   * @param data The data for the request.
-   * @param data.id
-   * @returns void No content
-   * @throws ApiError
-   */
-  public static downvoteComment(
-    data: DownvoteCommentData
-  ): CancelablePromise<DownvoteCommentResponse> {
-    return __request(OpenAPI, {
-      method: "POST",
-      url: "/comments/{id}/downvote",
-      path: {
-        id: data.id,
+      query: {
+        isUpvote: data.isUpvote,
       },
       errors: {
         401: "Unauthorized",
@@ -719,6 +740,179 @@ export class PostsService {
     return __request(OpenAPI, {
       method: "DELETE",
       url: "/posts/{id}/unvote",
+      path: {
+        id: data.id,
+      },
+      errors: {
+        401: "Unauthorized",
+        404: "Not found",
+      },
+    });
+  }
+}
+
+export class RepliesService {
+  /**
+   * Add a reply to a comment
+   * @param data The data for the request.
+   * @param data.commentId
+   * @param data.requestBody
+   * @returns ReplyResponse Created
+   * @throws ApiError
+   */
+  public static createReply(
+    data: CreateReplyData
+  ): CancelablePromise<CreateReplyResponse> {
+    return __request(OpenAPI, {
+      method: "POST",
+      url: "/replies/{commentId}",
+      path: {
+        commentId: data.commentId,
+      },
+      body: data.requestBody,
+      mediaType: "application/json",
+      errors: {
+        401: "Unauthorized",
+        404: "Not found",
+      },
+    });
+  }
+
+  /**
+   * Get all replies for a comment
+   * @param data The data for the request.
+   * @param data.commentId
+   * @returns ReplyResponse OK
+   * @throws ApiError
+   */
+  public static findAllReplies(
+    data: FindAllRepliesData
+  ): CancelablePromise<FindAllRepliesResponse> {
+    return __request(OpenAPI, {
+      method: "GET",
+      url: "/replies/comments/{commentId}",
+      path: {
+        commentId: data.commentId,
+      },
+      errors: {
+        401: "Unauthorized",
+        404: "Not found",
+      },
+    });
+  }
+
+  /**
+   * Get a reply by id
+   * @param data The data for the request.
+   * @param data.replyId
+   * @returns ReplyResponse OK
+   * @throws ApiError
+   */
+  public static findOneReply(
+    data: FindOneReplyData
+  ): CancelablePromise<FindOneReplyResponse> {
+    return __request(OpenAPI, {
+      method: "GET",
+      url: "/replies/{replyId}",
+      path: {
+        replyId: data.replyId,
+      },
+      errors: {
+        401: "Unauthorized",
+        404: "Not found",
+      },
+    });
+  }
+
+  /**
+   * Update a reply
+   * @param data The data for the request.
+   * @param data.replyId
+   * @param data.requestBody
+   * @returns ReplyResponse OK
+   * @throws ApiError
+   */
+  public static updateReply(
+    data: UpdateReplyData
+  ): CancelablePromise<UpdateReplyResponse> {
+    return __request(OpenAPI, {
+      method: "PATCH",
+      url: "/replies/{replyId}",
+      path: {
+        replyId: data.replyId,
+      },
+      body: data.requestBody,
+      mediaType: "application/json",
+      errors: {
+        401: "Unauthorized",
+        404: "Not found",
+      },
+    });
+  }
+
+  /**
+   * Delete a reply
+   * @param data The data for the request.
+   * @param data.replyId
+   * @returns void No content
+   * @throws ApiError
+   */
+  public static deleteReply(
+    data: DeleteReplyData
+  ): CancelablePromise<DeleteReplyResponse> {
+    return __request(OpenAPI, {
+      method: "DELETE",
+      url: "/replies/{replyId}",
+      path: {
+        replyId: data.replyId,
+      },
+      errors: {
+        401: "Unauthorized",
+        404: "Not found",
+      },
+    });
+  }
+
+  /**
+   * Vote a reply up or down
+   * @param data The data for the request.
+   * @param data.id
+   * @param data.isUpvote
+   * @returns void No content
+   * @throws ApiError
+   */
+  public static voteReply(
+    data: VoteReplyData
+  ): CancelablePromise<VoteReplyResponse> {
+    return __request(OpenAPI, {
+      method: "POST",
+      url: "/replies/{id}/vote",
+      path: {
+        id: data.id,
+      },
+      query: {
+        isUpvote: data.isUpvote,
+      },
+      errors: {
+        401: "Unauthorized",
+        404: "Not found",
+      },
+    });
+  }
+
+  /**
+   * Remove a vote from a reply
+   * @param data The data for the request.
+   * @param data.id
+   * @returns void No content
+   * @throws ApiError
+   */
+  public static unvoteReply(
+    data: UnvoteReplyData
+  ): CancelablePromise<UnvoteReplyResponse> {
+    return __request(OpenAPI, {
+      method: "DELETE",
+      url: "/replies/{id}/unvote",
       path: {
         id: data.id,
       },

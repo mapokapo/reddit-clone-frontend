@@ -1,11 +1,4 @@
 import { PostsService, SortBy, Timespan } from "@/client/requests";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { mapFetchErrors } from "@/lib/fetcher";
@@ -14,6 +7,7 @@ import { useState } from "react";
 import QueryHandler from "./query-handler";
 import PostView from "@/components/post-view";
 import { range } from "@/lib/utils";
+import SelectFilterMode from "./select-filter-mode";
 
 const PostsList: React.FC = () => {
   const [filterMode, setFilterMode] = useState<SortBy>("new");
@@ -23,7 +17,7 @@ const PostsList: React.FC = () => {
     queryKey: ["posts", "feed", filterMode, filterTimespan],
     queryFn: () =>
       mapFetchErrors({
-        fetchFunction: async () =>
+        fetchFunction: () =>
           PostsService.getFeed({
             sortBy: filterMode,
             timespan: filterTimespan,
@@ -34,36 +28,12 @@ const PostsList: React.FC = () => {
 
   return (
     <div className="flex flex-[3] flex-col">
-      <div className="flex gap-2">
-        <Select
-          defaultValue="top"
-          value={filterMode}
-          onValueChange={value => setFilterMode(value as SortBy)}>
-          <SelectTrigger className="flex w-min justify-start gap-2 border-none">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="top">Top</SelectItem>
-            <SelectItem value="new">New</SelectItem>
-          </SelectContent>
-        </Select>
-        {filterMode === "top" && (
-          <Select
-            defaultValue="all-time"
-            value={filterTimespan}
-            onValueChange={value => setFilterTimespan(value as Timespan)}>
-            <SelectTrigger className="flex w-min justify-between gap-2 border-none [&>span]:line-clamp-none [&>span]:text-nowrap">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all-time">All time</SelectItem>
-              <SelectItem value="year">Last year</SelectItem>
-              <SelectItem value="month">Last month</SelectItem>
-              <SelectItem value="week">Last week</SelectItem>
-            </SelectContent>
-          </Select>
-        )}
-      </div>
+      <SelectFilterMode
+        filterMode={filterMode}
+        filterTimespan={filterTimespan}
+        setFilterMode={setFilterMode}
+        setFilterTimespan={setFilterTimespan}
+      />
       <Separator />
       <ul className="mt-4 flex w-full flex-col gap-4">
         <QueryHandler

@@ -27,25 +27,42 @@ export type Vote = {
   voterId: number;
   postId?: number;
   commentId?: number;
+  replyId?: number;
   isUpvote: boolean;
 };
 
 export type CreateCommentRequest = {
   content: string;
-  parentId?: number;
 };
 
-export type Comment = {
+export type CommentResponse = {
   id: number;
   content: string;
-  authorId: number;
-  parentId?: number;
-  children: Array<unknown[]>;
+  author: User;
   postId: number;
   votes: number;
+  replyCount: number;
+  upvoted: boolean | null;
   createdAt: string;
   updatedAt: string;
 };
+
+export type SortBy = "new" | "top";
+
+export const SortBy = {
+  NEW: "new",
+  TOP: "top",
+} as const;
+
+export type Timespan = "day" | "week" | "month" | "year" | "all-time";
+
+export const Timespan = {
+  DAY: "day",
+  WEEK: "week",
+  MONTH: "month",
+  YEAR: "year",
+  ALL_TIME: "all-time",
+} as const;
 
 export type UpdateCommentRequest = {
   content?: string;
@@ -71,23 +88,6 @@ export type UpdateCommunityRequest = {
   description?: string;
 };
 
-export type SortBy = "new" | "top";
-
-export const SortBy = {
-  NEW: "new",
-  TOP: "top",
-} as const;
-
-export type Timespan = "day" | "week" | "month" | "year" | "all-time";
-
-export const Timespan = {
-  DAY: "day",
-  WEEK: "week",
-  MONTH: "month",
-  YEAR: "year",
-  ALL_TIME: "all-time",
-} as const;
-
 export type PostResponse = {
   id: number;
   title: string;
@@ -111,6 +111,25 @@ export type UpdatePostRequest = {
   content?: string;
 };
 
+export type CreateReplyRequest = {
+  content: string;
+};
+
+export type ReplyResponse = {
+  id: number;
+  content: string;
+  author: User;
+  commentId: number;
+  votes: number;
+  upvoted: boolean | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type UpdateReplyRequest = {
+  content?: string;
+};
+
 export type CreateUserData = {
   requestBody: CreateUserRequest;
 };
@@ -123,44 +142,46 @@ export type GetUserDataData = {
   /**
    * The data to include in the response
    */
-  include?: Array<"posts" | "votes">;
+  include?: Array<"posts" | "votes" | "comments">;
 };
 
 export type GetUserDataResponse = Array<PostResponse | Vote>;
+
+export type GetUserByIdData = {
+  id: number;
+};
+
+export type GetUserByIdResponse = User;
 
 export type CreateCommentData = {
   postId: number;
   requestBody: CreateCommentRequest;
 };
 
-export type CreateCommentResponse = Comment;
+export type CreateCommentResponse = CommentResponse;
 
 export type FindAllCommentsData = {
-  /**
-   * The depth of the comment tree to return
-   */
-  depth?: number;
   postId: number;
+  skip?: number;
+  sortBy?: SortBy;
+  take?: number;
+  timespan?: Timespan;
 };
 
-export type FindAllCommentsResponse = Array<Comment>;
+export type FindAllCommentsResponse = Array<CommentResponse>;
 
 export type FindCommentByIdData = {
   commentId: number;
-  /**
-   * The depth of the comment tree to return
-   */
-  depth?: number;
 };
 
-export type FindCommentByIdResponse = Comment;
+export type FindCommentByIdResponse = CommentResponse;
 
 export type UpdateCommentData = {
   commentId: number;
   requestBody: UpdateCommentRequest;
 };
 
-export type UpdateCommentResponse = Comment;
+export type UpdateCommentResponse = CommentResponse;
 
 export type DeleteCommentData = {
   commentId: number;
@@ -168,17 +189,12 @@ export type DeleteCommentData = {
 
 export type DeleteCommentResponse = void;
 
-export type UpvoteCommentData = {
+export type VoteCommentData = {
   id: number;
+  isUpvote: boolean;
 };
 
-export type UpvoteCommentResponse = void;
-
-export type DownvoteCommentData = {
-  id: number;
-};
-
-export type DownvoteCommentResponse = void;
+export type VoteCommentResponse = void;
 
 export type UnvoteCommentData = {
   id: number;
@@ -295,6 +311,51 @@ export type UnvotePostData = {
 
 export type UnvotePostResponse = void;
 
+export type CreateReplyData = {
+  commentId: number;
+  requestBody: CreateReplyRequest;
+};
+
+export type CreateReplyResponse = ReplyResponse;
+
+export type FindAllRepliesData = {
+  commentId: number;
+};
+
+export type FindAllRepliesResponse = Array<ReplyResponse>;
+
+export type FindOneReplyData = {
+  replyId: number;
+};
+
+export type FindOneReplyResponse = ReplyResponse;
+
+export type UpdateReplyData = {
+  replyId: number;
+  requestBody: UpdateReplyRequest;
+};
+
+export type UpdateReplyResponse = ReplyResponse;
+
+export type DeleteReplyData = {
+  replyId: number;
+};
+
+export type DeleteReplyResponse = void;
+
+export type VoteReplyData = {
+  id: number;
+  isUpvote: boolean;
+};
+
+export type VoteReplyResponse = void;
+
+export type UnvoteReplyData = {
+  id: number;
+};
+
+export type UnvoteReplyResponse = void;
+
 export type $OpenApiTs = {
   "/users": {
     post: {
@@ -344,6 +405,21 @@ export type $OpenApiTs = {
       };
     };
   };
+  "/users/{id}": {
+    get: {
+      req: GetUserByIdData;
+      res: {
+        /**
+         * OK
+         */
+        200: User;
+        /**
+         * Not found
+         */
+        404: unknown;
+      };
+    };
+  };
   "/comments/{postId}": {
     post: {
       req: CreateCommentData;
@@ -351,7 +427,7 @@ export type $OpenApiTs = {
         /**
          * Created
          */
-        201: Comment;
+        201: CommentResponse;
         /**
          * Unauthorized
          */
@@ -370,7 +446,11 @@ export type $OpenApiTs = {
         /**
          * OK
          */
-        200: Array<Comment>;
+        200: Array<CommentResponse>;
+        /**
+         * Unauthorized
+         */
+        401: ErrorResponse;
         /**
          * Not found
          */
@@ -385,7 +465,11 @@ export type $OpenApiTs = {
         /**
          * OK
          */
-        200: Comment;
+        200: CommentResponse;
+        /**
+         * Unauthorized
+         */
+        401: ErrorResponse;
         /**
          * Not found
          */
@@ -398,7 +482,7 @@ export type $OpenApiTs = {
         /**
          * OK
          */
-        200: Comment;
+        200: CommentResponse;
         /**
          * Unauthorized
          */
@@ -427,28 +511,9 @@ export type $OpenApiTs = {
       };
     };
   };
-  "/comments/{id}/upvote": {
+  "/comments/{id}/vote": {
     post: {
-      req: UpvoteCommentData;
-      res: {
-        /**
-         * No content
-         */
-        204: void;
-        /**
-         * Unauthorized
-         */
-        401: ErrorResponse;
-        /**
-         * Not found
-         */
-        404: unknown;
-      };
-    };
-  };
-  "/comments/{id}/downvote": {
-    post: {
-      req: DownvoteCommentData;
+      req: VoteCommentData;
       res: {
         /**
          * No content
@@ -751,6 +816,135 @@ export type $OpenApiTs = {
   "/posts/{id}/unvote": {
     delete: {
       req: UnvotePostData;
+      res: {
+        /**
+         * No content
+         */
+        204: void;
+        /**
+         * Unauthorized
+         */
+        401: ErrorResponse;
+        /**
+         * Not found
+         */
+        404: unknown;
+      };
+    };
+  };
+  "/replies/{commentId}": {
+    post: {
+      req: CreateReplyData;
+      res: {
+        /**
+         * Created
+         */
+        201: ReplyResponse;
+        /**
+         * Unauthorized
+         */
+        401: ErrorResponse;
+        /**
+         * Not found
+         */
+        404: unknown;
+      };
+    };
+  };
+  "/replies/comments/{commentId}": {
+    get: {
+      req: FindAllRepliesData;
+      res: {
+        /**
+         * OK
+         */
+        200: Array<ReplyResponse>;
+        /**
+         * Unauthorized
+         */
+        401: ErrorResponse;
+        /**
+         * Not found
+         */
+        404: unknown;
+      };
+    };
+  };
+  "/replies/{replyId}": {
+    get: {
+      req: FindOneReplyData;
+      res: {
+        /**
+         * OK
+         */
+        200: ReplyResponse;
+        /**
+         * Unauthorized
+         */
+        401: ErrorResponse;
+        /**
+         * Not found
+         */
+        404: unknown;
+      };
+    };
+    patch: {
+      req: UpdateReplyData;
+      res: {
+        /**
+         * OK
+         */
+        200: ReplyResponse;
+        /**
+         * Unauthorized
+         */
+        401: ErrorResponse;
+        /**
+         * Not found
+         */
+        404: unknown;
+      };
+    };
+    delete: {
+      req: DeleteReplyData;
+      res: {
+        /**
+         * No content
+         */
+        204: void;
+        /**
+         * Unauthorized
+         */
+        401: ErrorResponse;
+        /**
+         * Not found
+         */
+        404: unknown;
+      };
+    };
+  };
+  "/replies/{id}/vote": {
+    post: {
+      req: VoteReplyData;
+      res: {
+        /**
+         * No content
+         */
+        204: void;
+        /**
+         * Unauthorized
+         */
+        401: ErrorResponse;
+        /**
+         * Not found
+         */
+        404: unknown;
+      };
+    };
+  };
+  "/replies/{id}/unvote": {
+    delete: {
+      req: UnvoteReplyData;
       res: {
         /**
          * No content

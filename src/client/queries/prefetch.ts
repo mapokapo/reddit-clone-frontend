@@ -1,7 +1,7 @@
 // generated with @7nohe/openapi-react-query-codegen@1.4.1 
 
 import { type QueryClient } from "@tanstack/react-query";
-import { CommentsService, CommunitiesService, PostsService, UsersService } from "../requests/services.gen";
+import { CommentsService, CommunitiesService, PostsService, RepliesService, UsersService } from "../requests/services.gen";
 import { SortBy, Timespan } from "../requests/types.gen";
 import * as Common from "./common";
 /**
@@ -21,32 +21,46 @@ export const prefetchUseUsersServiceGetMe = (queryClient: QueryClient) => queryC
 * @throws ApiError
 */
 export const prefetchUseUsersServiceGetUserData = (queryClient: QueryClient, { include }: {
-  include?: ("posts" | "votes")[];
+  include?: ("posts" | "votes" | "comments")[];
 } = {}) => queryClient.prefetchQuery({ queryKey: Common.UseUsersServiceGetUserDataKeyFn({ include }), queryFn: () => UsersService.getUserData({ include }) });
+/**
+* Get a user's profile by ID
+* @param data The data for the request.
+* @param data.id
+* @returns User OK
+* @throws ApiError
+*/
+export const prefetchUseUsersServiceGetUserById = (queryClient: QueryClient, { id }: {
+  id: number;
+}) => queryClient.prefetchQuery({ queryKey: Common.UseUsersServiceGetUserByIdKeyFn({ id }), queryFn: () => UsersService.getUserById({ id }) });
 /**
 * Get all comments for a post
 * @param data The data for the request.
 * @param data.postId
-* @param data.depth The depth of the comment tree to return
-* @returns Comment OK
+* @param data.sortBy
+* @param data.timespan
+* @param data.skip
+* @param data.take
+* @returns CommentResponse OK
 * @throws ApiError
 */
-export const prefetchUseCommentsServiceFindAllComments = (queryClient: QueryClient, { depth, postId }: {
-  depth?: number;
+export const prefetchUseCommentsServiceFindAllComments = (queryClient: QueryClient, { postId, skip, sortBy, take, timespan }: {
   postId: number;
-}) => queryClient.prefetchQuery({ queryKey: Common.UseCommentsServiceFindAllCommentsKeyFn({ depth, postId }), queryFn: () => CommentsService.findAllComments({ depth, postId }) });
+  skip?: number;
+  sortBy?: SortBy;
+  take?: number;
+  timespan?: Timespan;
+}) => queryClient.prefetchQuery({ queryKey: Common.UseCommentsServiceFindAllCommentsKeyFn({ postId, skip, sortBy, take, timespan }), queryFn: () => CommentsService.findAllComments({ postId, skip, sortBy, take, timespan }) });
 /**
 * Get a comment by ID
 * @param data The data for the request.
 * @param data.commentId
-* @param data.depth The depth of the comment tree to return
-* @returns Comment OK
+* @returns CommentResponse OK
 * @throws ApiError
 */
-export const prefetchUseCommentsServiceFindCommentById = (queryClient: QueryClient, { commentId, depth }: {
+export const prefetchUseCommentsServiceFindCommentById = (queryClient: QueryClient, { commentId }: {
   commentId: number;
-  depth?: number;
-}) => queryClient.prefetchQuery({ queryKey: Common.UseCommentsServiceFindCommentByIdKeyFn({ commentId, depth }), queryFn: () => CommentsService.findCommentById({ commentId, depth }) });
+}) => queryClient.prefetchQuery({ queryKey: Common.UseCommentsServiceFindCommentByIdKeyFn({ commentId }), queryFn: () => CommentsService.findCommentById({ commentId }) });
 /**
 * Find all communities
 * @returns Community OK
@@ -131,3 +145,23 @@ export const prefetchUsePostsServiceFindAllPosts = (queryClient: QueryClient, { 
 export const prefetchUsePostsServiceFindOnePost = (queryClient: QueryClient, { id }: {
   id: number;
 }) => queryClient.prefetchQuery({ queryKey: Common.UsePostsServiceFindOnePostKeyFn({ id }), queryFn: () => PostsService.findOnePost({ id }) });
+/**
+* Get all replies for a comment
+* @param data The data for the request.
+* @param data.commentId
+* @returns ReplyResponse OK
+* @throws ApiError
+*/
+export const prefetchUseRepliesServiceFindAllReplies = (queryClient: QueryClient, { commentId }: {
+  commentId: number;
+}) => queryClient.prefetchQuery({ queryKey: Common.UseRepliesServiceFindAllRepliesKeyFn({ commentId }), queryFn: () => RepliesService.findAllReplies({ commentId }) });
+/**
+* Get a reply by id
+* @param data The data for the request.
+* @param data.replyId
+* @returns ReplyResponse OK
+* @throws ApiError
+*/
+export const prefetchUseRepliesServiceFindOneReply = (queryClient: QueryClient, { replyId }: {
+  replyId: number;
+}) => queryClient.prefetchQuery({ queryKey: Common.UseRepliesServiceFindOneReplyKeyFn({ replyId }), queryFn: () => RepliesService.findOneReply({ replyId }) });

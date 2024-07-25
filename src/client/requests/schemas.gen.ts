@@ -92,6 +92,9 @@ export const $Vote = {
     commentId: {
       type: "number",
     },
+    replyId: {
+      type: "number",
+    },
     isUpvote: {
       type: "boolean",
     },
@@ -105,14 +108,11 @@ export const $CreateCommentRequest = {
     content: {
       type: "string",
     },
-    parentId: {
-      type: "number",
-    },
   },
   required: ["content"],
 } as const;
 
-export const $Comment = {
+export const $CommentResponse = {
   type: "object",
   properties: {
     id: {
@@ -121,23 +121,27 @@ export const $Comment = {
     content: {
       type: "string",
     },
-    authorId: {
-      type: "number",
-    },
-    parentId: {
-      type: "number",
-    },
-    children: {
-      type: "array",
-      items: {
-        type: "array",
-      },
+    author: {
+      $ref: "#/components/schemas/User",
     },
     postId: {
       type: "number",
     },
     votes: {
       type: "number",
+    },
+    replyCount: {
+      type: "number",
+    },
+    upvoted: {
+      oneOf: [
+        {
+          type: "boolean",
+        },
+        {
+          type: "null",
+        },
+      ],
     },
     createdAt: {
       format: "date-time",
@@ -151,13 +155,24 @@ export const $Comment = {
   required: [
     "id",
     "content",
-    "authorId",
-    "children",
+    "author",
     "postId",
     "votes",
+    "replyCount",
+    "upvoted",
     "createdAt",
     "updatedAt",
   ],
+} as const;
+
+export const $SortBy = {
+  type: "string",
+  enum: ["new", "top"],
+} as const;
+
+export const $Timespan = {
+  type: "string",
+  enum: ["day", "week", "month", "year", "all-time"],
 } as const;
 
 export const $UpdateCommentRequest = {
@@ -230,16 +245,6 @@ export const $UpdateCommunityRequest = {
       type: "string",
     },
   },
-} as const;
-
-export const $SortBy = {
-  type: "string",
-  enum: ["new", "top"],
-} as const;
-
-export const $Timespan = {
-  type: "string",
-  enum: ["day", "week", "month", "year", "all-time"],
 } as const;
 
 export const $PostResponse = {
@@ -318,6 +323,74 @@ export const $UpdatePostRequest = {
     title: {
       type: "string",
     },
+    content: {
+      type: "string",
+    },
+  },
+} as const;
+
+export const $CreateReplyRequest = {
+  type: "object",
+  properties: {
+    content: {
+      type: "string",
+    },
+  },
+  required: ["content"],
+} as const;
+
+export const $ReplyResponse = {
+  type: "object",
+  properties: {
+    id: {
+      type: "number",
+    },
+    content: {
+      type: "string",
+    },
+    author: {
+      $ref: "#/components/schemas/User",
+    },
+    commentId: {
+      type: "number",
+    },
+    votes: {
+      type: "number",
+    },
+    upvoted: {
+      oneOf: [
+        {
+          type: "boolean",
+        },
+        {
+          type: "null",
+        },
+      ],
+    },
+    createdAt: {
+      format: "date-time",
+      type: "string",
+    },
+    updatedAt: {
+      format: "date-time",
+      type: "string",
+    },
+  },
+  required: [
+    "id",
+    "content",
+    "author",
+    "commentId",
+    "votes",
+    "upvoted",
+    "createdAt",
+    "updatedAt",
+  ],
+} as const;
+
+export const $UpdateReplyRequest = {
+  type: "object",
+  properties: {
     content: {
       type: "string",
     },

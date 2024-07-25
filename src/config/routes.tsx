@@ -5,6 +5,7 @@ import RootLayout from "@/layouts/root-layout";
 import CreatePostPage from "@/pages/create-post-page";
 import HomePage from "@/pages/home-page";
 import LoginPage from "@/pages/login-page";
+import PostPage from "@/pages/post-page";
 import ProfilePage from "@/pages/profile-page";
 import RegisterPage from "@/pages/register-page";
 import SettingsPage from "@/pages/settings-page";
@@ -38,6 +39,10 @@ const routes: RouteObject[] = [
               {
                 path: "/app/create-post",
                 element: <CreatePostPage />,
+              },
+              {
+                path: "/app/posts/:id",
+                element: <PostPage />,
               },
             ],
           },

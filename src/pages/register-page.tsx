@@ -39,11 +39,11 @@ const RegisterPage: React.FC = () => {
         );
 
         const res = await mapFetchErrors({
-          fetchFunction: async () => await uploadBytes(photoRef, photoFile),
+          fetchFunction: () => uploadBytes(photoRef, photoFile),
           key: "firebase/storage/upload",
         });
         const url = await mapFetchErrors({
-          fetchFunction: async () => await getDownloadURL(res.ref),
+          fetchFunction: () => getDownloadURL(res.ref),
           key: "firebase/storage/getDownloadURL",
         });
 
@@ -52,8 +52,8 @@ const RegisterPage: React.FC = () => {
 
       try {
         const profile = await mapFetchErrors({
-          fetchFunction: async () =>
-            await UsersService.createUser({
+          fetchFunction: () =>
+            UsersService.createUser({
               requestBody: {
                 name,
                 photoUrl,

@@ -1,56 +1,23 @@
-import { PostResponse, PostsService } from "@/client/requests";
+import { PostResponse } from "@/client/requests";
 import { cn, getRelativeTime } from "@/lib/utils";
-import { ArrowBigDown, ArrowBigUp, Dot } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { mapFetchErrors } from "@/lib/fetcher";
-import { toast } from "sonner";
-import mapErrorToMessage from "@/lib/mapError";
+import { Dot } from "lucide-react";
 import { Link } from "react-router-dom";
+import VotingButtons from "./voting-buttons";
 
 type Props = {
   post: PostResponse;
+  isListItem?: boolean;
 };
 
-const PostView: React.FC<Props> = ({ post }) => {
-  const queryClient = useQueryClient();
-  const { isPending, mutateAsync } = useMutation({
-    mutationFn: ({isUpvote, unvote}: {isUpvote: boolean, unvote: boolean}) =>
-      mapFetchErrors({
-        fetchFunction: async () => {
-          if (unvote) {
-            return await PostsService.unvotePost({
-              id: post.id,
-            });
-          } else {
-            return await PostsService.votePost({
-              id: post.id,
-              isUpvote,
-            });
-          }
-        },
-        key: "/posts/vote",
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["posts"],
-      });
-    },
-  });
-
-  const onVote = async (isUpvote: boolean, unvote: boolean) => {
-    try {
-      await mutateAsync({isUpvote, unvote});
-    } catch (error) {
-      const [text, details] = mapErrorToMessage(error);
-      toast.error(text, {
-        description: details,
-      });
-    }
-  };
+const PostView: React.FC<Props> = ({ post, isListItem = true }) => {
+  const MainComponent = isListItem ? Link : "div";
 
   return (
-    <div className="flex flex-col gap-2 rounded-lg px-4 py-2  transition-colors hover:bg-muted">
+    <div
+      className={cn(
+        "flex h-min flex-col py-2",
+        isListItem ? "rounded-lg px-4 transition-colors hover:bg-muted" : ""
+      )}>
       <div className="flex items-center text-sm text-muted-foreground">
         <Link
           to={`/app/communities/${post.communityId}`}
@@ -60,43 +27,18 @@ const PostView: React.FC<Props> = ({ post }) => {
         <Dot size={16} />
         <span>{getRelativeTime(new Date(post.createdAt))}</span>
       </div>
-      <Link
+      <MainComponent
         to={`/app/posts/${post.id}`}
-        className="flex flex-col gap-2">
+        className={cn("flex flex-col", isListItem ? "gap-2" : "gap-4")}>
         <h2 className="text-2xl font-bold text-foreground">{post.title}</h2>
-        <p className="line-clamp-3 text-muted-foreground">{post.content}</p>
-      </Link>
-      <div className="mt-1 flex w-min items-center rounded-3xl bg-muted">
-        <Button
-          variant="ghost"
-          className={cn(
-            "aspect-square h-min rounded-full p-1 hover:text-orange-500",
-            { "text-orange-500": post.upvoted === true }
-          )}
-          disabled={isPending}
-          onClick={() => onVote(true, post.upvoted === true)}>
-          <ArrowBigUp
-            size={26}
-            strokeWidth={1}
-            fill={post.upvoted ? "currentColor" : "none"}
-          />
-        </Button>
-        <span className="text-center">{post.votes}</span>
-        <Button
-          variant="ghost"
-          className={cn(
-            "aspect-square h-min rounded-full p-1 hover:text-indigo-500",
-            { "text-indigo-500": post.upvoted === false }
-          )}
-          disabled={isPending}
-          onClick={() => onVote(false, post.upvoted === false)}>
-          <ArrowBigDown
-            size={26}
-            strokeWidth={1}
-            fill={post.upvoted === false ? "currentColor" : "none"}
-          />
-        </Button>
-      </div>
+        <p className="text-[15px] text-secondary-foreground/75">
+          {post.content}
+        </p>
+      </MainComponent>
+      <VotingButtons
+        post={post}
+        isListItem={isListItem}
+      />
     </div>
   );
 };

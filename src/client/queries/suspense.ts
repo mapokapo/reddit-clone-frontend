@@ -1,7 +1,7 @@
 // generated with @7nohe/openapi-react-query-codegen@1.4.1 
 
 import { UseQueryOptions, useSuspenseQuery } from "@tanstack/react-query";
-import { CommentsService, CommunitiesService, PostsService, UsersService } from "../requests/services.gen";
+import { CommentsService, CommunitiesService, PostsService, RepliesService, UsersService } from "../requests/services.gen";
 import { SortBy, Timespan } from "../requests/types.gen";
 import * as Common from "./common";
 /**
@@ -21,32 +21,46 @@ export const useUsersServiceGetMeSuspense = <TData = Common.UsersServiceGetMeDef
 * @throws ApiError
 */
 export const useUsersServiceGetUserDataSuspense = <TData = Common.UsersServiceGetUserDataDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ include }: {
-  include?: ("posts" | "votes")[];
+  include?: ("posts" | "votes" | "comments")[];
 } = {}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useSuspenseQuery<TData, TError>({ queryKey: Common.UseUsersServiceGetUserDataKeyFn({ include }, queryKey), queryFn: () => UsersService.getUserData({ include }) as TData, ...options });
+/**
+* Get a user's profile by ID
+* @param data The data for the request.
+* @param data.id
+* @returns User OK
+* @throws ApiError
+*/
+export const useUsersServiceGetUserByIdSuspense = <TData = Common.UsersServiceGetUserByIdDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ id }: {
+  id: number;
+}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useSuspenseQuery<TData, TError>({ queryKey: Common.UseUsersServiceGetUserByIdKeyFn({ id }, queryKey), queryFn: () => UsersService.getUserById({ id }) as TData, ...options });
 /**
 * Get all comments for a post
 * @param data The data for the request.
 * @param data.postId
-* @param data.depth The depth of the comment tree to return
-* @returns Comment OK
+* @param data.sortBy
+* @param data.timespan
+* @param data.skip
+* @param data.take
+* @returns CommentResponse OK
 * @throws ApiError
 */
-export const useCommentsServiceFindAllCommentsSuspense = <TData = Common.CommentsServiceFindAllCommentsDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ depth, postId }: {
-  depth?: number;
+export const useCommentsServiceFindAllCommentsSuspense = <TData = Common.CommentsServiceFindAllCommentsDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ postId, skip, sortBy, take, timespan }: {
   postId: number;
-}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useSuspenseQuery<TData, TError>({ queryKey: Common.UseCommentsServiceFindAllCommentsKeyFn({ depth, postId }, queryKey), queryFn: () => CommentsService.findAllComments({ depth, postId }) as TData, ...options });
+  skip?: number;
+  sortBy?: SortBy;
+  take?: number;
+  timespan?: Timespan;
+}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useSuspenseQuery<TData, TError>({ queryKey: Common.UseCommentsServiceFindAllCommentsKeyFn({ postId, skip, sortBy, take, timespan }, queryKey), queryFn: () => CommentsService.findAllComments({ postId, skip, sortBy, take, timespan }) as TData, ...options });
 /**
 * Get a comment by ID
 * @param data The data for the request.
 * @param data.commentId
-* @param data.depth The depth of the comment tree to return
-* @returns Comment OK
+* @returns CommentResponse OK
 * @throws ApiError
 */
-export const useCommentsServiceFindCommentByIdSuspense = <TData = Common.CommentsServiceFindCommentByIdDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ commentId, depth }: {
+export const useCommentsServiceFindCommentByIdSuspense = <TData = Common.CommentsServiceFindCommentByIdDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ commentId }: {
   commentId: number;
-  depth?: number;
-}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useSuspenseQuery<TData, TError>({ queryKey: Common.UseCommentsServiceFindCommentByIdKeyFn({ commentId, depth }, queryKey), queryFn: () => CommentsService.findCommentById({ commentId, depth }) as TData, ...options });
+}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useSuspenseQuery<TData, TError>({ queryKey: Common.UseCommentsServiceFindCommentByIdKeyFn({ commentId }, queryKey), queryFn: () => CommentsService.findCommentById({ commentId }) as TData, ...options });
 /**
 * Find all communities
 * @returns Community OK
@@ -131,3 +145,23 @@ export const usePostsServiceFindAllPostsSuspense = <TData = Common.PostsServiceF
 export const usePostsServiceFindOnePostSuspense = <TData = Common.PostsServiceFindOnePostDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ id }: {
   id: number;
 }, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useSuspenseQuery<TData, TError>({ queryKey: Common.UsePostsServiceFindOnePostKeyFn({ id }, queryKey), queryFn: () => PostsService.findOnePost({ id }) as TData, ...options });
+/**
+* Get all replies for a comment
+* @param data The data for the request.
+* @param data.commentId
+* @returns ReplyResponse OK
+* @throws ApiError
+*/
+export const useRepliesServiceFindAllRepliesSuspense = <TData = Common.RepliesServiceFindAllRepliesDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ commentId }: {
+  commentId: number;
+}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useSuspenseQuery<TData, TError>({ queryKey: Common.UseRepliesServiceFindAllRepliesKeyFn({ commentId }, queryKey), queryFn: () => RepliesService.findAllReplies({ commentId }) as TData, ...options });
+/**
+* Get a reply by id
+* @param data The data for the request.
+* @param data.replyId
+* @returns ReplyResponse OK
+* @throws ApiError
+*/
+export const useRepliesServiceFindOneReplySuspense = <TData = Common.RepliesServiceFindOneReplyDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ replyId }: {
+  replyId: number;
+}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useSuspenseQuery<TData, TError>({ queryKey: Common.UseRepliesServiceFindOneReplyKeyFn({ replyId }, queryKey), queryFn: () => RepliesService.findOneReply({ replyId }) as TData, ...options });

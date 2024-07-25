@@ -39,7 +39,7 @@ export const UserProvider: React.FC<PropsWithChildren> = ({ children }) => {
       if (newUser) {
         try {
           const userProfile = await mapFetchErrors({
-            fetchFunction: async () => await UsersService.getMe(),
+            fetchFunction: () => UsersService.getMe(),
             key: "/users/me",
           });
           if (!userProfile) throw new Error("User profile not found");
@@ -57,7 +57,10 @@ export const UserProvider: React.FC<PropsWithChildren> = ({ children }) => {
   }, []);
 
   const value = useMemo(
-    () => ({ user, profile, error, setProfile }),
+    () => ({ user, profile, error, setProfile: (newProfile: UserProfile) => {
+      setError(null);
+      setProfile(newProfile);
+    } }),
     [user, profile, error]
   );
 
