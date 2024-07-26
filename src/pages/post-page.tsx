@@ -1,19 +1,32 @@
-import { PostsService, SortBy, Timespan } from "@/client/requests";
+import {
+  CommentsService,
+  PostsService,
+  SortBy,
+  Timespan,
+} from "@/client/requests";
 import CommentsList from "@/components/comments-list";
 import CommunityInfoSidebar from "@/components/community-info-sidebar";
 import PostView from "@/components/post-view";
 import QueryHandler from "@/components/query-handler";
 import SelectFilterMode from "@/components/select-filter-mode";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Textarea } from "@/components/ui/textarea";
 import { mapFetchErrors } from "@/lib/fetcher";
-import { useQuery } from "@tanstack/react-query";
+import mapErrorToMessage from "@/lib/mapError";
+import { cn } from "@/lib/utils";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
+import { toast } from "sonner";
 
 const PostPage: React.FC = () => {
+  const [commentText, setCommentText] = useState("");
+  const [isInputFocused, setIsInputFocused] = useState(false);
   const [filterMode, setFilterMode] = useState<SortBy>("new");
   const [filterTimespan, setFilterTimespan] = useState<Timespan>("all-time");
+
+  const queryClient = useQueryClient();
 
   const { id } = useParams<{ id: string }>();
 
@@ -33,6 +46,41 @@ const PostPage: React.FC = () => {
       }),
   });
 
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: ({ postId, content }: { postId: number; content: string }) =>
+      mapFetchErrors({
+        fetchFunction: () =>
+          CommentsService.createComment({
+            postId: postId,
+            requestBody: {
+              content,
+            },
+          }),
+        key: `/comments/${postId}`,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["comments"],
+      });
+    },
+  });
+
+  const onSubmit = async () => {
+    try {
+      await mutateAsync({
+        postId: parseInt(id),
+        content: commentText,
+      });
+      setCommentText("");
+      setIsInputFocused(false);
+    } catch (e) {
+      const [text, details] = mapErrorToMessage(e);
+      toast.error(text, {
+        description: details,
+      });
+    }
+  };
+
   return (
     <main className="mx-auto flex min-h-full w-full max-w-6xl gap-8 p-4 py-16">
       <QueryHandler
@@ -51,11 +99,38 @@ const PostPage: React.FC = () => {
                 post={post}
                 isListItem={false}
               />
-              <Input
-                className="mt-4"
-                placeholder="Add a comment"
-                type="text"
-              />
+              <div className="mt-4 flex flex-col gap-2 rounded-xl border border-border">
+                <Textarea
+                  className={cn("border-none", {
+                    "resize-none": !isInputFocused,
+                    "min-h-0": !isInputFocused,
+                  })}
+                  rows={isInputFocused ? undefined : 1}
+                  placeholder="Add a comment"
+                  value={commentText}
+                  onChange={e => setCommentText(e.target.value)}
+                  onFocus={() => setIsInputFocused(true)}
+                  disabled={isPending}
+                />
+                {isInputFocused && (
+                  <div className="flex justify-end gap-2 p-2">
+                    <Button
+                      variant="secondary"
+                      onClick={() => setIsInputFocused(false)}
+                      className="h-min w-min px-2 py-1"
+                      disabled={isPending}>
+                      Cancel
+                    </Button>
+                    <Button
+                      variant="default"
+                      onClick={() => onSubmit()}
+                      className="h-min w-min px-2 py-1"
+                      disabled={isPending}>
+                      Comment
+                    </Button>
+                  </div>
+                )}
+              </div>
               <SelectFilterMode
                 filterMode={filterMode}
                 filterTimespan={filterTimespan}

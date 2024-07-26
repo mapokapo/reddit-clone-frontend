@@ -23,7 +23,7 @@ const CommunityInfoSidebar: React.FC<Props> = ({ communityId }) => {
   });
 
   return (
-    <div className="flex h-full w-full flex-col rounded-lg bg-muted/60 p-4">
+    <div className="flex h-min max-h-[48rem] w-full flex-col rounded-lg bg-muted/60 p-4">
       <QueryHandler
         query={query}
         error={() => <span>An error has occured</span>}
