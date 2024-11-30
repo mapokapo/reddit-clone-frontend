@@ -9,12 +9,12 @@ import * as Common from "./common";
 * This endpoint is used by the client to get user data such as posts, comments, and votes for a user.
 * @param data The data for the request.
 * @param data.userId
-* @param data.include The data to include in the response
+* @param data.include
 * @returns unknown OK
 * @throws ApiError
 */
 export const useUsersServiceGetUserDataSuspense = <TData = Common.UsersServiceGetUserDataDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ include, userId }: {
-  include?: ("posts" | "votes" | "comments" | "replies")[];
+  include: string[];
   userId: number;
 }, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useSuspenseQuery<TData, TError>({ queryKey: Common.UseUsersServiceGetUserDataKeyFn({ include, userId }, queryKey), queryFn: () => UsersService.getUserData({ include, userId }) as TData, ...options });
 /**

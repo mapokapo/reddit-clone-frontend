@@ -22,14 +22,7 @@ export type ErrorResponse = {
   message: string | Array<string>;
 };
 
-export type Vote = {
-  id: number;
-  voterId: number;
-  postId?: number;
-  commentId?: number;
-  replyId?: number;
-  isUpvote: boolean;
-};
+export type Vote = unknown;
 
 export type CreateCommentRequest = {
   content: string;
@@ -137,10 +130,7 @@ export type CreateUserData = {
 export type CreateUserResponse = User;
 
 export type GetUserDataData = {
-  /**
-   * The data to include in the response
-   */
-  include?: Array<"posts" | "votes" | "comments" | "replies">;
+  include: Array<string>;
   userId: number;
 };
 

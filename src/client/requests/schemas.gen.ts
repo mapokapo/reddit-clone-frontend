@@ -79,27 +79,7 @@ export const $ErrorResponse = {
 
 export const $Vote = {
   type: "object",
-  properties: {
-    id: {
-      type: "number",
-    },
-    voterId: {
-      type: "number",
-    },
-    postId: {
-      type: "number",
-    },
-    commentId: {
-      type: "number",
-    },
-    replyId: {
-      type: "number",
-    },
-    isUpvote: {
-      type: "boolean",
-    },
-  },
-  required: ["id", "voterId", "isUpvote"],
+  properties: {},
 } as const;
 
 export const $CreateCommentRequest = {
