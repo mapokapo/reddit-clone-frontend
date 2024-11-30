@@ -210,6 +210,12 @@ export type CreateCommunityResponse = Community;
 
 export type FindAllCommunitiesResponse = Array<Community>;
 
+export type CheckUserMembershipData = {
+  id: number;
+};
+
+export type CheckUserMembershipResponse = string;
+
 export type FindUserCommunitiesResponse = Array<Community>;
 
 export type FindOneCommunityData = {
@@ -259,6 +265,8 @@ export type CreatePostData = {
 
 export type CreatePostResponse = PostResponse;
 
+export type FindAllPostsResponse = Array<PostResponse>;
+
 export type FindAllPostsByUserData = {
   skip?: number;
   sortBy?: SortBy;
@@ -269,7 +277,7 @@ export type FindAllPostsByUserData = {
 
 export type FindAllPostsByUserResponse = Array<PostResponse>;
 
-export type FindAllPostsData = {
+export type FindAllPostsInCommunityData = {
   communityId: number;
   skip?: number;
   sortBy?: SortBy;
@@ -277,7 +285,7 @@ export type FindAllPostsData = {
   timespan?: Timespan;
 };
 
-export type FindAllPostsResponse = Array<PostResponse>;
+export type FindAllPostsInCommunityResponse = Array<PostResponse>;
 
 export type FindOnePostData = {
   id: number;
@@ -569,6 +577,29 @@ export type $OpenApiTs = {
          * OK
          */
         200: Array<Community>;
+        /**
+         * Unauthorized
+         */
+        401: ErrorResponse;
+      };
+    };
+  };
+  "/communities/{id}/membership": {
+    get: {
+      req: CheckUserMembershipData;
+      res: {
+        /**
+         * OK
+         */
+        200: string;
+        /**
+         * Unauthorized
+         */
+        401: ErrorResponse;
+        /**
+         * Community not found
+         */
+        404: unknown;
       };
     };
   };
@@ -594,6 +625,10 @@ export type $OpenApiTs = {
          * OK
          */
         200: Community;
+        /**
+         * Unauthorized
+         */
+        401: ErrorResponse;
         /**
          * Not found
          */
@@ -707,6 +742,24 @@ export type $OpenApiTs = {
       };
     };
   };
+  "/posts/all": {
+    get: {
+      res: {
+        /**
+         * OK
+         */
+        200: Array<PostResponse>;
+        /**
+         * Unauthorized
+         */
+        401: ErrorResponse;
+        /**
+         * Not found
+         */
+        404: unknown;
+      };
+    };
+  };
   "/posts/user/{userId}": {
     get: {
       req: FindAllPostsByUserData;
@@ -724,7 +777,7 @@ export type $OpenApiTs = {
   };
   "/posts/community/{communityId}": {
     get: {
-      req: FindAllPostsData;
+      req: FindAllPostsInCommunityData;
       res: {
         /**
          * OK

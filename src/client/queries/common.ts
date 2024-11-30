@@ -39,6 +39,12 @@ export type CommunitiesServiceFindAllCommunitiesDefaultResponse = Awaited<Return
 export type CommunitiesServiceFindAllCommunitiesQueryResult<TData = CommunitiesServiceFindAllCommunitiesDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
 export const useCommunitiesServiceFindAllCommunitiesKey = "CommunitiesServiceFindAllCommunities";
 export const UseCommunitiesServiceFindAllCommunitiesKeyFn = (queryKey?: Array<unknown>) => [useCommunitiesServiceFindAllCommunitiesKey, ...(queryKey ?? [])];
+export type CommunitiesServiceCheckUserMembershipDefaultResponse = Awaited<ReturnType<typeof CommunitiesService.checkUserMembership>>;
+export type CommunitiesServiceCheckUserMembershipQueryResult<TData = CommunitiesServiceCheckUserMembershipDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
+export const useCommunitiesServiceCheckUserMembershipKey = "CommunitiesServiceCheckUserMembership";
+export const UseCommunitiesServiceCheckUserMembershipKeyFn = ({ id }: {
+  id: number;
+}, queryKey?: Array<unknown>) => [useCommunitiesServiceCheckUserMembershipKey, ...(queryKey ?? [{ id }])];
 export type CommunitiesServiceFindUserCommunitiesDefaultResponse = Awaited<ReturnType<typeof CommunitiesService.findUserCommunities>>;
 export type CommunitiesServiceFindUserCommunitiesQueryResult<TData = CommunitiesServiceFindUserCommunitiesDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
 export const useCommunitiesServiceFindUserCommunitiesKey = "CommunitiesServiceFindUserCommunities";
@@ -58,6 +64,10 @@ export const UsePostsServiceGetFeedKeyFn = ({ skip, sortBy, take, timespan }: {
   take?: number;
   timespan?: Timespan;
 } = {}, queryKey?: Array<unknown>) => [usePostsServiceGetFeedKey, ...(queryKey ?? [{ skip, sortBy, take, timespan }])];
+export type PostsServiceFindAllPostsDefaultResponse = Awaited<ReturnType<typeof PostsService.findAllPosts>>;
+export type PostsServiceFindAllPostsQueryResult<TData = PostsServiceFindAllPostsDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
+export const usePostsServiceFindAllPostsKey = "PostsServiceFindAllPosts";
+export const UsePostsServiceFindAllPostsKeyFn = (queryKey?: Array<unknown>) => [usePostsServiceFindAllPostsKey, ...(queryKey ?? [])];
 export type PostsServiceFindAllPostsByUserDefaultResponse = Awaited<ReturnType<typeof PostsService.findAllPostsByUser>>;
 export type PostsServiceFindAllPostsByUserQueryResult<TData = PostsServiceFindAllPostsByUserDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
 export const usePostsServiceFindAllPostsByUserKey = "PostsServiceFindAllPostsByUser";
@@ -68,16 +78,16 @@ export const UsePostsServiceFindAllPostsByUserKeyFn = ({ skip, sortBy, take, tim
   timespan?: Timespan;
   userId: number;
 }, queryKey?: Array<unknown>) => [usePostsServiceFindAllPostsByUserKey, ...(queryKey ?? [{ skip, sortBy, take, timespan, userId }])];
-export type PostsServiceFindAllPostsDefaultResponse = Awaited<ReturnType<typeof PostsService.findAllPosts>>;
-export type PostsServiceFindAllPostsQueryResult<TData = PostsServiceFindAllPostsDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
-export const usePostsServiceFindAllPostsKey = "PostsServiceFindAllPosts";
-export const UsePostsServiceFindAllPostsKeyFn = ({ communityId, skip, sortBy, take, timespan }: {
+export type PostsServiceFindAllPostsInCommunityDefaultResponse = Awaited<ReturnType<typeof PostsService.findAllPostsInCommunity>>;
+export type PostsServiceFindAllPostsInCommunityQueryResult<TData = PostsServiceFindAllPostsInCommunityDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
+export const usePostsServiceFindAllPostsInCommunityKey = "PostsServiceFindAllPostsInCommunity";
+export const UsePostsServiceFindAllPostsInCommunityKeyFn = ({ communityId, skip, sortBy, take, timespan }: {
   communityId: number;
   skip?: number;
   sortBy?: SortBy;
   take?: number;
   timespan?: Timespan;
-}, queryKey?: Array<unknown>) => [usePostsServiceFindAllPostsKey, ...(queryKey ?? [{ communityId, skip, sortBy, take, timespan }])];
+}, queryKey?: Array<unknown>) => [usePostsServiceFindAllPostsInCommunityKey, ...(queryKey ?? [{ communityId, skip, sortBy, take, timespan }])];
 export type PostsServiceFindOnePostDefaultResponse = Awaited<ReturnType<typeof PostsService.findOnePost>>;
 export type PostsServiceFindOnePostQueryResult<TData = PostsServiceFindOnePostDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
 export const usePostsServiceFindOnePostKey = "PostsServiceFindOnePost";

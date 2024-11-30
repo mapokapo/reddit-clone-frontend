@@ -28,6 +28,8 @@ import type {
   CreateCommunityData,
   CreateCommunityResponse,
   FindAllCommunitiesResponse,
+  CheckUserMembershipData,
+  CheckUserMembershipResponse,
   FindUserCommunitiesResponse,
   FindOneCommunityData,
   FindOneCommunityResponse,
@@ -43,10 +45,11 @@ import type {
   GetFeedResponse,
   CreatePostData,
   CreatePostResponse,
+  FindAllPostsResponse,
   FindAllPostsByUserData,
   FindAllPostsByUserResponse,
-  FindAllPostsData,
-  FindAllPostsResponse,
+  FindAllPostsInCommunityData,
+  FindAllPostsInCommunityResponse,
   FindOnePostData,
   FindOnePostResponse,
   UpdatePostData,
@@ -364,7 +367,7 @@ export class CommunitiesService {
   }
 
   /**
-   * Find all communities
+   * Find all communities the user can see
    * @returns Community OK
    * @throws ApiError
    */
@@ -372,6 +375,32 @@ export class CommunitiesService {
     return __request(OpenAPI, {
       method: "GET",
       url: "/communities",
+      errors: {
+        401: "Unauthorized",
+      },
+    });
+  }
+
+  /**
+   * Check if a user is a member of a community
+   * @param data The data for the request.
+   * @param data.id
+   * @returns string OK
+   * @throws ApiError
+   */
+  public static checkUserMembership(
+    data: CheckUserMembershipData
+  ): CancelablePromise<CheckUserMembershipResponse> {
+    return __request(OpenAPI, {
+      method: "GET",
+      url: "/communities/{id}/membership",
+      path: {
+        id: data.id,
+      },
+      errors: {
+        401: "Unauthorized",
+        404: "Community not found",
+      },
     });
   }
 
@@ -407,6 +436,7 @@ export class CommunitiesService {
         id: data.id,
       },
       errors: {
+        401: "Unauthorized",
         404: "Not found",
       },
     });
@@ -564,6 +594,22 @@ export class PostsService {
   }
 
   /**
+   * Find all posts from communities the user can access
+   * @returns PostResponse OK
+   * @throws ApiError
+   */
+  public static findAllPosts(): CancelablePromise<FindAllPostsResponse> {
+    return __request(OpenAPI, {
+      method: "GET",
+      url: "/posts/all",
+      errors: {
+        401: "Unauthorized",
+        404: "Not found",
+      },
+    });
+  }
+
+  /**
    * Find all posts by a user
    * @param data The data for the request.
    * @param data.userId
@@ -606,9 +652,9 @@ export class PostsService {
    * @returns PostResponse OK
    * @throws ApiError
    */
-  public static findAllPosts(
-    data: FindAllPostsData
-  ): CancelablePromise<FindAllPostsResponse> {
+  public static findAllPostsInCommunity(
+    data: FindAllPostsInCommunityData
+  ): CancelablePromise<FindAllPostsInCommunityResponse> {
     return __request(OpenAPI, {
       method: "GET",
       url: "/posts/community/{communityId}",

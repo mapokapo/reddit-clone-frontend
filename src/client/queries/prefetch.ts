@@ -62,11 +62,21 @@ export const prefetchUseCommentsServiceFindCommentById = (queryClient: QueryClie
   commentId: number;
 }) => queryClient.prefetchQuery({ queryKey: Common.UseCommentsServiceFindCommentByIdKeyFn({ commentId }), queryFn: () => CommentsService.findCommentById({ commentId }) });
 /**
-* Find all communities
+* Find all communities the user can see
 * @returns Community OK
 * @throws ApiError
 */
 export const prefetchUseCommunitiesServiceFindAllCommunities = (queryClient: QueryClient) => queryClient.prefetchQuery({ queryKey: Common.UseCommunitiesServiceFindAllCommunitiesKeyFn(), queryFn: () => CommunitiesService.findAllCommunities() });
+/**
+* Check if a user is a member of a community
+* @param data The data for the request.
+* @param data.id
+* @returns string OK
+* @throws ApiError
+*/
+export const prefetchUseCommunitiesServiceCheckUserMembership = (queryClient: QueryClient, { id }: {
+  id: number;
+}) => queryClient.prefetchQuery({ queryKey: Common.UseCommunitiesServiceCheckUserMembershipKeyFn({ id }), queryFn: () => CommunitiesService.checkUserMembership({ id }) });
 /**
 * Find all communities that the current user is a member of
 * @returns Community OK
@@ -100,6 +110,12 @@ export const prefetchUsePostsServiceGetFeed = (queryClient: QueryClient, { skip,
   timespan?: Timespan;
 } = {}) => queryClient.prefetchQuery({ queryKey: Common.UsePostsServiceGetFeedKeyFn({ skip, sortBy, take, timespan }), queryFn: () => PostsService.getFeed({ skip, sortBy, take, timespan }) });
 /**
+* Find all posts from communities the user can access
+* @returns PostResponse OK
+* @throws ApiError
+*/
+export const prefetchUsePostsServiceFindAllPosts = (queryClient: QueryClient) => queryClient.prefetchQuery({ queryKey: Common.UsePostsServiceFindAllPostsKeyFn(), queryFn: () => PostsService.findAllPosts() });
+/**
 * Find all posts by a user
 * @param data The data for the request.
 * @param data.userId
@@ -128,13 +144,13 @@ export const prefetchUsePostsServiceFindAllPostsByUser = (queryClient: QueryClie
 * @returns PostResponse OK
 * @throws ApiError
 */
-export const prefetchUsePostsServiceFindAllPosts = (queryClient: QueryClient, { communityId, skip, sortBy, take, timespan }: {
+export const prefetchUsePostsServiceFindAllPostsInCommunity = (queryClient: QueryClient, { communityId, skip, sortBy, take, timespan }: {
   communityId: number;
   skip?: number;
   sortBy?: SortBy;
   take?: number;
   timespan?: Timespan;
-}) => queryClient.prefetchQuery({ queryKey: Common.UsePostsServiceFindAllPostsKeyFn({ communityId, skip, sortBy, take, timespan }), queryFn: () => PostsService.findAllPosts({ communityId, skip, sortBy, take, timespan }) });
+}) => queryClient.prefetchQuery({ queryKey: Common.UsePostsServiceFindAllPostsInCommunityKeyFn({ communityId, skip, sortBy, take, timespan }), queryFn: () => PostsService.findAllPostsInCommunity({ communityId, skip, sortBy, take, timespan }) });
 /**
 * Find a post by ID
 * @param data The data for the request.
