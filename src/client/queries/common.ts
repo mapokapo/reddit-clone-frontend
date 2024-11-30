@@ -11,7 +11,7 @@ export type UsersServiceGetUserDataDefaultResponse = Awaited<ReturnType<typeof U
 export type UsersServiceGetUserDataQueryResult<TData = UsersServiceGetUserDataDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
 export const useUsersServiceGetUserDataKey = "UsersServiceGetUserData";
 export const UseUsersServiceGetUserDataKeyFn = ({ include }: {
-  include?: ("posts" | "votes" | "comments")[];
+  include?: ("posts" | "votes" | "comments" | "replies")[];
 } = {}, queryKey?: Array<unknown>) => [useUsersServiceGetUserDataKey, ...(queryKey ?? [{ include }])];
 export type UsersServiceGetUserByIdDefaultResponse = Awaited<ReturnType<typeof UsersService.getUserById>>;
 export type UsersServiceGetUserByIdQueryResult<TData = UsersServiceGetUserByIdDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;

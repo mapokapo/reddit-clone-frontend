@@ -21,7 +21,7 @@ export const useUsersServiceGetMe = <TData = Common.UsersServiceGetMeDefaultResp
 * @throws ApiError
 */
 export const useUsersServiceGetUserData = <TData = Common.UsersServiceGetUserDataDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ include }: {
-  include?: ("posts" | "votes" | "comments")[];
+  include?: ("posts" | "votes" | "comments" | "replies")[];
 } = {}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UseUsersServiceGetUserDataKeyFn({ include }, queryKey), queryFn: () => UsersService.getUserData({ include }) as TData, ...options });
 /**
 * Get a user's profile by ID

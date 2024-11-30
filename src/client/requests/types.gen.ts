@@ -142,7 +142,7 @@ export type GetUserDataData = {
   /**
    * The data to include in the response
    */
-  include?: Array<"posts" | "votes" | "comments">;
+  include?: Array<"posts" | "votes" | "comments" | "replies">;
 };
 
 export type GetUserDataResponse = Array<PostResponse | Vote>;

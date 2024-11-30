@@ -21,7 +21,7 @@ export const prefetchUseUsersServiceGetMe = (queryClient: QueryClient) => queryC
 * @throws ApiError
 */
 export const prefetchUseUsersServiceGetUserData = (queryClient: QueryClient, { include }: {
-  include?: ("posts" | "votes" | "comments")[];
+  include?: ("posts" | "votes" | "comments" | "replies")[];
 } = {}) => queryClient.prefetchQuery({ queryKey: Common.UseUsersServiceGetUserDataKeyFn({ include }), queryFn: () => UsersService.getUserData({ include }) });
 /**
 * Get a user's profile by ID
