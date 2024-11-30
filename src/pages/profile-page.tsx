@@ -13,7 +13,7 @@ import { mapFetchErrors } from "@/lib/fetcher";
 import { initials, isComment, isPost, isReply, range } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 type ViewMode = "all" | "posts" | "votes" | "comments";
 
@@ -147,13 +147,26 @@ const ProfilePage: React.FC = () => {
                       <PostView post={item} />
                     ) : isComment(item) ? (
                       <div className="flex w-full flex-col">
-                        <span className="text-sm font-semibold">Comment</span>
-                        <CommentView comment={item} />
+                        <span className="text-sm font-semibold text-muted-foreground">
+                          Commented on{" "}
+                          <Link
+                            to={`/app/posts/${item.postId}`}
+                            className="underline">
+                            a post
+                          </Link>
+                        </span>
+                        <div className="border-l-2 border-border pl-2">
+                          <CommentView comment={item} />
+                        </div>
                       </div>
                     ) : isReply(item) ? (
                       <div className="flex w-full flex-col">
-                        <span className="text-sm font-semibold">Reply</span>
-                        <ReplyView reply={item} />
+                        <span className="text-sm font-semibold text-muted-foreground">
+                          Replied to a comment
+                        </span>
+                        <div className="border-l-2 border-border">
+                          <ReplyView reply={item} />
+                        </div>
                       </div>
                     ) : (
                       <VoteView vote={item} />
