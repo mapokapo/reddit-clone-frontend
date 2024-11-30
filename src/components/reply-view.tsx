@@ -40,10 +40,10 @@ enum Dialogs {
 
 type Props = {
   reply: ReplyResponse;
-  onReplyTo: (reply: ReplyResponse) => void;
+  onReplyTo?: (reply: ReplyResponse) => void;
 };
 
-const ReplyView: React.FC<Props> = ({ reply, onReplyTo }) => {
+const ReplyView: React.FC<Props> = ({ reply, onReplyTo = undefined }) => {
   const { profile } = useUserProfile();
   const queryClient = useQueryClient();
 
@@ -63,6 +63,9 @@ const ReplyView: React.FC<Props> = ({ reply, onReplyTo }) => {
         key: `/replies/${replyId}`,
       }),
     onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ["users"],
+      });
       await queryClient.invalidateQueries({
         queryKey: ["replies", reply.commentId],
       });
@@ -92,6 +95,9 @@ const ReplyView: React.FC<Props> = ({ reply, onReplyTo }) => {
           key: `/replies/${replyId}`,
         }),
       onSuccess: async () => {
+        await queryClient.invalidateQueries({
+          queryKey: ["users"],
+        });
         await queryClient.invalidateQueries({
           queryKey: ["replies", reply.commentId],
         });
@@ -287,15 +293,17 @@ const ReplyView: React.FC<Props> = ({ reply, onReplyTo }) => {
             isListItem={false}
           />
         )}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="!m-0 ml-2 flex h-min w-min items-center gap-2 p-1"
-          onClick={() => {
-            onReplyTo(reply);
-          }}>
-          <MessageCircle size={18} />
-        </Button>
+        {onReplyTo !== undefined && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="!m-0 ml-2 flex h-min w-min items-center gap-2 p-1"
+            onClick={() => {
+              onReplyTo(reply);
+            }}>
+            <MessageCircle size={18} />
+          </Button>
+        )}
       </div>
     </div>
   );

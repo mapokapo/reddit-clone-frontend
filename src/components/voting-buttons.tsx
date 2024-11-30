@@ -77,6 +77,9 @@ const VotingButtons: React.FC<Props> = ({ isListItem = true, ...props }) => {
       }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
+        queryKey: ["users"],
+      });
+      await queryClient.invalidateQueries({
         queryKey:
           "post" in props
             ? []

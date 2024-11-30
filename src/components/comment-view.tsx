@@ -75,6 +75,9 @@ const CommentView: React.FC<Props> = ({ comment }) => {
       }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
+        queryKey: ["users"],
+      });
+      await queryClient.invalidateQueries({
         queryKey: ["comments", comment.postId],
       });
     },
@@ -103,6 +106,9 @@ const CommentView: React.FC<Props> = ({ comment }) => {
       }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
+        queryKey: ["users"],
+      });
+      await queryClient.invalidateQueries({
         queryKey: ["comments", comment.postId],
       });
     },
@@ -130,6 +136,9 @@ const CommentView: React.FC<Props> = ({ comment }) => {
         key: `/replies/${commentId}`,
       }),
     onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ["users"],
+      });
       await queryClient.invalidateQueries({
         queryKey: ["replies", comment.id],
       });
