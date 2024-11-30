@@ -1,6 +1,18 @@
-import { CommentResponse, CommentsService } from "@/client/requests";
-import { getRelativeTime, cn } from "@/lib/utils";
-import { Dot, Ellipsis, Reply } from "lucide-react";
+import {
+  CommentResponse,
+  CommentsService,
+  RepliesService,
+  ReplyResponse,
+  User,
+} from "@/client/requests";
+import { getRelativeTime } from "@/lib/utils";
+import {
+  Dot,
+  Ellipsis,
+  Reply,
+  MessageCircle,
+  ChevronRight,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import RepliesList from "@/components/replies-list";
 import { Button } from "@/components/ui/button";
@@ -45,6 +57,9 @@ const CommentView: React.FC<Props> = ({ comment }) => {
   const [repliesEnabled, setRepliesEnabled] = useState(false);
   const [editCommentText, setEditCommentText] = useState("");
   const [dialog, setDialog] = useState<Dialogs | null>(null);
+  const [replyText, setReplyText] = useState("");
+  const [isReplying, setIsReplying] = useState(false);
+  const [replyingTo, setReplyingTo] = useState<User | null>(null);
 
   const {
     mutateAsync: mutateDeleteCommentAsync,
@@ -93,6 +108,37 @@ const CommentView: React.FC<Props> = ({ comment }) => {
     },
   });
 
+  const {
+    mutateAsync: mutateCreateReplyAsync,
+    isPending: createReplyIsPending,
+  } = useMutation({
+    mutationFn: ({
+      commentId,
+      content,
+    }: {
+      commentId: number;
+      content: string;
+    }) =>
+      mapFetchErrors({
+        fetchFunction: () =>
+          RepliesService.createReply({
+            commentId,
+            requestBody: {
+              content,
+            },
+          }),
+        key: `/replies/${commentId}`,
+      }),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ["replies", comment.id],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ["comments", comment.postId],
+      });
+    },
+  });
+
   const onDelete = async (commentId: number) => {
     try {
       await mutateDeleteCommentAsync({ commentId });
@@ -115,6 +161,32 @@ const CommentView: React.FC<Props> = ({ comment }) => {
         description: details,
       });
     }
+  };
+
+  const onReply = async (commentId: number, content: string) => {
+    try {
+      await mutateCreateReplyAsync({
+        commentId,
+        content:
+          replyingTo !== null
+            ? `@{${replyingTo.name}-${replyingTo.id}} ${content}`
+            : content,
+      });
+      setReplyText("");
+      setIsReplying(false);
+      setReplyingTo(null);
+    } catch (e) {
+      const [text, details] = mapErrorToMessage(e);
+      toast.error(text, {
+        description: details,
+      });
+    }
+  };
+
+  const onReplyTo = (reply: ReplyResponse) => {
+    setIsReplying(true);
+    setReplyText("");
+    setReplyingTo(reply.author);
   };
 
   const commentEdited = comment.createdAt !== comment.updatedAt;
@@ -241,20 +313,68 @@ const CommentView: React.FC<Props> = ({ comment }) => {
           </Dialog>
         )}
       </div>
-      <p
-        className={cn("ml-1 text-sm", {
-          "mb-2": comment.author.id === profile.id,
-        })}>
-        {comment.content}
-      </p>
-      {comment.author.id !== profile.id && (
-        <VotingButtons
-          comment={comment}
-          isListItem={false}
-        />
+      <p className="ml-1 text-sm">{comment.content}</p>
+      <div className="flex gap-2">
+        {comment.author.id !== profile.id && (
+          <VotingButtons
+            comment={comment}
+            isListItem={false}
+          />
+        )}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="!m-0 ml-2 flex h-min w-min items-center gap-2 p-1"
+          onClick={() => {
+            setIsReplying(!isReplying);
+          }}>
+          <MessageCircle size={18} />
+        </Button>
+      </div>
+      {isReplying && (
+        <div className="ml-4 flex w-full flex-col justify-center text-muted-foreground">
+          {replyingTo !== null && (
+            <div className="ml-1 flex items-center">
+              <ChevronRight size={16} />
+              <p className="text-sm font-semibold">{replyingTo.name}</p>
+            </div>
+          )}
+          <div className="flex items-center gap-2">
+            <Textarea
+              value={replyText}
+              onChange={e => setReplyText(e.target.value)}
+              disabled={createReplyIsPending}
+              rows={1}
+              placeholder="Add a reply"
+              className="min-h-0 resize-none text-foreground"
+            />
+            <Button
+              variant="default"
+              className="h-min w-min px-2 py-1"
+              onClick={() => {
+                onReply(comment.id, replyText);
+              }}
+              disabled={createReplyIsPending}>
+              Reply
+            </Button>
+            <Button
+              variant="destructive"
+              className="h-min w-min px-2 py-1"
+              onClick={() => {
+                setIsReplying(false);
+                setReplyText("");
+              }}
+              disabled={createReplyIsPending}>
+              Cancel
+            </Button>
+          </div>
+        </div>
       )}
       {comment.replyCount === 0 ? null : repliesEnabled ? (
-        <RepliesList commentId={comment.id} />
+        <RepliesList
+          commentId={comment.id}
+          onReplyTo={onReplyTo}
+        />
       ) : (
         <Button
           variant="ghost"

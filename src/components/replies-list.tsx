@@ -1,18 +1,16 @@
-import { RepliesService } from "@/client/requests";
+import { RepliesService, ReplyResponse } from "@/client/requests";
 import { mapFetchErrors } from "@/lib/fetcher";
-import { getRelativeTime } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { Dot } from "lucide-react";
-import { Link } from "react-router-dom";
 import QueryHandler from "@/components/query-handler";
-import VotingButtons from "@/components/voting-buttons";
-import Loading from "./loading";
+import Loading from "@/components/loading";
+import ReplyView from "./reply-view";
 
 type Props = {
   commentId: number;
+  onReplyTo: (reply: ReplyResponse) => void;
 };
 
-const RepliesList: React.FC<Props> = ({ commentId }) => {
+const RepliesList: React.FC<Props> = ({ commentId, onReplyTo }) => {
   const query = useQuery({
     queryKey: ["replies", commentId],
     queryFn: () =>
@@ -33,22 +31,10 @@ const RepliesList: React.FC<Props> = ({ commentId }) => {
       success={replies => (
         <ol className="ml-4 flex flex-col gap-4 border-l border-border">
           {replies.map(reply => (
-            <li
-              key={reply.id}
-              className="ml-2 flex flex-col gap-2">
-              <div className="ml-1 flex items-center text-sm text-muted-foreground">
-                <Link
-                  to={`/app/profiles/${reply.author.id}`}
-                  className="font-bold text-foreground hover:underline">
-                  {reply.author.name}
-                </Link>
-                <Dot size={16} />
-                <span>{getRelativeTime(new Date(reply.createdAt))}</span>
-              </div>
-              <p className="ml-1 text-sm">{reply.content}</p>
-              <VotingButtons
+            <li key={reply.id}>
+              <ReplyView
                 reply={reply}
-                isListItem={false}
+                onReplyTo={onReplyTo}
               />
             </li>
           ))}

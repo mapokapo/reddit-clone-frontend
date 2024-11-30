@@ -38,3 +38,10 @@ export function initials(name: string) {
     .map(n => n[0])
     .join("");
 }
+
+export function normalizeReplyContent(
+  content: string,
+  remove: boolean = false
+) {
+  return content.replace(/@{(.+?)-\d+}/, remove ? "" : "@$1").trim();
+}
