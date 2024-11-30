@@ -1,8 +1,12 @@
-import { PostResponse } from "@/client/requests";
-import { cn, getRelativeTime } from "@/lib/utils";
+import { PostResponse, UsersService } from "@/client/requests";
+import { cn, getRelativeTime, initials } from "@/lib/utils";
 import { Dot } from "lucide-react";
 import { Link } from "react-router-dom";
 import VotingButtons from "./voting-buttons";
+import { useQuery } from "@tanstack/react-query";
+import { mapFetchErrors } from "@/lib/fetcher";
+import QueryHandler from "./query-handler";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type Props = {
   post: PostResponse;
@@ -11,6 +15,18 @@ type Props = {
 
 const PostView: React.FC<Props> = ({ post, isListItem = true }) => {
   const MainComponent = isListItem ? Link : "div";
+
+  const authorQuery = useQuery({
+    queryKey: ["users", post.authorId],
+    queryFn: () =>
+      mapFetchErrors({
+        fetchFunction: () =>
+          UsersService.getUserById({
+            id: post.authorId,
+          }),
+        key: `/users/${post.authorId}`,
+      }),
+  });
 
   return (
     <div
@@ -27,6 +43,28 @@ const PostView: React.FC<Props> = ({ post, isListItem = true }) => {
         <Dot size={16} />
         <span>{getRelativeTime(new Date(post.createdAt))}</span>
       </div>
+      <QueryHandler
+        query={authorQuery}
+        loading={<div>Loading...</div>}
+        error={() => <div>Error</div>}
+        showToastOnError={true}
+        success={author => (
+          <Link
+            to={`/app/profiles/${post.authorId}`}
+            className="mt-1 flex items-center gap-1 font-bold text-foreground hover:underline">
+            <Avatar className="h-5 w-5">
+              <AvatarImage
+                src={author.photoUrl}
+                alt={author.name}
+              />
+              <AvatarFallback className="text-xs">
+                {initials(author.name)}
+              </AvatarFallback>
+            </Avatar>
+            <span className="text-sm text-muted-foreground">{author.name}</span>
+          </Link>
+        )}
+      />
       <MainComponent
         to={`/app/posts/${post.id}`}
         className={cn("flex flex-col", isListItem ? "gap-2" : "gap-4")}>
