@@ -65,9 +65,8 @@ const VoteView: React.FC<Props> = ({ vote }) => {
           />
         )}
         <span>
-          You{" "}
           <span className="font-bold">
-            {vote.isUpvote ? "up" : "down"}voted
+            {vote.isUpvote ? "Up" : "Down"}voted
           </span>{" "}
           {vote.postId !== undefined ? (
             <Link
