@@ -75,11 +75,11 @@ const VotingButtons: React.FC<Props> = ({ isListItem = true, ...props }) => {
         },
         key: `/${"post" in props ? "posts" : "comment" in props ? "comments" : "replies"}/vote`,
       }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
         queryKey:
           "post" in props
-            ? ["posts"]
+            ? []
             : "comment" in props
               ? ["comments"]
               : ["replies"],

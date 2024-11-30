@@ -66,10 +66,10 @@ const CreatePostPage: React.FC = () => {
           }),
         key: "/posts",
       }),
-    onSuccess: () => {
+    onSuccess: async () => {
       form.reset();
 
-      queryClient.invalidateQueries({
+      await queryClient.invalidateQueries({
         queryKey: ["posts"],
       });
     },

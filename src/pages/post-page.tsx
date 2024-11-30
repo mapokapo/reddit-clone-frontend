@@ -58,8 +58,8 @@ const PostPage: React.FC = () => {
           }),
         key: `/comments/${postId}`,
       }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
         queryKey: ["comments"],
       });
     },
