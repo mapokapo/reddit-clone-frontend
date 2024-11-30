@@ -1,6 +1,8 @@
 import { UsersService } from "@/client/requests";
+import CommentView from "@/components/comment-view";
 import PostView from "@/components/post-view";
 import QueryHandler from "@/components/query-handler";
+import ReplyView from "@/components/reply-view";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -8,12 +10,12 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUserProfile } from "@/components/user-provider";
 import VoteView from "@/components/vote-view";
 import { mapFetchErrors } from "@/lib/fetcher";
-import { initials, range } from "@/lib/utils";
+import { initials, isComment, isPost, isReply, range } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 
-type ViewMode = "all" | "posts" | "votes";
+type ViewMode = "all" | "posts" | "votes" | "comments";
 
 const ProfilePage: React.FC = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("all");
@@ -48,7 +50,10 @@ const ProfilePage: React.FC = () => {
       "users",
       {
         id: id !== undefined ? parseInt(id) : currentProfile.id,
-        include: viewMode === "all" ? ["posts", "votes"] : [viewMode],
+        include:
+          viewMode === "all"
+            ? ["posts", "comments", "replies", "votes"]
+            : [viewMode],
       },
     ],
     queryFn: () =>
@@ -56,7 +61,12 @@ const ProfilePage: React.FC = () => {
         fetchFunction: async () =>
           await UsersService.getUserData({
             userId: id !== undefined ? parseInt(id) : currentProfile.id,
-            include: viewMode === "all" ? ["posts", "votes"] : [viewMode],
+            include:
+              viewMode === "all"
+                ? ["posts", "comments", "replies", "votes"]
+                : viewMode === "comments"
+                  ? ["comments", "replies"]
+                  : [viewMode],
           }),
         key: `/users/userdata/${id !== undefined ? id : "me"}`,
       }),
@@ -103,6 +113,7 @@ const ProfilePage: React.FC = () => {
         <TabsList>
           <TabsTrigger value="all">All</TabsTrigger>
           <TabsTrigger value="posts">Posts</TabsTrigger>
+          <TabsTrigger value="comments">Comments</TabsTrigger>
           <TabsTrigger value="votes">Votes</TabsTrigger>
         </TabsList>
       </Tabs>
@@ -132,10 +143,20 @@ const ProfilePage: React.FC = () => {
                   <li
                     key={item.id}
                     className="flex w-full gap-4">
-                    {"isUpvote" in item ? (
-                      <VoteView vote={item} />
-                    ) : (
+                    {isPost(item) ? (
                       <PostView post={item} />
+                    ) : isComment(item) ? (
+                      <div className="flex w-full flex-col">
+                        <span className="text-sm font-semibold">Comment</span>
+                        <CommentView comment={item} />
+                      </div>
+                    ) : isReply(item) ? (
+                      <div className="flex w-full flex-col">
+                        <span className="text-sm font-semibold">Reply</span>
+                        <ReplyView reply={item} />
+                      </div>
+                    ) : (
+                      <VoteView vote={item} />
                     )}
                   </li>
                 ))}

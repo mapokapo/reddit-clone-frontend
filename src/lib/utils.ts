@@ -1,3 +1,9 @@
+import {
+  CommentResponse,
+  PostResponse,
+  ReplyResponse,
+  VoteResponse,
+} from "@/client/requests";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -61,4 +67,28 @@ export function extractMentionFromReply(content: string): {
 
 export function containsMention(content: string) {
   return /@{(.+)-(\d+)}/.test(content);
+}
+
+export function isPost(
+  item: PostResponse | CommentResponse | ReplyResponse | VoteResponse
+): item is PostResponse {
+  return "title" in item && "communityId" in item && "content" in item;
+}
+
+export function isComment(
+  item: PostResponse | CommentResponse | ReplyResponse | VoteResponse
+): item is CommentResponse {
+  return "postId" in item && "replyCount" in item && "author" in item;
+}
+
+export function isReply(
+  item: PostResponse | CommentResponse | ReplyResponse | VoteResponse
+): item is ReplyResponse {
+  return "commentId" in item && !("replyCount" in item) && "author" in item;
+}
+
+export function isVote(
+  item: PostResponse | CommentResponse | ReplyResponse | VoteResponse
+): item is VoteResponse {
+  return "voterId" in item && "isUpvote" in item;
 }
