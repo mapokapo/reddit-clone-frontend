@@ -15,7 +15,7 @@ const CommunityPage: React.FC = () => {
   const queryClient = useQueryClient();
 
   if (id === undefined || isNaN(parseInt(id))) {
-    return <div>Invalid post ID</div>;
+    return <div>Invalid community ID</div>;
   }
 
   const query = useQuery({
