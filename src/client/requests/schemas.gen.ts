@@ -77,9 +77,29 @@ export const $ErrorResponse = {
   required: ["statusCode", "timestamp", "path", "message"],
 } as const;
 
-export const $Vote = {
+export const $VoteResponse = {
   type: "object",
-  properties: {},
+  properties: {
+    id: {
+      type: "number",
+    },
+    voterId: {
+      type: "number",
+    },
+    postId: {
+      type: "number",
+    },
+    commentId: {
+      type: "number",
+    },
+    replyId: {
+      type: "number",
+    },
+    isUpvote: {
+      type: "boolean",
+    },
+  },
+  required: ["id", "voterId", "isUpvote"],
 } as const;
 
 export const $CreateCommentRequest = {

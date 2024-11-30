@@ -22,7 +22,14 @@ export type ErrorResponse = {
   message: string | Array<string>;
 };
 
-export type Vote = unknown;
+export type VoteResponse = {
+  id: number;
+  voterId: number;
+  postId?: number;
+  commentId?: number;
+  replyId?: number;
+  isUpvote: boolean;
+};
 
 export type CreateCommentRequest = {
   content: string;
@@ -134,7 +141,9 @@ export type GetUserDataData = {
   userId: number;
 };
 
-export type GetUserDataResponse = Array<PostResponse | Vote>;
+export type GetUserDataResponse = Array<
+  PostResponse | CommentResponse | ReplyResponse | VoteResponse
+>;
 
 export type GetMeResponse = User | void;
 
@@ -378,7 +387,9 @@ export type $OpenApiTs = {
         /**
          * OK
          */
-        200: Array<PostResponse | Vote>;
+        200: Array<
+          PostResponse | CommentResponse | ReplyResponse | VoteResponse
+        >;
         /**
          * Unauthorized
          */
