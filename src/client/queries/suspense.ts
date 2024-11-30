@@ -5,14 +5,6 @@ import { CommentsService, CommunitiesService, PostsService, RepliesService, User
 import { SortBy, Timespan } from "../requests/types.gen";
 import * as Common from "./common";
 /**
-* Get the current user
-* This endpoint is used by the client to get the current user. Returns 204 if the authenticated user doesn't have a profile.
-* @returns User OK
-* @returns void No content
-* @throws ApiError
-*/
-export const useUsersServiceGetMeSuspense = <TData = Common.UsersServiceGetMeDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>(queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useSuspenseQuery<TData, TError>({ queryKey: Common.UseUsersServiceGetMeKeyFn(queryKey), queryFn: () => UsersService.getMe() as TData, ...options });
-/**
 * Get aggregated user data for the current user
 * This endpoint is used by the client to get user data such as posts, comments, and votes for the current user.
 * @param data The data for the request.
@@ -20,9 +12,30 @@ export const useUsersServiceGetMeSuspense = <TData = Common.UsersServiceGetMeDef
 * @returns unknown OK
 * @throws ApiError
 */
-export const useUsersServiceGetUserDataSuspense = <TData = Common.UsersServiceGetUserDataDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ include }: {
+export const useUsersServiceGetMyUserDataSuspense = <TData = Common.UsersServiceGetMyUserDataDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ include }: {
   include?: ("posts" | "votes" | "comments" | "replies")[];
-} = {}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useSuspenseQuery<TData, TError>({ queryKey: Common.UseUsersServiceGetUserDataKeyFn({ include }, queryKey), queryFn: () => UsersService.getUserData({ include }) as TData, ...options });
+} = {}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useSuspenseQuery<TData, TError>({ queryKey: Common.UseUsersServiceGetMyUserDataKeyFn({ include }, queryKey), queryFn: () => UsersService.getMyUserData({ include }) as TData, ...options });
+/**
+* Get aggregated user data for a user
+* This endpoint is used by the client to get user data such as posts, comments, and votes for a user.
+* @param data The data for the request.
+* @param data.userId
+* @param data.include The data to include in the response
+* @returns unknown OK
+* @throws ApiError
+*/
+export const useUsersServiceGetUserDataSuspense = <TData = Common.UsersServiceGetUserDataDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>({ include, userId }: {
+  include?: ("posts" | "votes" | "comments" | "replies")[];
+  userId: number;
+}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useSuspenseQuery<TData, TError>({ queryKey: Common.UseUsersServiceGetUserDataKeyFn({ include, userId }, queryKey), queryFn: () => UsersService.getUserData({ include, userId }) as TData, ...options });
+/**
+* Get the current user
+* This endpoint is used by the client to get the current user. Returns 204 if the authenticated user doesn't have a profile.
+* @returns User OK
+* @returns void No content
+* @throws ApiError
+*/
+export const useUsersServiceGetMeSuspense = <TData = Common.UsersServiceGetMeDefaultResponse, TError = unknown, TQueryKey extends Array<unknown> = unknown[]>(queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useSuspenseQuery<TData, TError>({ queryKey: Common.UseUsersServiceGetMeKeyFn(queryKey), queryFn: () => UsersService.getMe() as TData, ...options });
 /**
 * Get a user's profile by ID
 * @param data The data for the request.

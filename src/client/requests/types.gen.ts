@@ -136,16 +136,26 @@ export type CreateUserData = {
 
 export type CreateUserResponse = User;
 
-export type GetMeResponse = User | void;
-
-export type GetUserDataData = {
+export type GetMyUserDataData = {
   /**
    * The data to include in the response
    */
   include?: Array<"posts" | "votes" | "comments" | "replies">;
 };
 
+export type GetMyUserDataResponse = Array<PostResponse | Vote>;
+
+export type GetUserDataData = {
+  /**
+   * The data to include in the response
+   */
+  include?: Array<"posts" | "votes" | "comments" | "replies">;
+  userId: number;
+};
+
 export type GetUserDataResponse = Array<PostResponse | Vote>;
+
+export type GetMeResponse = User | void;
 
 export type GetUserByIdData = {
   id: number;
@@ -380,6 +390,36 @@ export type $OpenApiTs = {
       };
     };
   };
+  "/users/userdata/me": {
+    get: {
+      req: GetMyUserDataData;
+      res: {
+        /**
+         * OK
+         */
+        200: Array<PostResponse | Vote>;
+        /**
+         * Unauthorized
+         */
+        401: ErrorResponse;
+      };
+    };
+  };
+  "/users/userdata/{userId}": {
+    get: {
+      req: GetUserDataData;
+      res: {
+        /**
+         * OK
+         */
+        200: Array<PostResponse | Vote>;
+        /**
+         * Unauthorized
+         */
+        401: ErrorResponse;
+      };
+    };
+  };
   "/users/me": {
     get: {
       res: {
@@ -391,21 +431,6 @@ export type $OpenApiTs = {
          * No content
          */
         204: void;
-        /**
-         * Unauthorized
-         */
-        401: ErrorResponse;
-      };
-    };
-  };
-  "/users/userdata": {
-    get: {
-      req: GetUserDataData;
-      res: {
-        /**
-         * OK
-         */
-        200: Array<PostResponse | Vote>;
         /**
          * Unauthorized
          */

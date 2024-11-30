@@ -3,16 +3,23 @@
 import { UseQueryResult } from "@tanstack/react-query";
 import { CommentsService, CommunitiesService, PostsService, RepliesService, UsersService } from "../requests/services.gen";
 import { SortBy, Timespan } from "../requests/types.gen";
+export type UsersServiceGetMyUserDataDefaultResponse = Awaited<ReturnType<typeof UsersService.getMyUserData>>;
+export type UsersServiceGetMyUserDataQueryResult<TData = UsersServiceGetMyUserDataDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
+export const useUsersServiceGetMyUserDataKey = "UsersServiceGetMyUserData";
+export const UseUsersServiceGetMyUserDataKeyFn = ({ include }: {
+  include?: ("posts" | "votes" | "comments" | "replies")[];
+} = {}, queryKey?: Array<unknown>) => [useUsersServiceGetMyUserDataKey, ...(queryKey ?? [{ include }])];
+export type UsersServiceGetUserDataDefaultResponse = Awaited<ReturnType<typeof UsersService.getUserData>>;
+export type UsersServiceGetUserDataQueryResult<TData = UsersServiceGetUserDataDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
+export const useUsersServiceGetUserDataKey = "UsersServiceGetUserData";
+export const UseUsersServiceGetUserDataKeyFn = ({ include, userId }: {
+  include?: ("posts" | "votes" | "comments" | "replies")[];
+  userId: number;
+}, queryKey?: Array<unknown>) => [useUsersServiceGetUserDataKey, ...(queryKey ?? [{ include, userId }])];
 export type UsersServiceGetMeDefaultResponse = Awaited<ReturnType<typeof UsersService.getMe>>;
 export type UsersServiceGetMeQueryResult<TData = UsersServiceGetMeDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
 export const useUsersServiceGetMeKey = "UsersServiceGetMe";
 export const UseUsersServiceGetMeKeyFn = (queryKey?: Array<unknown>) => [useUsersServiceGetMeKey, ...(queryKey ?? [])];
-export type UsersServiceGetUserDataDefaultResponse = Awaited<ReturnType<typeof UsersService.getUserData>>;
-export type UsersServiceGetUserDataQueryResult<TData = UsersServiceGetUserDataDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
-export const useUsersServiceGetUserDataKey = "UsersServiceGetUserData";
-export const UseUsersServiceGetUserDataKeyFn = ({ include }: {
-  include?: ("posts" | "votes" | "comments" | "replies")[];
-} = {}, queryKey?: Array<unknown>) => [useUsersServiceGetUserDataKey, ...(queryKey ?? [{ include }])];
 export type UsersServiceGetUserByIdDefaultResponse = Awaited<ReturnType<typeof UsersService.getUserById>>;
 export type UsersServiceGetUserByIdQueryResult<TData = UsersServiceGetUserByIdDefaultResponse, TError = unknown> = UseQueryResult<TData, TError>;
 export const useUsersServiceGetUserByIdKey = "UsersServiceGetUserById";

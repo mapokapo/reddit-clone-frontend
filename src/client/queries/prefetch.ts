@@ -5,14 +5,6 @@ import { CommentsService, CommunitiesService, PostsService, RepliesService, User
 import { SortBy, Timespan } from "../requests/types.gen";
 import * as Common from "./common";
 /**
-* Get the current user
-* This endpoint is used by the client to get the current user. Returns 204 if the authenticated user doesn't have a profile.
-* @returns User OK
-* @returns void No content
-* @throws ApiError
-*/
-export const prefetchUseUsersServiceGetMe = (queryClient: QueryClient) => queryClient.prefetchQuery({ queryKey: Common.UseUsersServiceGetMeKeyFn(), queryFn: () => UsersService.getMe() });
-/**
 * Get aggregated user data for the current user
 * This endpoint is used by the client to get user data such as posts, comments, and votes for the current user.
 * @param data The data for the request.
@@ -20,9 +12,30 @@ export const prefetchUseUsersServiceGetMe = (queryClient: QueryClient) => queryC
 * @returns unknown OK
 * @throws ApiError
 */
-export const prefetchUseUsersServiceGetUserData = (queryClient: QueryClient, { include }: {
+export const prefetchUseUsersServiceGetMyUserData = (queryClient: QueryClient, { include }: {
   include?: ("posts" | "votes" | "comments" | "replies")[];
-} = {}) => queryClient.prefetchQuery({ queryKey: Common.UseUsersServiceGetUserDataKeyFn({ include }), queryFn: () => UsersService.getUserData({ include }) });
+} = {}) => queryClient.prefetchQuery({ queryKey: Common.UseUsersServiceGetMyUserDataKeyFn({ include }), queryFn: () => UsersService.getMyUserData({ include }) });
+/**
+* Get aggregated user data for a user
+* This endpoint is used by the client to get user data such as posts, comments, and votes for a user.
+* @param data The data for the request.
+* @param data.userId
+* @param data.include The data to include in the response
+* @returns unknown OK
+* @throws ApiError
+*/
+export const prefetchUseUsersServiceGetUserData = (queryClient: QueryClient, { include, userId }: {
+  include?: ("posts" | "votes" | "comments" | "replies")[];
+  userId: number;
+}) => queryClient.prefetchQuery({ queryKey: Common.UseUsersServiceGetUserDataKeyFn({ include, userId }), queryFn: () => UsersService.getUserData({ include, userId }) });
+/**
+* Get the current user
+* This endpoint is used by the client to get the current user. Returns 204 if the authenticated user doesn't have a profile.
+* @returns User OK
+* @returns void No content
+* @throws ApiError
+*/
+export const prefetchUseUsersServiceGetMe = (queryClient: QueryClient) => queryClient.prefetchQuery({ queryKey: Common.UseUsersServiceGetMeKeyFn(), queryFn: () => UsersService.getMe() });
 /**
 * Get a user's profile by ID
 * @param data The data for the request.
