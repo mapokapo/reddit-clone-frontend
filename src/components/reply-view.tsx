@@ -204,6 +204,19 @@ const ReplyView: React.FC<Props> = ({ reply, onReplyTo }) => {
                     />
                   </div>
                   <DialogFooter>
+                    {containsMention(reply.content) && (
+                      <DialogClose asChild>
+                        <Button
+                          variant="destructive"
+                          type="button"
+                          onClick={() => {
+                            onEdit(reply.id, editReplyText, null);
+                          }}
+                          disabled={editReplyIsPending}>
+                          Remove mention
+                        </Button>
+                      </DialogClose>
+                    )}
                     <DialogClose asChild>
                       <Button
                         variant="default"
