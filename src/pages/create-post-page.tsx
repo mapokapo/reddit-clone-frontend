@@ -17,6 +17,7 @@ import mapErrorToMessage from "@/lib/mapError";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -34,6 +35,7 @@ const formSchema = z.object({
 
 const CreatePostPage: React.FC = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -66,12 +68,14 @@ const CreatePostPage: React.FC = () => {
           }),
         key: "/posts",
       }),
-    onSuccess: async () => {
+    onSuccess: async newPost => {
       form.reset();
 
       await queryClient.invalidateQueries({
         queryKey: ["posts"],
       });
+
+      navigate(`/app/posts/${newPost.id}`);
     },
   });
 
