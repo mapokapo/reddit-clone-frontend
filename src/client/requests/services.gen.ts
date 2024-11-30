@@ -6,8 +6,6 @@ import { request as __request } from "./core/request";
 import type {
   CreateUserData,
   CreateUserResponse,
-  GetMyUserDataData,
-  GetMyUserDataResponse,
   GetUserDataData,
   GetUserDataResponse,
   GetMeResponse,
@@ -94,29 +92,6 @@ export class UsersService {
       url: "/users",
       body: data.requestBody,
       mediaType: "application/json",
-      errors: {
-        401: "Unauthorized",
-      },
-    });
-  }
-
-  /**
-   * Get aggregated user data for the current user
-   * This endpoint is used by the client to get user data such as posts, comments, and votes for the current user.
-   * @param data The data for the request.
-   * @param data.include The data to include in the response
-   * @returns unknown OK
-   * @throws ApiError
-   */
-  public static getMyUserData(
-    data: GetMyUserDataData = {}
-  ): CancelablePromise<GetMyUserDataResponse> {
-    return __request(OpenAPI, {
-      method: "GET",
-      url: "/users/userdata/me",
-      query: {
-        include: data.include,
-      },
       errors: {
         401: "Unauthorized",
       },

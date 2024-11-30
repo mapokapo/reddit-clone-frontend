@@ -136,15 +136,6 @@ export type CreateUserData = {
 
 export type CreateUserResponse = User;
 
-export type GetMyUserDataData = {
-  /**
-   * The data to include in the response
-   */
-  include?: Array<"posts" | "votes" | "comments" | "replies">;
-};
-
-export type GetMyUserDataResponse = Array<PostResponse | Vote>;
-
 export type GetUserDataData = {
   /**
    * The data to include in the response
@@ -383,21 +374,6 @@ export type $OpenApiTs = {
          * Created
          */
         201: User;
-        /**
-         * Unauthorized
-         */
-        401: ErrorResponse;
-      };
-    };
-  };
-  "/users/userdata/me": {
-    get: {
-      req: GetMyUserDataData;
-      res: {
-        /**
-         * OK
-         */
-        200: Array<PostResponse | Vote>;
         /**
          * Unauthorized
          */

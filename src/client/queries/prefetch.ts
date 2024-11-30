@@ -5,17 +5,6 @@ import { CommentsService, CommunitiesService, PostsService, RepliesService, User
 import { SortBy, Timespan } from "../requests/types.gen";
 import * as Common from "./common";
 /**
-* Get aggregated user data for the current user
-* This endpoint is used by the client to get user data such as posts, comments, and votes for the current user.
-* @param data The data for the request.
-* @param data.include The data to include in the response
-* @returns unknown OK
-* @throws ApiError
-*/
-export const prefetchUseUsersServiceGetMyUserData = (queryClient: QueryClient, { include }: {
-  include?: ("posts" | "votes" | "comments" | "replies")[];
-} = {}) => queryClient.prefetchQuery({ queryKey: Common.UseUsersServiceGetMyUserDataKeyFn({ include }), queryFn: () => UsersService.getMyUserData({ include }) });
-/**
 * Get aggregated user data for a user
 * This endpoint is used by the client to get user data such as posts, comments, and votes for a user.
 * @param data The data for the request.
