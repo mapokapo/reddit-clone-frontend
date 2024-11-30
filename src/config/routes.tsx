@@ -38,7 +38,11 @@ const routes: RouteObject[] = [
                 element: <SettingsPage />,
               },
               {
-                path: "/app/profile",
+                path: "/app/profiles",
+                element: <ProfilePage />,
+              },
+              {
+                path: "/app/profiles/:id",
                 element: <ProfilePage />,
               },
               {

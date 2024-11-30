@@ -59,7 +59,7 @@ const Profile: React.FC = () => {
             <span className="text-lg">{profile.name}</span>
             <Separator />
             <div className="flex w-full flex-col gap-2">
-              <Link to="/app/profile">
+              <Link to="/app/profiles">
                 <Button
                   variant="ghost"
                   className="flex w-full justify-start gap-2">
