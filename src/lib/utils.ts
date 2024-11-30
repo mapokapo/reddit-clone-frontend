@@ -31,3 +31,10 @@ export function getRelativeTime(d1: Date, d2 = new Date()) {
 
   return null;
 }
+
+export function initials(name: string) {
+  return name
+    .split(" ")
+    .map(n => n[0])
+    .join("");
+}

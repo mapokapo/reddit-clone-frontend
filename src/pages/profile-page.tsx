@@ -8,7 +8,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUserProfile } from "@/components/user-provider";
 import VoteView from "@/components/vote-view";
 import { mapFetchErrors } from "@/lib/fetcher";
-import { range } from "@/lib/utils";
+import { initials, range } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
@@ -41,7 +41,7 @@ const ProfilePage: React.FC = () => {
             src={profile.photoUrl}
             alt={profile.name}
           />
-          <AvatarFallback>{profile.name}</AvatarFallback>
+          <AvatarFallback>{initials(profile.name)}</AvatarFallback>
         </Avatar>
         <div className="flex flex-col">
           <span className="text-2xl font-bold">{profile.name}</span>

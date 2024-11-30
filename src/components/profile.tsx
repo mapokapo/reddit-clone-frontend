@@ -13,6 +13,7 @@ import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useState } from "react";
 import Loading from "./loading";
+import { initials } from "@/lib/utils";
 
 const Profile: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -39,7 +40,7 @@ const Profile: React.FC = () => {
               src={profile.photoUrl}
               alt={profile.name}
             />
-            <AvatarFallback>{profile.name}</AvatarFallback>
+            <AvatarFallback>{initials(profile.name)}</AvatarFallback>
           </Avatar>
         </Button>
       </PopoverTrigger>
@@ -53,7 +54,7 @@ const Profile: React.FC = () => {
                 src={profile.photoUrl}
                 alt={profile.name}
               />
-              <AvatarFallback>{profile.name}</AvatarFallback>
+              <AvatarFallback>{initials(profile.name)}</AvatarFallback>
             </Avatar>
             <span className="text-lg">{profile.name}</span>
             <Separator />
