@@ -1,7 +1,12 @@
-import { RepliesService, ReplyResponse, User } from "@/client/requests";
+import { RepliesService, ReplyResponse } from "@/client/requests";
 import { useUserProfile } from "@/components/user-provider";
 import { Button } from "@/components/ui/button";
-import { getRelativeTime, normalizeReplyContent } from "@/lib/utils";
+import {
+  containsMention,
+  extractMentionFromReply,
+  getRelativeTime,
+  normalizeReplyContent,
+} from "@/lib/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Dialog,
@@ -111,7 +116,10 @@ const ReplyView: React.FC<Props> = ({ reply, onReplyTo }) => {
   const onEdit = async (
     replyId: number,
     content: string,
-    replyingTo: User | null
+    replyingTo: {
+      name: string;
+      id: number;
+    } | null
   ) => {
     try {
       await mutateEditReplyAsync({
@@ -155,7 +163,13 @@ const ReplyView: React.FC<Props> = ({ reply, onReplyTo }) => {
                 <DialogTrigger
                   asChild
                   onClick={() => {
-                    setEditReplyText(reply.content);
+                    if (containsMention(reply.content)) {
+                      setEditReplyText(
+                        normalizeReplyContent(reply.content, true)
+                      );
+                    } else {
+                      setEditReplyText(reply.content);
+                    }
                     setDialog(Dialogs.editReplyDialog);
                   }}>
                   <DropdownMenuItem>Edit</DropdownMenuItem>
@@ -173,6 +187,9 @@ const ReplyView: React.FC<Props> = ({ reply, onReplyTo }) => {
                   <DialogHeader>
                     <DialogTitle className="text-foreground">
                       Edit reply
+                      {containsMention(reply.content)
+                        ? ` to ${extractMentionFromReply(reply.content)?.name ?? "user"}`
+                        : ""}{" "}
                     </DialogTitle>
                     <DialogDescription>
                       Make changes to your reply.
@@ -192,7 +209,11 @@ const ReplyView: React.FC<Props> = ({ reply, onReplyTo }) => {
                         variant="default"
                         type="button"
                         onClick={() => {
-                          onEdit(reply.id, editReplyText, null);
+                          onEdit(
+                            reply.id,
+                            editReplyText,
+                            extractMentionFromReply(reply.content)
+                          );
                         }}
                         disabled={editReplyIsPending}>
                         Save

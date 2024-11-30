@@ -45,3 +45,20 @@ export function normalizeReplyContent(
 ) {
   return content.replace(/@{(.+?)-\d+}/, remove ? "" : "@$1").trim();
 }
+
+export function extractMentionFromReply(content: string): {
+  name: string;
+  id: number;
+} | null {
+  const match = /@{(.+?)-(\d+)}/.exec(content);
+  if (!match) return null;
+
+  return {
+    name: match[1],
+    id: parseInt(match[2]),
+  };
+}
+
+export function containsMention(content: string) {
+  return /@{(.+)-(\d+)}/.test(content);
+}
