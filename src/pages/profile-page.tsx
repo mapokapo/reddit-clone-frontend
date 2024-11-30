@@ -29,7 +29,6 @@ const ProfilePage: React.FC = () => {
       "users",
       {
         id: id !== undefined ? id : "me",
-        include: viewMode === "all" ? ["posts", "votes"] : [viewMode],
       },
     ],
     queryFn: () =>
@@ -57,6 +56,7 @@ const ProfilePage: React.FC = () => {
         fetchFunction: async () =>
           await UsersService.getUserData({
             userId: id !== undefined ? parseInt(id) : currentProfile.id,
+            include: viewMode === "all" ? ["posts", "votes"] : [viewMode],
           }),
         key: `/users/userdata/${id !== undefined ? id : "me"}`,
       }),
