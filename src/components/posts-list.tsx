@@ -9,31 +9,69 @@ import PostView from "@/components/post-view";
 import { range } from "@/lib/utils";
 import SelectFilterMode from "./select-filter-mode";
 
-const PostsList: React.FC = () => {
+type Props = {
+  communityId?: number;
+  all?: boolean;
+};
+
+const PostsList: React.FC<Props> = ({ communityId, all = false }) => {
   const [filterMode, setFilterMode] = useState<SortBy>("new");
   const [filterTimespan, setFilterTimespan] = useState<Timespan>("all-time");
 
-  const query = useQuery({
-    queryKey: ["posts", "feed", filterMode, filterTimespan],
-    queryFn: () =>
-      mapFetchErrors({
-        fetchFunction: () =>
-          PostsService.getFeed({
-            sortBy: filterMode,
-            timespan: filterTimespan,
-          }),
-        key: "/posts/feed",
-      }),
-  });
+  const query = useQuery(
+    all
+      ? {
+          queryKey: ["posts"],
+          queryFn: () =>
+            mapFetchErrors({
+              fetchFunction: () => PostsService.findAllPosts(),
+              key: "/posts",
+            }),
+        }
+      : communityId !== undefined
+        ? {
+            queryKey: [
+              "posts",
+              "community",
+              communityId,
+              filterMode,
+              filterTimespan,
+            ],
+            queryFn: () =>
+              mapFetchErrors({
+                fetchFunction: () =>
+                  PostsService.findAllPostsInCommunity({
+                    communityId,
+                    sortBy: filterMode,
+                    timespan: filterTimespan,
+                  }),
+                key: `/posts/communities/${communityId}`,
+              }),
+          }
+        : {
+            queryKey: ["posts", "feed", filterMode, filterTimespan],
+            queryFn: () =>
+              mapFetchErrors({
+                fetchFunction: () =>
+                  PostsService.getFeed({
+                    sortBy: filterMode,
+                    timespan: filterTimespan,
+                  }),
+                key: "/posts/feed",
+              }),
+          }
+  );
 
   return (
     <div className="flex flex-[3] flex-col">
-      <SelectFilterMode
-        filterMode={filterMode}
-        filterTimespan={filterTimespan}
-        setFilterMode={setFilterMode}
-        setFilterTimespan={setFilterTimespan}
-      />
+      {all !== true && (
+        <SelectFilterMode
+          filterMode={filterMode}
+          filterTimespan={filterTimespan}
+          setFilterMode={setFilterMode}
+          setFilterTimespan={setFilterTimespan}
+        />
+      )}
       <Separator />
       <ul className="mt-4 flex w-full flex-col gap-4">
         <QueryHandler

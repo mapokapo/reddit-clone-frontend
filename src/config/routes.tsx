@@ -2,6 +2,7 @@ import AppLayout from "@/layouts/app-layout";
 import PrivateLayout from "@/layouts/private-layout";
 import PublicLayout from "@/layouts/public-layout";
 import RootLayout from "@/layouts/root-layout";
+import CommunityPage from "@/pages/community-page";
 import CreatePostPage from "@/pages/create-post-page";
 import HomePage from "@/pages/home-page";
 import LoginPage from "@/pages/login-page";
@@ -29,6 +30,10 @@ const routes: RouteObject[] = [
                 element: <HomePage />,
               },
               {
+                path: "/app/all",
+                element: <HomePage all={true} />,
+              },
+              {
                 path: "/app/settings",
                 element: <SettingsPage />,
               },
@@ -43,6 +48,10 @@ const routes: RouteObject[] = [
               {
                 path: "/app/posts/:id",
                 element: <PostPage />,
+              },
+              {
+                path: "/app/communities/:id",
+                element: <CommunityPage />,
               },
             ],
           },
