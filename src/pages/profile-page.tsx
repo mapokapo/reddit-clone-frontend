@@ -11,43 +11,90 @@ import { mapFetchErrors } from "@/lib/fetcher";
 import { initials, range } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import { useParams } from "react-router-dom";
 
 type ViewMode = "all" | "posts" | "votes";
 
 const ProfilePage: React.FC = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("all");
-  const { profile } = useUserProfile();
+  const { profile: currentProfile } = useUserProfile();
+  const { id } = useParams<{ id: string }>();
 
-  const items = useQuery({
+  if (id !== undefined && isNaN(parseInt(id))) {
+    return <div>Invalid profile ID</div>;
+  }
+
+  const userInfoQuery = useQuery({
     queryKey: [
       "users",
       {
-        id: profile.id,
+        id: id !== undefined ? id : "me",
+        include: viewMode === "all" ? ["posts", "votes"] : [viewMode],
+      },
+    ],
+    queryFn: () =>
+      id !== undefined
+        ? mapFetchErrors({
+            fetchFunction: async () =>
+              await UsersService.getUserById({
+                id: parseInt(id),
+              }),
+            key: `/users/${id}`,
+          })
+        : currentProfile,
+  });
+
+  const itemsQuery = useQuery({
+    queryKey: [
+      "users",
+      {
+        id: id !== undefined ? parseInt(id) : currentProfile.id,
         include: viewMode === "all" ? ["posts", "votes"] : [viewMode],
       },
     ],
     queryFn: () =>
       mapFetchErrors({
-        fetchFunction: UsersService.getUserData,
-        key: "/users/me",
+        fetchFunction: async () =>
+          await UsersService.getUserData({
+            userId: id !== undefined ? parseInt(id) : currentProfile.id,
+          }),
+        key: `/users/userdata/${id !== undefined ? id : "me"}`,
       }),
   });
 
   return (
     <main className="mx-auto flex min-h-full w-full max-w-6xl flex-col gap-8 p-4 py-16">
-      <div className="flex h-min items-center gap-2">
-        <Avatar className="h-24 w-24 border-2 border-border p-2">
-          <AvatarImage
-            src={profile.photoUrl}
-            alt={profile.name}
-          />
-          <AvatarFallback>{initials(profile.name)}</AvatarFallback>
-        </Avatar>
-        <div className="flex flex-col">
-          <span className="text-2xl font-bold">{profile.name}</span>
-          <span className="text-lg text-muted-foreground">{profile.email}</span>
-        </div>
-      </div>
+      <QueryHandler
+        query={userInfoQuery}
+        loading={
+          <div className="flex h-1/3 w-full flex-col gap-2">
+            <Skeleton className="h-24 w-full rounded-lg bg-muted" />
+            <Skeleton className="h-24 w-full rounded-lg bg-muted" />
+          </div>
+        }
+        error={() => (
+          <p className="p-4 text-xl text-muted-foreground">
+            An error occurred while fetching user data.
+          </p>
+        )}
+        success={profile => (
+          <div className="flex h-min items-center gap-2">
+            <Avatar className="h-24 w-24 border-2 border-border">
+              <AvatarImage
+                src={profile.photoUrl}
+                alt={profile.name}
+              />
+              <AvatarFallback>{initials(profile.name)}</AvatarFallback>
+            </Avatar>
+            <div className="flex flex-col">
+              <span className="text-2xl font-bold">{profile.name}</span>
+              <span className="text-lg text-muted-foreground">
+                {profile.email}
+              </span>
+            </div>
+          </div>
+        )}
+      />
       <Separator />
       <Tabs
         defaultValue="all"
@@ -61,7 +108,7 @@ const ProfilePage: React.FC = () => {
       </Tabs>
       <div className="flex flex-col gap-4">
         <QueryHandler
-          query={items}
+          query={itemsQuery}
           loading={range(3).map(key => (
             <Skeleton
               key={key}
