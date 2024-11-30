@@ -57,10 +57,15 @@ export const UserProvider: React.FC<PropsWithChildren> = ({ children }) => {
   }, []);
 
   const value = useMemo(
-    () => ({ user, profile, error, setProfile: (newProfile: UserProfile) => {
-      setError(null);
-      setProfile(newProfile);
-    } }),
+    () => ({
+      user,
+      profile,
+      error,
+      setProfile: (newProfile: UserProfile) => {
+        setError(null);
+        setProfile(newProfile);
+      },
+    }),
     [user, profile, error]
   );
 
@@ -71,7 +76,7 @@ export const useAuth = () => {
   const context = useContext(UserContext);
 
   if (context === undefined)
-    throw new Error("useUser must be used within a UserProvider");
+    throw new Error("useAuth must be used within a UserProvider");
 
   return context;
 };
